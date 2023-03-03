@@ -61,13 +61,13 @@ Amount AmountMultiplyRatio(Amount amount, int ratio);
  * Name: NewAmount
  * Description: 使用指定金额信息创建新的Amount对象
  * Arguments:
- *     amount: 用于存放创建结果的Amount对象
+ *     destination: 指向用于存放创建结果的Amount对象的指针
  *     yuan: 元
  *     jiao: 角
  *     cent: 分
  * Returns: 若金额信息超出范围，返回1
  *          否则，返回0
  * */
-int NewAmount(Amount amount, int yuan, int jiao, int cent);
+int NewAmount(Amount *destination, int yuan, int jiao, int cent);
 
 #endif
