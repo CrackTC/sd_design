@@ -7,12 +7,6 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include <time.h>
-
-typedef int Amount;
-typedef time_t Time;
-
-struct InventoryEntry;
 struct Item;
 struct BaseDiscount;
 struct LossEntry;
@@ -25,65 +19,6 @@ struct Staff;
 struct PermissionEntry;
 struct JournalEntry;
 
-/*
- * Name: Operation
- * Description: 定义用户操作的枚举值
- * */
-enum Operation {
-    OP_ADD_STAFF,
-    OP_DELETE_STAFF,
-    OP_UPDATE_STAFF,
-    OP_READ_STAFF,
-
-    OP_READ_JOURNAL,
-
-    OP_READ_STATISTICS,
-
-    OP_ADD_INVENTORY,
-    OP_UPDATE_INVENTORY,
-    OP_READ_INVENTORY,
-
-    OP_ADD_CUSTOMER,
-    OP_DELETE_CUSTOMER,
-    OP_UPDATE_CUSTOMER,
-    OP_READ_CUSTOMER,
-
-    OP_READ_ORDER,
-
-    OP_ADD_DISCOUNT,
-    OP_DELETE_DISCOUNT,
-    OP_UPDATE_DISCOUNT,
-    OP_READ_DISCOUNT,
-
-    OP_ADD_REFUND,
-    OP_DELETE_REFUND,
-    OP_UPDATE_REFUND,
-    OP_READ_REFUND,
-};
-
-/*
- * Name: InventoryEntry
- * Description: 表示一个库存条目
- * */
-struct InventoryEntry {
-    // 库存编号
-    int id;
-
-    // 商品编号
-    int itemId;
-
-    // 数量
-    int number;
-
-    // 入库时间
-    Time inboundTime;
-
-    // 生产日期
-    Time productionTime;
-
-    // 购入单价
-    Amount inboundUnitPrice;
-};
 
 /*
  * Name: Item
@@ -94,7 +29,7 @@ struct Item {
     int id;
 
     // 商品名称
-    char *name;
+    const char *name;
 
     // 售价
     Amount price;
@@ -127,7 +62,7 @@ struct LossEntry {
     int inventoryId;
 
     // 损耗原因
-    char *reason;
+    const char *reason;
 
     // 损耗时间
     Time time;
@@ -142,7 +77,7 @@ struct RefundEntry {
     int orderId;
 
     // 退款理由
-    char *reason;
+    const char *reason;
 
     // 退款时间
     Time time;
@@ -154,7 +89,7 @@ struct RefundEntry {
     int number;
 
     // 备注信息
-    char *remark;
+    const char *remark;
 };
 
 /*
@@ -169,10 +104,10 @@ struct Customer {
     int level;
 
     // 客户姓名
-    char *name;
+    const char *name;
 
     // 客户联系方式
-    char *contact;
+    const char *contact;
 };
 
 /*
@@ -215,7 +150,7 @@ struct Profit {
     Amount amount;
 
     // 事项
-    char *matter;
+    const char *matter;
 
     // 时间
     Time time;
@@ -233,13 +168,13 @@ struct Staff {
     int isEnabled;
 
     // 员工姓名
-    char *name;
+    const char *name;
 
     // 员工密码
-    char *password;
+    const char *password;
 
     // 联系方式
-    char *contact;
+    const char *contact;
 };
 
 
@@ -270,7 +205,7 @@ struct JournalEntry {
     Operation operation;
 
     // 操作相关参数
-    char **arguments;
+    const char **arguments;
 };
 
 #endif
