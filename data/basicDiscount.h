@@ -14,7 +14,7 @@
  * Name: BaseDiscount
  * Description: 表示基于折扣比率的基本折扣
  * */
-struct BasicDiscount;
+typedef struct BasicDiscount BasicDiscount;
 
 /*
  * Name: NewBasicDiscount
@@ -23,11 +23,12 @@ struct BasicDiscount;
  *     destination: 指向用于存放创建结果的BasicDiscount对象的指针
  *     itemId: 商品编号
  *     ratio: 折扣比率
+ *     customerLevel: 客户等级
  *     deadline: 折扣截止时间
  * Returns: 若成功创建，返回0
  *          否则，返回1
  * */
-int NewBasicDiscount(BasicDiscount *destination, int itemId, int ratio, Time *deadline);
+int NewBasicDiscount(BasicDiscount *destination, int itemId, int ratio, int customerLevel, Time *deadline);
 
 /*
  * Name: GetAllBasicDiscounts
@@ -35,7 +36,7 @@ int NewBasicDiscount(BasicDiscount *destination, int itemId, int ratio, Time *de
  * Returns: 一个链表，包含所有基本折扣
  *          若不存在基本折扣，返回NULL
  * */
-const LinkedListPointer GetAllBasicDiscounts();
+const LinkedList *GetAllBasicDiscounts();
 
 /*
  * Name: GetBasicDiscountsByItemId
@@ -45,7 +46,7 @@ const LinkedListPointer GetAllBasicDiscounts();
  * Returns: 一个链表，包含所有符合条件的基本折扣
  *          若不存在符合条件的基本折扣，返回NULL
  * */
-const LinkedListPointer GetBasicDiscountsByItemId(int itemId);
+const LinkedList *GetBasicDiscountsByItemId(int itemId);
 
 /*
  * Name: GetBasicDiscountXXX
@@ -56,6 +57,7 @@ const LinkedListPointer GetBasicDiscountsByItemId(int itemId);
  * */
 int GetBasicDiscountItemId(const BasicDiscount *discount);
 int GetBasicDiscountRatio(const BasicDiscount *discount);
+int GetBasicDiscountCustomerLevel(const BasicDiscount *discount);
 Time *GetBasicDiscountDeadline(const BasicDiscount *discount);
 
 /*
@@ -67,6 +69,7 @@ Time *GetBasicDiscountDeadline(const BasicDiscount *discount);
  * */
 void SetBasicDiscountItemId(BasicDiscount *discount, int value);
 void SetBasicDiscountRatio(BasicDiscount *discount, int value);
+void SetBasicDiscountCustomerLevel(BasicDiscount *discount, int value);
 void SetBasicDiscountDeadline(BasicDiscount *discount, Time *value);
 
 /*
