@@ -19,6 +19,8 @@ struct Staff;
 struct PermissionEntry;
 struct JournalEntry;
 
+// TODO: add customer discount
+
 
 /*
  * Name: Item
