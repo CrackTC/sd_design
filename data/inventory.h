@@ -16,6 +16,7 @@
  * Description: 表示一个库存条目
  * */
 struct InventoryEntry;
+
 /*
  * Name: GetAllInventory
  * Description: 获取所有库存条目
