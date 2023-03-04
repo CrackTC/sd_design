@@ -48,8 +48,8 @@ const LinkedList *GetAllCustomers();
  * Description: 获取具有指定客户编号的客户
  * Arguments:
  *     id: 指定的客户编号
- * Returns: 符合条件的库存条目
- *          若不存在符合条件的条目，返回NULL
+ * Returns: 符合条件的客户
+ *          若不存在符合条件的客户，返回NULL
  * */
 const Customer *GetCustomerById(int id);
 
@@ -99,7 +99,7 @@ void SetCustomerContact(Customer *customer, const char *contact);
  * Name: AppendCustomer
  * Description: 向系统中追加一个Customer对象
  * Arguments:
- *     custmer: 一个指针，指向要追加的Customer对象
+ *     customer: 一个指针，指向要追加的Customer对象
  * Returns: 如果成功追加，返回0
  *          否则，返回1
  * */
