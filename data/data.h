@@ -7,7 +7,6 @@
 #ifndef DATA_H
 #define DATA_H
 
-struct Item;
 struct BaseDiscount;
 struct LossEntry;
 struct RefundEntry;
@@ -21,24 +20,6 @@ struct JournalEntry;
 
 // TODO: add customer discount
 
-
-/*
- * Name: Item
- * Description: 表示一个商品
- * */
-struct Item {
-    // 商品编号
-    int id;
-
-    // 商品名称
-    const char *name;
-
-    // 售价
-    Amount price;
-
-    // 保质期
-    Time shelfLife;
-};
 
 /*
  * Name: BaseDiscount
