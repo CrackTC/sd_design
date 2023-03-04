@@ -26,12 +26,15 @@ struct Item;
  *     price: 指向商品价格的指针
  *     shelfLife: 指向商品保质期的指针
  * Returns: 若成功创建，返回0
- *          否则，返回1*/
+ *          否则，返回1
+ * */
 int NewItem(Item *destination, const char *name, Amount *price, Time *shelfLife);
 
 /*
  * Name: GetAllItems
  * Description: 获取所有商品
+ * Returns: 一个链表，包含所有商品
+ *          若不存在商品，返回NULL
  * */
 const LinkedListPointer GetAllItems();
 
