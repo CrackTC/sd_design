@@ -7,19 +7,6 @@
 #ifndef DATA_H
 #define DATA_H
 
-struct LossEntry;
-struct RefundEntry;
-struct Customer;
-struct Order;
-struct Statistics;
-struct Profit;
-struct Staff;
-struct PermissionEntry;
-struct JournalEntry;
-
-// TODO: add customer discount
-
-
 /*
  * Name: LossEntry
  * Description: 表示一个货物损耗条目

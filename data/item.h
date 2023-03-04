@@ -15,7 +15,7 @@
  * Name: Item
  * Description: 表示一个商品
  * */
-struct Item;
+typedef struct Item Item;
 
 /*
  * Name: NewItem
@@ -36,7 +36,7 @@ int NewItem(Item *destination, const char *name, Amount *price, Time *shelfLife)
  * Returns: 一个链表，包含所有商品
  *          若不存在商品，返回NULL
  * */
-const LinkedListPointer GetAllItems();
+const LinkedList *GetAllItems();
 
 /*
  * Name: GetItemById
