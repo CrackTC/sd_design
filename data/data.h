@@ -8,24 +8,6 @@
 #define DATA_H
 
 /*
- * Name: Customer
- * Description: 表示一个客户
- * */
-struct Customer {
-    // 客户编号
-    int id;
-
-    // 客户等级
-    int level;
-
-    // 客户姓名
-    const char *name;
-
-    // 客户联系方式
-    const char *contact;
-};
-
-/*
  * Name: Order
  * Description: 表示一个订单
  * */
