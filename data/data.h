@@ -7,7 +7,6 @@
 #ifndef DATA_H
 #define DATA_H
 
-struct BaseDiscount;
 struct LossEntry;
 struct RefundEntry;
 struct Customer;
@@ -20,21 +19,6 @@ struct JournalEntry;
 
 // TODO: add customer discount
 
-
-/*
- * Name: BaseDiscount
- * Description: 表示基于折扣比率的基本折扣
- * */
-struct BasicDiscount {
-    // 商品编号
-    int itemId;
-
-    // 折扣比率%
-    int ratio;
-
-    // 折扣截止时间
-    Time deadline;
-};
 
 /*
  * Name: LossEntry
