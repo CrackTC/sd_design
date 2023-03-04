@@ -8,21 +8,6 @@
 #define DATA_H
 
 /*
- * Name: LossEntry
- * Description: 表示一个货物损耗条目
- * */
-struct LossEntry {
-    // 库存编号
-    int inventoryId;
-
-    // 损耗原因
-    const char *reason;
-
-    // 损耗时间
-    Time time;
-};
-
-/*
  * Name: RefundEntry
  * Description: 表示一个退款条目
  * */
