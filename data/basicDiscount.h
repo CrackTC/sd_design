@@ -20,15 +20,22 @@ typedef struct BasicDiscount BasicDiscount;
  * Name: NewBasicDiscount
  * Description: 创建新的基本折扣
  * Arguments:
- *     destination: 指向用于存放创建结果的BasicDiscount对象的指针
  *     itemId: 商品编号
  *     ratio: 折扣比率
  *     customerLevel: 客户等级
  *     deadline: 折扣截止时间
- * Returns: 若成功创建，返回0
- *          否则，返回1
+ * Returns: 若成功创建，返回指向创建的BasicDiscount对象的指针
+ *          否则，返回NULL
  * */
-int NewBasicDiscount(BasicDiscount *destination, int itemId, int ratio, int customerLevel, Time *deadline);
+BasicDiscount *NewBasicDiscount(int itemId, int ratio, int customerLevel, Time *deadline);
+
+/*
+ * Name: FreeBasicDiscount
+ * Description: 释放指定的BasicDiscount对象占用的空间
+ * Arguments:
+ *     discount: 指向要释放空间的BasicDiscount对象的指针
+ * */
+void FreeBasicDiscount(BasicDiscount *discount);
 
 /*
  * Name: GetAllBasicDiscounts

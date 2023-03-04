@@ -22,6 +22,14 @@ struct LinkedString {
 typedef LinkedString *LinkedStringPointer;
 
 /*
+ * Name: FreeLinkedString
+ * Description: 释放指定的LinkedString链表占用的空间
+ * Arguments:
+ *     string: 要释放空间的LinkedString链表的头指针
+ * */
+void FreeLinkedString(LinkedString *string);
+
+/*
  * Name: SerializationCallback
  * Description: 表示完成序列化后的回调函数
  * */

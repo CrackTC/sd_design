@@ -79,4 +79,12 @@ LinkedListPointer GetNodeByPredicate(const LinkedListPointer head, NodePredicate
  * */
 LinkedListPointer AppendNode(LinkedListPointer head, LinkedListPointer node);
 
+/*
+ * Name: FreeList
+ * Desciption: 释放指定的链表占用的空间
+ * Arguments:
+ *     list: 要释放空间的链表的头指针
+ * */
+void FreeList(LinkedListPointer list);
+
 #endif

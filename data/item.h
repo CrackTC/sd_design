@@ -21,14 +21,21 @@ typedef struct Item Item;
  * Name: NewItem
  * Description: 创建一个新的商品
  * Arguments:
- *     destination: 指向用于存放创建结果的Item对象的指针
  *     name: 商品名称
  *     price: 指向商品价格的指针
  *     shelfLife: 指向商品保质期的指针
- * Returns: 若成功创建，返回0
- *          否则，返回1
+ * Returns: 若成功创建，返回指向所创建Item对象的指针
+ *          否则，返回NULL
  * */
-int NewItem(Item *destination, const char *name, Amount *price, Time *shelfLife);
+Item *NewItem(const char *name, Amount *price, Time *shelfLife);
+
+/*
+ * Name: FreeItem
+ * Description: 释放指定Item对象占用的空间
+ * Arguments:
+ *     item: 一个指针，指向需要释放空间的Item对象
+ * */
+void FreeItem(Item *item);
 
 /*
  * Name: GetAllItems

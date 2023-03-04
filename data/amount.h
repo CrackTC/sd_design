@@ -61,13 +61,20 @@ Amount AmountMultiplyRatio(Amount amount, int ratio);
  * Name: NewAmount
  * Description: 使用指定金额信息创建新的Amount对象
  * Arguments:
- *     destination: 指向用于存放创建结果的Amount对象的指针
  *     yuan: 元
  *     jiao: 角
  *     cent: 分
- * Returns: 若金额信息超出范围，返回1
- *          否则，返回0
+ * Returns: 若金额信息超出范围，返回NULL
+ *          否则，返回指向创建的Amount对象的指针
  * */
-int NewAmount(Amount *destination, int yuan, int jiao, int cent);
+Amount *NewAmount(int yuan, int jiao, int cent);
+
+/*
+ * Name: FreeAmount
+ * Description: 释放指定Amount对象占用的空间
+ * Arguments:
+ *     amount: 指向需要释放空间的Amount对象的指针
+ * */
+void FreeAmount(Amount *amount);
 
 #endif

@@ -81,4 +81,12 @@ int NewDateTime(Time *destination, int year, int month, int day, int hour, int m
  * */
 int NewTimeSpan(Time *destination, int year, int month ,int day, int hour, int minute, int second);
 
+/*
+ * Name: FreeTime
+ * Description: 释放指定Time对象占用的空间
+ * Arguments:
+ *     time: 一个指针，指向要释放空间的Time对象
+ * */
+void FreeTime(Time *time);
+
 #endif

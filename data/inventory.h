@@ -7,9 +7,9 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
-#include "time.h"
 #include "amount.h"
 #include "linkedList.h"
+#include "time.h"
 
 /*
  * Name: InventoryEntry
@@ -49,22 +49,24 @@ const LinkedListPointer GetInventoryByItemId(int itemId);
  * Name: NewInventoryEntry
  * Description: 创建一个新的库存条目
  * Arguments:
- *     destination: 指向用于存放创建结果的Inventory对象的指针
  *     itemId: 商品编号
  *     number: 数量
  *     inboundTimePointer: 指向入库时间的指针
  *     productionTimePointer: 指向生产日期的指针
  *     inboundUnitPricePointer: 指向入库单价的指针
- * Returns: 若成功创建，返回0
- *          否则，返回1
+ * Returns: 若成功创建，返回指向所创建的InventoryEntry对象的指针
+ *          否则，返回NULL
  * */
-int NewInventoryEntry(
-        InventoryEntry *destination,
-        int itemId,
-        int number,
-        const Time *inboundTimePointer,
-        const Time *productionTimePointer,
-        const Amount *inboundUnitPricePointer);
+InventoryEntry *NewInventoryEntry(int itemId, int number, const Time *inboundTimePointer,
+                                  const Time *productionTimePointer, const Amount *inboundUnitPricePointer);
+
+/*
+ * Name: FreeInventoryEntry
+ * Description: 释放指定的InventoryEntry对象占用的空间
+ * Arguments:
+ *     entry: 一个指针，指向需要释放空间的InventoryEntry对象
+ * */
+void FreeInventoryEntry(InventoryEntry *entry);
 
 /*
  * Name: GetInventoryEntryXXX
