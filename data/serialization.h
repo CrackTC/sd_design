@@ -80,22 +80,24 @@ struct UnserializationContext {
  * Description: 通过指定的序列化上下文对对象进行序列化
  * Arguments:
  *     source: 指向要进行序列化的对象的指针
+ *     index: 索引，指定对象的序列化结果在文件中的位次
  *     context: 序列化上下文
  * Returns: 若序列化成功，返回0
  *          否则，返回-1
  * */
-int Serialize(const void *source, const SerializationContext *context);
+int Serialize(const void *source, int index, const SerializationContext *context);
 
 /*
  * Name: Unserialize
  * Description: 通过指定的反序列化上下文对对象进行反序列化
  * Arguments:
  *     destination: 指向要存放序列化结果的对象的指针
+ *     index: 索引，指定对象的序列化结果在文件中的位次
  *     context: 反序列化上下文
  * Returns: 若反序列化成功，返回0
  *          若文件不存在，返回1
  *          否则，返回-1
  * */
-int Unserialize(void *destination, const UnserializationContext *context);
+int Unserialize(void *destination, int index, const UnserializationContext *context);
 
 #endif
