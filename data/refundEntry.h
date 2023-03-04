@@ -15,26 +15,7 @@
  * Name: RefundEntry
  * Description: 表示一个退款条目
  * */
-struct RefundEntry
-{
-    // 订单编号
-    int orderId;
-
-    // 退款理由
-    const char *reason;
-
-    // 退款时间
-    Time *time;
-
-    // 退款金额
-    Amount *refundAmount;
-
-    // 回库数量
-    int number;
-
-    // 备注信息
-    const char *remark;
-};
+typedef struct RefundEntry RefundEntry;
 
 /*
  * Name: NewRefundEntry
