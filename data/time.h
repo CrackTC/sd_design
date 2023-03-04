@@ -53,33 +53,31 @@ size_t TimeToString(char *destination, size_t maxSize, Time time);
  * Name: NewDateTime
  * Description: 使用指定日期时间信息创建新的Time对象
  * Arguments:
- *     destination: 指向用于存放创建结果的Time对象的指针
  *     year: 年
  *     month: 月
  *     day: 日
  *     hour: 小时
  *     minute: 分钟
  *     second: 秒
- * Returns: 若日期时间信息超出范围，返回1
- *          否则，返回0
+ * Returns: 若日期时间信息超出范围，返回NULL
+ *          否则，返回指向所创建Time对象的指针
  * */
-int NewDateTime(Time *destination, int year, int month, int day, int hour, int minute, int second);
+Time *NewDateTime(int year, int month, int day, int hour, int minute, int second);
 
 /*
  * Name: NewTimeSpan
  * Description: 使用指定时间间隔信息创建新的Time对象
  * Arguments:
- *     destination: 指向用于存放创建结果的Time对象的指针
  *     year: 间隔年数
  *     month: 间隔月数
  *     day: 间隔天数
  *     hour: 间隔小时数
  *     minute: 间隔分钟数
  *     second: 间隔秒数
- * Returns: 若时间间隔信息超出范围，返回1
- *          否则，返回0
+ * Returns: 若时间间隔信息超出范围，返回NULL
+ *          否则，返回指向所创建的Time对象的指针
  * */
-int NewTimeSpan(Time *destination, int year, int month ,int day, int hour, int minute, int second);
+Time *NewTimeSpan(int year, int month ,int day, int hour, int minute, int second);
 
 /*
  * Name: FreeTime
