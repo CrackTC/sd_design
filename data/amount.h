@@ -13,7 +13,7 @@
  * Name: Amount
  * Description: 表示一个特定的金额
  * */
-struct Amount;
+typedef struct Amount Amount;
 
 /*
  * Name: AmountToString

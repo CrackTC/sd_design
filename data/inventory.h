@@ -15,7 +15,7 @@
  * Name: InventoryEntry
  * Description: 表示一个库存条目
  * */
-struct InventoryEntry;
+typedef struct InventoryEntry InventoryEntry;
 
 /*
  * Name: GetAllInventory
@@ -23,7 +23,7 @@ struct InventoryEntry;
  * Returns: 一个链表，包含所有库存条目
  *          若不存在库存条目，返回NULL
  * */
-const LinkedListPointer GetAllInventory();
+const LinkedList *GetAllInventory();
 
 /*
  * Name: GetInventoryById

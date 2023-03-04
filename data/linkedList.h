@@ -11,13 +11,13 @@
  * Name: LinkedListNode
  * Description: 表示一个链表结点
  * */
-struct LinkedList {
+typedef struct LinkedList {
     // 指向要存储的数据的指针
     void const *data;
 
     // 指向下一链表结点的指针
-    LinkedList *next;
-};
+    struct LinkedList *next;
+} LinkedList;
 
 /*
  * Name: LinkedListNodePointer

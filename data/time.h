@@ -7,12 +7,13 @@
 #ifndef TIME_H
 #define TIME_H
 
+#include <stddef.h>
+
 /*
  * Name: Time
  * Description: 表示时间或时间间隔
  * */
-#include <cstddef>
-struct Time;
+typedef struct Time Time;
 
 /*
  * Name: AddTime
