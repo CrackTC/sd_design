@@ -8,28 +8,6 @@
 #define DATA_H
 
 /*
- * Name: Order
- * Description: 表示一个订单
- * */
-struct Order {
-    // 订单编号
-    int id;
-
-    // 库存编号
-    int inventoryId;
-
-    // 数量
-    int number;
-
-    // 客户编号
-    int customerId;
-
-    // 总价
-    Amount amount;
-};
-
-
-/*
  * Name: Statistics
  * Description: 表示统计信息
  * */
