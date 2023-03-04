@@ -73,6 +73,8 @@ struct UnserializationContext {
     const char* filePath;
 };
 
+
+
 /*
  * Name: Serialize
  * Description: 通过指定的序列化上下文对对象进行序列化
@@ -91,6 +93,7 @@ int Serialize(const void *source, const SerializationContext *context);
  *     destination: 指向要存放序列化结果的对象的指针
  *     context: 反序列化上下文
  * Returns: 若反序列化成功，返回0
+ *          若文件不存在，返回1
  *          否则，返回-1
  * */
 int Unserialize(void *destination, const UnserializationContext *context);
