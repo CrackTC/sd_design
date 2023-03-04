@@ -80,6 +80,16 @@ void SetBasicDiscountCustomerLevel(BasicDiscount *discount, int value);
 void SetBasicDiscountDeadline(BasicDiscount *discount, Time *value);
 
 /*
+ * Name: AppendBasicDiscount
+ * Description: 向系统追加一个BaseDiscount对象
+ * Arguments:
+ *     discount: 一个指针，指向要追加的BaseDiscount对象
+ * Returns: 如果追加成功，返回0
+ *          否则，返回1
+ * */
+int AppendBasicDiscount(BasicDiscount *discount);
+
+/*
  * Name: BasicDiscountSave
  * Description: 保存对基本折扣的所有更改
  * */

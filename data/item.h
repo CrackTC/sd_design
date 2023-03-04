@@ -89,6 +89,16 @@ void SetItemPrice(Item *item, Amount *value);
 void SetItemShelfLife(Item *item, Time *value);
 
 /*
+ * Name: AppendItem
+ * Description: 向系统中追加一个Item对象
+ * Arguments:
+ *     item: 一个指针，指向要追加的Item对象
+ * Returns: 如果成功追加，返回0
+ *          否则，返回1
+ * */
+int AppendItem(Item *item);
+
+/*
  * Name: ItemsSave
  * Description: 保存对商品的所有更改
  * */

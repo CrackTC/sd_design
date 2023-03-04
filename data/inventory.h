@@ -96,6 +96,16 @@ void SetInventoryEntryProductionTimePointer(InventoryEntry *entry, Time *value);
 void SetInventoryEntryInboundUnitPricePointer(InventoryEntry *entry, Amount *value);
 
 /*
+ * Name: AppendInventoryEntry
+ * Description: 向系统中追加一个InventoryEntry对象
+ * Arguments:
+ *     entry: 一个指针，指向要追加的InventoryEntry对象
+ * Returns: 如果成功追加，返回0
+ *          否则，返回1
+ * */
+int AppendInventoryEntry(InventoryEntry *entry);
+
+/*
  * Name: InventorySave
  * Description: 保存对库存条目的所有更改
  * */
