@@ -1,5 +1,4 @@
-/*
- * FileName: data/lossEntry.h
+/* FileName: data/lossEntry.h
  * Author: 陈若珂
  * Description: 包含货物损耗相关数据表示和操作的定义和声明
  * */
@@ -14,16 +13,7 @@
  * Name: LossEntry
  * Description: 表示一个货物损耗条目
  * */
-typedef struct LossEntry {
-    // 库存编号
-    int inventoryId;
-
-    // 损耗原因
-    const char *reason;
-
-    // 损耗时间
-    Time *time;
-} LossEntry;
+typedef struct LossEntry LossEntry;
 
 /*
  * Name: NewLossEntry
@@ -75,7 +65,7 @@ const char *GetLossEntryReason(const LossEntry *entry);
 Time *GetLossEntryTime(const LossEntry *entry);
 
 /*
- * Name: SetInventoryEntryXXX
+ * Name: SetLossEntryXXX
  * Description: 设置货损条目的某个成员
  * Arguments:
  *     entry: 指向要设置成员的货损条目的指针
