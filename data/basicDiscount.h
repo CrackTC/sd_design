@@ -56,6 +56,16 @@ const LinkedList *GetAllBasicDiscounts();
 const LinkedList *GetBasicDiscountsByItemId(int itemId);
 
 /*
+ * Name: GetBasicDiscountsByCustomerLevel
+ * Description: 获取具有指定客户等级的基本折扣
+ * Arguments:
+ *     level: 指定的客户等级
+ * Returns: 一个链表，包含所有符合条件的基本折扣
+ *          若不存在符合条件的基本折扣，返回NULL
+ * */
+const LinkedList *GetBasicDiscountsByCustomerLevel(int level);
+
+/*
  * Name: GetBasicDiscountXXX
  * Description: 获取基本折扣的某个成员
  * Arguments:
