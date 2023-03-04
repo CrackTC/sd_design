@@ -13,7 +13,7 @@
  * */
 struct LinkedList {
     // 指向要存储的数据的指针
-    void *data;
+    void const *data;
 
     // 指向下一链表结点的指针
     LinkedList *next;
