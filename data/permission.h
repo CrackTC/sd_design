@@ -27,6 +27,14 @@ typedef struct PermissionEntry PermissionEntry;
 PermissionEntry *NewPermissionEntry(int staffId, const int *hasPermission);
 
 /*
+ * Name: FreePermissionEntry
+ * Description: 释放指定的PermissionEntry对象占用的空间
+ * Arguments:
+ *     entry: 一个指针，指向要释放空间的PermissionEntry对象
+ * */
+void FreePermissionEntry(PermissionEntry *entry);
+
+/*
  * Name: GetAllPermissionEntry
  * Description: 获取所有权限条目
  * Returns: 一个链表，包含所有权限条目
