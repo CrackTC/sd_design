@@ -8,30 +8,6 @@
 #define DATA_H
 
 /*
- * Name: Statistics
- * Description: 表示统计信息
- * */
-struct Statistics {
-    // 收支记录
-    Profit *profitHistory;
-};
-
-/*
- * Name: Profit
- * Description: 表示一个收支条目
- * */
-struct Profit {
-    // 金额
-    Amount amount;
-
-    // 事项
-    const char *matter;
-
-    // 时间
-    Time time;
-};
-
-/*
  * Name: Staff
  * Description: 表示一个员工
  * */
