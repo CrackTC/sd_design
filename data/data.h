@@ -7,19 +7,6 @@
 #ifndef DATA_H
 #define DATA_H
 
-
-/*
- * Name: PermissionEntry
- * Description: 表示员工的权限信息
- * */
-struct PermissionEntry {
-    // 员工编号
-    int staffId;
-
-    // 表示员工是否拥有指定权限
-    int *hasPermission;
-};
-
 /*
  * Name: JournalEntry
  * Description: 表示一个日志条目
