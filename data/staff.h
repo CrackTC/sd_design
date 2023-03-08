@@ -98,6 +98,16 @@ void SetStaffContact(Staff *staff, const char *value);
 int AppendStaff(Staff *staff);
 
 /*
+ * Name: RemoveStaff
+ * Description: 向系统中删除一个Staff对象
+ * Argument:
+ *     staff: 一个指针，指向要删除的Staff对象
+ * Returns: 如果成功删除，返回0
+ *          否则，返回1
+ * */
+int RemoveStaff(Staff *staff);
+
+/*
  * Name: StaffSave
  * Description: 保存对员工信息的所有更改
  * */

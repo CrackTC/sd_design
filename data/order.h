@@ -99,6 +99,16 @@ void SetOrderAmount(Order *order, Amount *value);
 int AppendOrder(Order *order);
 
 /*
+ * Name: RemoveOrder
+ * Description: 向系统中删除一个Order对象
+ * Arguments:
+ *     order: 一个指针，指向要删除的Order对象
+ * Returns: 如果成功删除，返回0
+ *          否则，返回1
+ * */
+int RemoveOrder(Order *order);
+
+/*
  * Name: OrderSave
  * Description: 保存对订单信息的所有更改
  * */

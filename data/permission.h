@@ -82,6 +82,16 @@ void SetPermissionEntryPermissions(PermissionEntry *entry, const int *value);
 int AppendPermissionEntry(PermissionEntry *entry);
 
 /*
+ * Name: RemovePermissionEntry
+ * Description: 向系统中删除一个PermissionEntry对象
+ * Arguments:
+ *     entry: 一个指针，指向要删除的对象
+ * Returns: 若成功删除，返回0
+ *          否则，返回1
+ * */
+int RemovePermissionEntry(PermissionEntry *entry);
+
+/*
  * Name: PermissionSave
  * Description: 保存对权限条目的所有更改
  * */

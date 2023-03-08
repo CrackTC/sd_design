@@ -91,13 +91,23 @@ void SetBasicDiscountDeadline(BasicDiscount *discount, Time *value);
 
 /*
  * Name: AppendBasicDiscount
- * Description: 向系统追加一个BaseDiscount对象
+ * Description: 向系统追加一个BasicDiscount对象
  * Arguments:
- *     discount: 一个指针，指向要追加的BaseDiscount对象
+ *     discount: 一个指针，指向要追加的BasicDiscount对象
  * Returns: 如果追加成功，返回0
  *          否则，返回1
  * */
 int AppendBasicDiscount(BasicDiscount *discount);
+
+/*
+ * Name: RemoveBasicDiscount
+ * Description: 向系统中删除一个BasicDiscount对象
+ * Arguments:
+ *     discount: 一个指针，指向要删除的BasicDiscount对象
+ * Returns: 如果追加成功，返回0
+ *          否则，返回1
+ * */
+int RemoveBasicDiscount(BasicDiscount *discount);
 
 /*
  * Name: BasicDiscountSave

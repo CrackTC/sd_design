@@ -28,6 +28,9 @@ typedef struct TableRow {
 typedef struct Table {
     // 所有列
     LinkedList *rows;
+
+    // 备注
+    const char *remark;
 } Table;
 
 /*
@@ -62,7 +65,7 @@ void AppendTableRow(TableRow *row, const char *item);
  * Returns: 若创建成功，返回一个指针，指向创建的表格
  *          否则，返回NULL
  * */
-Table *NewTable(TableRow *title);
+Table *NewTable(TableRow *title, const char *remark);
 
 /*
  * Name: FreeTable
@@ -91,6 +94,15 @@ int AppendTable(Table *table, TableRow *row);
  * Returns: 一个指针，指向表格的标题行
  * */
 TableRow *GetTableTitle(const Table *table);
+
+/*
+ * Name: GetTableRemark
+ * Description: 获取表格的备注部分
+ * Arguments:
+ *     table: 一个指针，指向要获取备注的表格
+ * Returns: 表格的备注
+ * */
+const char *GetTableRemark(const Table *table);
 
 /*
  * Name: GetRowByIndex

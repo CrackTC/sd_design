@@ -99,6 +99,16 @@ void SetItemShelfLife(Item *item, Time *value);
 int AppendItem(Item *item);
 
 /*
+ * Name: RemoveItem
+ * Description: 向系统中删除一个Item对象
+ * Arguments:
+ *     items: 一个指针，指向要删除的Item对象
+ * Returns: 如果成功删除，返回0
+ *          否则，返回1
+ * */
+int RemoveItem(Item *item);
+
+/*
  * Name: ItemsSave
  * Description: 保存对商品的所有更改
  * */

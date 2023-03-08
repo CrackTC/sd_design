@@ -98,6 +98,16 @@ void SetRefundEntryRemark(RefundEntry *entry, const char *remark);
 int AppendRefundEntry(RefundEntry *entry);
 
 /*
+ * Name: RemoveRefundEntry
+ * Description: 从系统中删除一个RefundEntry对象
+ * Arguments:
+ *     entry: 一个指针，指向要删除的RefundEntry对象
+ * Returns: 如果成功删除，返回0
+ *          否则，返回1
+ * */
+int RemoveRefundEntry(RefundEntry *entry);
+
+/*
  * Name: RefundEntrySave
  * Description: 保存对退款条目的所有更改
  * */

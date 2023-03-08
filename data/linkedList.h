@@ -80,6 +80,15 @@ LinkedListPointer GetNodeByPredicate(const LinkedListPointer head, NodePredicate
 LinkedListPointer AppendNode(LinkedListPointer head, LinkedListPointer node);
 
 /*
+ * Name: RemoveNode
+ * Description: 删除指定的链表结点
+ * Arguments:
+ *     head: 链表的头指针
+ *     node: 要删除的结点
+ * */
+int RemoveNode(LinkedListPointer head, LinkedListPointer node);
+
+/*
  * Name: FreeList
  * Desciption: 释放指定的链表占用的空间
  * Arguments:

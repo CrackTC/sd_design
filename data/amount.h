@@ -25,7 +25,7 @@ typedef struct Amount Amount;
  * Returns: 若结果字符串总字符数（包含'\0'）不大于maxSize，返回不包含'\0'的总字符数
  *          否则，返回0
  * */
-size_t AmountToString(char *destination, size_t maxSize, Amount amount);
+size_t AmountToString(char *destination, size_t maxSize, const Amount *amount);
 
 /*
  * Name: AmountAdd
@@ -33,9 +33,10 @@ size_t AmountToString(char *destination, size_t maxSize, Amount amount);
  * Arguments:
  *     amountA: 第一个Amount对象
  *     amountB: 第二个Amount对象
- * Returns: 一个Amount对象，表示amountA和amountB相加的结果
+ * Returns: 一个Amount对象，表示amountA和amountB相加的结果，
+ *          若相加的结果超出表示范围，返回NULL
  * */
-Amount AmountAdd(Amount amountA, Amount amountB);
+Amount *AmountAdd(const Amount *amountA, const Amount *amountB);
 
 /*
  * Name: AmountMultiply

@@ -106,6 +106,16 @@ void SetCustomerContact(Customer *customer, const char *contact);
 int AppendCustomer(Customer *customer);
 
 /*
+ * Name: RemoveCustomer
+ * Description: 向系统中删除一个Customer对象
+ * Arguments:
+ *     customer: 一个指针，指向要删除的Customer对象
+ * Returns: 如果成功删除，返回0
+ *          否则，返回1
+ * */
+int RemoveCustomer(Customer *customer);
+
+/*
  * Name: CustomerSave
  * Description: 保存对客户信息的所有更改
  * */
