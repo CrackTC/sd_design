@@ -80,6 +80,13 @@ Time *NewDateTime(int year, int month, int day, int hour, int minute, int second
 Time *NewTimeSpan(int year, int month ,int day, int hour, int minute, int second);
 
 /*
+ * Name: GetSystemTime
+ * Description: 获取当前的系统时间
+ * Returns: 一个指针，指向表示当前系统时间的Time对象
+ * */
+Time *GetSystemTime();
+
+/*
  * Name: FreeTime
  * Description: 释放指定Time对象占用的空间
  * Arguments:
