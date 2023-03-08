@@ -43,7 +43,7 @@ const InventoryEntry *GetInventoryById(int id);
  * Returns: 一个链表，包含所有符合条件的库存条目
  *          若不存在符合条件的条目，返回NULL
  * */
-const LinkedListPointer GetInventoryByItemId(int itemId);
+LinkedList *GetInventoryByItemId(int itemId);
 
 /*
  * Name: NewInventoryEntry
