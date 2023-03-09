@@ -1,21 +1,31 @@
 #include "basicDiscount.h"
+#include <malloc.h>
 
 struct BasicDiscount
 {
     int itemId;
     int ratio;
     int customerLevel;
-    const Time *deadline;
+    Time *deadline;
 };
 
-BasicDiscount *NewBasicDiscount(int itemId, int ratio, int customerLevel, const Time *deadline)
+BasicDiscount *NewBasicDiscount(int itemId, int ratio, int customerLevel, Time *deadline)
 {
+    if (itemId < 0 || ratio < 0 || ratio > 100 || customerLevel < 0 || deadline == NULL)
+        return NULL;
 
+    BasicDiscount *discount = malloc(sizeof(BasicDiscount));
+    discount->itemId = itemId;
+    discount->ratio = ratio;
+    discount->customerLevel = customerLevel;
+    discount->deadline = deadline;
+    return discount;
 }
 
 void FreeBasicDiscount(BasicDiscount *discount)
 {
-
+    FreeTime(discount->deadline);
+    free(discount);
 }
 
 const LinkedList *GetAllBasicDiscounts()

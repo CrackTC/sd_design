@@ -27,7 +27,7 @@ typedef struct BasicDiscount BasicDiscount;
  * Returns: 若成功创建，返回指向创建的BasicDiscount对象的指针
  *          否则，返回NULL
  * */
-BasicDiscount *NewBasicDiscount(int itemId, int ratio, int customerLevel, const Time *deadline);
+BasicDiscount *NewBasicDiscount(int itemId, int ratio, int customerLevel, Time *deadline);
 
 /*
  * Name: FreeBasicDiscount
