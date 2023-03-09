@@ -70,7 +70,6 @@ void SetCustomerName(Customer *customer, const char *name)
 
 }
 
-
 void SetCustomerContact(Customer *customer, const char *contact)
 {
 
