@@ -51,14 +51,14 @@ LinkedList *GetInventoryByItemId(int itemId);
  * Arguments:
  *     itemId: 商品编号
  *     number: 数量
- *     inboundTimePointer: 指向入库时间的指针
- *     productionTimePointer: 指向生产日期的指针
- *     inboundUnitPricePointer: 指向入库单价的指针
+ *     inboundTime: 指向入库时间的指针
+ *     productionTime: 指向生产日期的指针
+ *     inboundUnitPrice: 指向入库单价的指针
  * Returns: 若成功创建，返回指向所创建的InventoryEntry对象的指针
  *          否则，返回NULL
  * */
-InventoryEntry *NewInventoryEntry(int itemId, int number, const Time *inboundTimePointer,
-                                  const Time *productionTimePointer, const Amount *inboundUnitPricePointer);
+InventoryEntry *NewInventoryEntry(int itemId, int number, const Time *inboundTime, const Time *productionTime,
+                                  const Amount *inboundUnitPrice);
 
 /*
  * Name: FreeInventoryEntry
