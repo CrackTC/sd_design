@@ -27,7 +27,7 @@ typedef struct BasicDiscount BasicDiscount;
  * Returns: 若成功创建，返回指向创建的BasicDiscount对象的指针
  *          否则，返回NULL
  * */
-BasicDiscount *NewBasicDiscount(int itemId, int ratio, int customerLevel, Time *deadline);
+BasicDiscount *NewBasicDiscount(int itemId, int ratio, int customerLevel, const Time *deadline);
 
 /*
  * Name: FreeBasicDiscount
@@ -75,7 +75,7 @@ const LinkedList *GetBasicDiscountsByCustomerLevel(int level);
 int GetBasicDiscountItemId(const BasicDiscount *discount);
 int GetBasicDiscountRatio(const BasicDiscount *discount);
 int GetBasicDiscountCustomerLevel(const BasicDiscount *discount);
-Time *GetBasicDiscountDeadline(const BasicDiscount *discount);
+const Time *GetBasicDiscountDeadline(const BasicDiscount *discount);
 
 /*
  * Name: SetBasicDiscountXXX
@@ -87,7 +87,7 @@ Time *GetBasicDiscountDeadline(const BasicDiscount *discount);
 void SetBasicDiscountItemId(BasicDiscount *discount, int value);
 void SetBasicDiscountRatio(BasicDiscount *discount, int value);
 void SetBasicDiscountCustomerLevel(BasicDiscount *discount, int value);
-void SetBasicDiscountDeadline(BasicDiscount *discount, Time *value);
+void SetBasicDiscountDeadline(BasicDiscount *discount, const Time *value);
 
 /*
  * Name: AppendBasicDiscount
