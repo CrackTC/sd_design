@@ -23,7 +23,7 @@ typedef struct Time Time;
  *     timeSpan: 表示基础时间经过的时间间隔的Time对象
  * Returns: 一个Time对象，表示baseTime经过timeSpan时间间隔后的时间
  * */
-Time *AddTime(Time *baseTime, Time *timeSpan);
+Time *AddTime(const Time *baseTime, const Time *timeSpan);
 
 /*
  * Name: CompareTime
@@ -47,7 +47,7 @@ int CompareTime(const Time *timeA, const Time *timeB);
  * Returns: 若结果字符串总字符数（包含'\0'）不大于maxSize，返回不包含'\0'的总字符数
  *          否则，返回0
  * */
-size_t TimeToString(char *destination, size_t maxSize, Time *time);
+size_t TimeToString(char *destination, size_t maxSize, const Time *time);
 
 /*
  * Name: NewDateTime
