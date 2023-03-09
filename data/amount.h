@@ -16,16 +16,31 @@
 typedef struct Amount Amount;
 
 /*
- * Name: AmountToString
- * Description: 获取Amount对象的字符串表示
+ * Name: GetAmountYuan
+ * Description: 获取指定的Amount对象的元数
  * Arguments:
- *     destination: 用于存放结果的字符串
- *     maxSize: 指示最多能向destination中写入的字符数（包含'\0'）
- *     amount: 要获取字符串表示的Amount对象
- * Returns: 若结果字符串总字符数（包含'\0'）不大于maxSize，返回不包含'\0'的总字符数
- *          否则，返回0
+ *     amount: 一个指针，指向要获取元数的Amount对象
+ * Returns: 指定的Amount对象的元数
  * */
-size_t AmountToString(char *destination, size_t maxSize, const Amount *amount);
+int GetAmountYuan(const Amount *amount);
+
+/*
+ * Name: GetAmountJiao
+ * Description: 获取指定的Amount对象的角数
+ * Arguments:
+ *     amount: 一个指针，指向要获取角数的Amount对象
+ * Returns: 指定的Amount对象的角数
+ * */
+int GetAmountJiao(const Amount *amount);
+
+/*
+ * Name: GetAmountCent
+ * Description: 获取指定的Amount对象的分数
+ * Arguments:
+ *     amount: 一个指针，指向要获取分数的Amount对象
+ * Returns: 指定的Amount对象的分数
+ * */
+int GetAmountCent(const Amount *amount);
 
 /*
  * Name: AmountAdd
@@ -46,7 +61,7 @@ Amount *AmountAdd(const Amount *amountA, const Amount *amountB);
  *     multiple: 要增加至的倍数
  * Returns: 一个Amount对象，表示amount同multiple相乘的结果
  * */
-Amount AmountMultiply(Amount amount, int multiple);
+Amount *AmountMultiply(const Amount *amount, int multiple);
 
 /*
  * Name: AmountMultiplyRatio
@@ -56,7 +71,7 @@ Amount AmountMultiply(Amount amount, int multiple);
  *     ratio: 要缩小至的百分比，范围[0, 100]
  * Returns: 一个Amount对象，表示amount缩小至ratio%的结果
  * */
-Amount AmountMultiplyRatio(Amount amount, int ratio);
+Amount *AmountMultiplyRatio(const Amount *amount, int ratio);
 
 /*
  * Name: NewAmount
