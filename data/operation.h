@@ -79,6 +79,8 @@ enum Operation {
     OP_READ_REFUND,
 };
 
+typedef enum Operation Operation;
+
 /*
  * Name: OperationToString
  * Desciption: 获取操作的枚举项的字符串表示
