@@ -7,18 +7,11 @@
 #include "amount.h"
 #include <limits.h>
 #include <malloc.h>
-#include <math.h>
-#include <stdio.h>
 
 struct Amount
 {
     long long value;
 };
-
-size_t GetIntegerLength(int num)
-{
-    return (int)((ceil(log10(num)) + 1) * sizeof(char));
-}
 
 int GetAmountYuan(const Amount *amount)
 {
@@ -35,10 +28,16 @@ int GetAmountCent(const Amount *amount)
     return amount->value % 10;
 }
 
+// 判断value是否可无溢出地被int表示
+int IsValueValid(long long value)
+{
+    return value >= INT_MIN && value <= INT_MAX;
+}
+
 Amount *AmountAdd(const Amount *amountA, const Amount *amountB)
 {
     long long resultValue = amountA->value + amountB->value;
-    if (resultValue / 100 > INT_MIN && resultValue / 100 < INT_MAX)
+    if (IsValueValid(resultValue / 100))
     {
         Amount *amount = malloc(sizeof(Amount));
         amount->value = resultValue;
@@ -50,7 +49,7 @@ Amount *AmountAdd(const Amount *amountA, const Amount *amountB)
 Amount *AmountMultiply(const Amount *amount, int multiple)
 {
     long long resultValue = amount->value * multiple;
-    if (resultValue / 100 > INT_MIN && resultValue / 100 < INT_MAX)
+    if (IsValueValid(resultValue / 100))
     {
         Amount *amount = malloc(sizeof(Amount));
         amount->value = resultValue;
@@ -61,8 +60,11 @@ Amount *AmountMultiply(const Amount *amount, int multiple)
 
 Amount *AmountMultiplyRatio(const Amount *amount, int ratio)
 {
-    if (ratio > 100 || ratio < 0) return NULL;
+    if (ratio > 100 || ratio < 0)
+        return NULL;
     long long resultMul100 = amount->value * ratio;
+
+    // 舍入判断指标
     int bias = (resultMul100 % 100) / 10;
     long long result = resultMul100 / 100;
     Amount *resultAmount = malloc(sizeof(Amount));
@@ -74,7 +76,7 @@ Amount *AmountMultiplyRatio(const Amount *amount, int ratio)
     else
     {
         resultAmount->value = bias > 0 ? result + 1 : result - 1;
-        return  resultAmount;
+        return resultAmount;
     }
 }
 
