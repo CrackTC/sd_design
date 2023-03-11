@@ -13,17 +13,11 @@
  * */
 typedef struct LinkedList {
     // 指向要存储的数据的指针
-    void const *data;
+    void *data;
 
     // 指向下一链表结点的指针
     struct LinkedList *next;
 } LinkedList;
-
-/*
- * Name: LinkedListNodePointer
- * Description: 表示一个指向链表结点的指针
- * */
-typedef LinkedList *LinkedListPointer;
 
 /*
  * Name: GetNodeByIndex
@@ -34,7 +28,7 @@ typedef LinkedList *LinkedListPointer;
  * Returns: 指向链表的第index个结点的指针
  *          若index超出范围，则返回NULL
  * */
-LinkedListPointer GetNodeByIndex(const LinkedListPointer head, int index);
+LinkedList *GetNodeByIndex(const LinkedList *head, int index);
 
 /*
  * Name: GetLastNode
@@ -44,29 +38,7 @@ LinkedListPointer GetNodeByIndex(const LinkedListPointer head, int index);
  * Returns: 链表的最后一个结点
  *          若head为NULL，返回NULL
  * */
-LinkedListPointer GetNodeByIndex(const LinkedListPointer head, int index);
-
-/*
- * Name: NodePredicate
- * Description: 表示作用于链表结点的谓词，用于指示给定的结点是否符合某些条件
- * Arguments:
- *     pointer: 指向链表结点的指针
- * Returns: 若结点符合条件，返回1
- *          否则，返回0
- * */
-typedef int (*NodePredicate)(LinkedListPointer pointer);
-
-/*
- * Name: GetNodeByPredicate
- * Description: 使用指定的谓词获取链表结点
- * Arguments:
- *     head: 链表的头指针
- *     predicate: 谓词
- * Returns: 指向符合predicate条件的第一个结点
- *          若不存在这样的结点，返回NULL
- * */
-LinkedListPointer GetNodeByPredicate(const LinkedListPointer head, NodePredicate predicate);
-
+LinkedList *GetLastNode(const LinkedList *head);
 
 /*
  * Name: AppendNode
@@ -77,7 +49,7 @@ LinkedListPointer GetNodeByPredicate(const LinkedListPointer head, NodePredicate
  * Returns: 添加结点后链表的头指针
  *          若head为NULL，则返回node
  * */
-LinkedListPointer AppendNode(LinkedListPointer head, LinkedListPointer node);
+LinkedList *AppendNode(LinkedList *head, LinkedList *node);
 
 /*
  * Name: RemoveNode
@@ -86,7 +58,7 @@ LinkedListPointer AppendNode(LinkedListPointer head, LinkedListPointer node);
  *     head: 链表的头指针
  *     node: 要删除的结点
  * */
-int RemoveNode(LinkedListPointer head, LinkedListPointer node);
+int RemoveNode(LinkedList *head, LinkedList *node);
 
 /*
  * Name: FreeList
@@ -94,6 +66,6 @@ int RemoveNode(LinkedListPointer head, LinkedListPointer node);
  * Arguments:
  *     list: 要释放空间的链表的头指针
  * */
-void FreeList(LinkedListPointer list);
+void FreeList(LinkedList *list);
 
 #endif
