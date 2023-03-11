@@ -13,7 +13,10 @@
  * Name: Amount
  * Description: 表示一个特定的金额
  * */
-typedef struct Amount Amount;
+typedef struct Amount
+{
+    long long value;
+} Amount;
 
 /*
  * Name: GetAmountYuan

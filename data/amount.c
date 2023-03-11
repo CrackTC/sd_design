@@ -8,11 +8,6 @@
 #include <limits.h>
 #include <malloc.h>
 
-struct Amount
-{
-    long long value;
-};
-
 int GetAmountYuan(const Amount *amount)
 {
     return amount->value / 100;
