@@ -8,12 +8,16 @@
 #define TIME_H
 
 #include <stddef.h>
+#include <time.h>
 
 /*
  * Name: Time
  * Description: 表示时间或时间间隔
  * */
-typedef struct Time Time;
+typedef struct Time
+{
+    time_t value;
+} Time;
 
 /*
  * Name: AddTime
@@ -23,7 +27,7 @@ typedef struct Time Time;
  *     timeSpan: 表示基础时间经过的时间间隔的Time对象
  * Returns: 一个Time对象，表示baseTime经过timeSpan时间间隔后的时间
  * */
-Time *AddTime(const Time *baseTime, const Time *timeSpan);
+Time AddTime(const Time *baseTime, const Time *timeSpan);
 
 /*
  * Name: CompareTime
@@ -62,7 +66,7 @@ size_t TimeToString(char *destination, size_t maxSize, const Time *time);
  * Returns: 若日期时间信息超出范围，返回NULL
  *          否则，返回指向所创建Time对象的指针
  * */
-Time *NewDateTime(int year, int month, int day, int hour, int minute, int second);
+Time NewDateTime(int year, int month, int day, int hour, int minute, int second);
 
 /*
  * Name: NewTimeSpan
@@ -77,21 +81,13 @@ Time *NewDateTime(int year, int month, int day, int hour, int minute, int second
  * Returns: 若时间间隔信息超出范围，返回NULL
  *          否则，返回指向所创建的Time对象的指针
  * */
-Time *NewTimeSpan(int year, int month ,int day, int hour, int minute, int second);
+Time NewTimeSpan(int year, int month ,int day, int hour, int minute, int second);
 
 /*
  * Name: GetSystemTime
  * Description: 获取当前的系统时间
  * Returns: 一个指针，指向表示当前系统时间的Time对象
  * */
-Time *GetSystemTime();
-
-/*
- * Name: FreeTime
- * Description: 释放指定Time对象占用的空间
- * Arguments:
- *     time: 一个指针，指向要释放空间的Time对象
- * */
-void FreeTime(Time *time);
+Time GetSystemTime();
 
 #endif
