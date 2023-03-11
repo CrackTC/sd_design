@@ -43,7 +43,7 @@ void FreeBasicDiscount(BasicDiscount *discount);
  * Returns: 一个链表，包含所有基本折扣
  *          若不存在基本折扣，返回NULL
  * */
-const LinkedList *GetAllBasicDiscounts();
+LinkedList *GetAllBasicDiscounts();
 
 /*
  * Name: GetBasicDiscountsByItemId
@@ -53,7 +53,7 @@ const LinkedList *GetAllBasicDiscounts();
  * Returns: 一个链表，包含所有符合条件的基本折扣
  *          若不存在符合条件的基本折扣，返回NULL
  * */
-const LinkedList *GetBasicDiscountsByItemId(int itemId);
+LinkedList *GetBasicDiscountsByItemId(int itemId);
 
 /*
  * Name: GetBasicDiscountsByCustomerLevel
@@ -63,7 +63,7 @@ const LinkedList *GetBasicDiscountsByItemId(int itemId);
  * Returns: 一个链表，包含所有符合条件的基本折扣
  *          若不存在符合条件的基本折扣，返回NULL
  * */
-const LinkedList *GetBasicDiscountsByCustomerLevel(int level);
+LinkedList *GetBasicDiscountsByCustomerLevel(int level);
 
 /*
  * Name: GetBasicDiscountXXX
@@ -75,7 +75,7 @@ const LinkedList *GetBasicDiscountsByCustomerLevel(int level);
 int GetBasicDiscountItemId(const BasicDiscount *discount);
 int GetBasicDiscountRatio(const BasicDiscount *discount);
 int GetBasicDiscountCustomerLevel(const BasicDiscount *discount);
-const Time *GetBasicDiscountDeadline(const BasicDiscount *discount);
+Time GetBasicDiscountDeadline(const BasicDiscount *discount);
 
 /*
  * Name: SetBasicDiscountXXX
@@ -104,7 +104,7 @@ int AppendBasicDiscount(BasicDiscount *discount);
  * Description: 向系统中删除一个BasicDiscount对象
  * Arguments:
  *     discount: 一个指针，指向要删除的BasicDiscount对象
- * Returns: 如果追加成功，返回0
+ * Returns: 如果删除成功，返回0
  *          否则，返回1
  * */
 int RemoveBasicDiscount(BasicDiscount *discount);
