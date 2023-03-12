@@ -124,6 +124,6 @@ TableRow *GetRowByIndex(const Table *table, int index);
  * Returns: 若存在这样的元素，返回该元素
  *          否则，返回NULL
  * */
-const char *GetRowItemByColumnName(const Table *table, const TableRow *row, const char *columnName);
+char *GetRowItemByColumnName(const Table *table, const TableRow *row, const char *columnName);
 
 #endif
