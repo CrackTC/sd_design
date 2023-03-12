@@ -25,7 +25,7 @@ typedef struct Customer Customer;
  * Returns: 若成功创建，返回一个指针，指向创建的Customer对象
  *          否则，返回NULL
  * */
-Customer *NewCustomer(int level, const char *name, const char *contact);
+Customer *NewCustomer(int level, char *name, char *contact);
 
 /*
  * Name: FreeCustomer
@@ -41,7 +41,7 @@ void FreeCustomer(Customer *customer);
  * Returns: 一个链表，其中包含所有客户
  *          若不存在客户，则返回NULL
  * */
-const LinkedList *GetAllCustomers();
+LinkedList *GetAllCustomers();
 
 /*
  * Name: GetCustomerById
@@ -51,7 +51,7 @@ const LinkedList *GetAllCustomers();
  * Returns: 符合条件的客户
  *          若不存在符合条件的客户，返回NULL
  * */
-const Customer *GetCustomerById(int id);
+Customer *GetCustomerById(int id);
 
 /*
  * Name: GetCustomersByLevel
@@ -61,7 +61,7 @@ const Customer *GetCustomerById(int id);
  * Returns: 一个链表，包含所有具有指定等级的客户
  *          若不存在这样的客户，返回NULL
  * */
-const LinkedList *GetCustomersByLevel(int level);
+LinkedList *GetCustomersByLevel(int level);
 
 /*
  * Name: GetCustomersByName
@@ -70,7 +70,7 @@ const LinkedList *GetCustomersByLevel(int level);
  *     name: 指定的客户名称
  * Return: 一个链表，包含所有具有指定名称的客户
  *         若不存在这样的客户，返回NULL*/
-const LinkedList *GetCustomersByName(const char *name);
+LinkedList *GetCustomersByName(const char *name);
 
 /*
  * Name: GetCustomerXXX
