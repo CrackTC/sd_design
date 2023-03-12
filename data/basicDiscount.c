@@ -46,7 +46,12 @@ LinkedList *GetAllBasicDiscounts()
 
     Table *table;
     int result = Unserialize(&table, path);
-    if (result != 0)
+    if (result == 1)
+    {
+        BasicDiscountSave();
+        return NULL;
+    }
+    else if (result != 0)
         return NULL;
 
     LinkedList *list = NULL;
@@ -57,12 +62,13 @@ LinkedList *GetAllBasicDiscounts()
         const TableRow *row = rowNode->data;
 
         int itemId;
-        sscanf("%d", GetRowItemByColumnName(table, row, itemIdRow), &itemId);
         int ratio;
-        sscanf("%d", GetRowItemByColumnName(table, row, ratioRow), &ratio);
         int customerLevel;
-        sscanf("%d", GetRowItemByColumnName(table, row, customerLevelRow), &customerLevel);
         Time deadline;
+
+        sscanf("%d", GetRowItemByColumnName(table, row, itemIdRow), &itemId);
+        sscanf("%d", GetRowItemByColumnName(table, row, ratioRow), &ratio);
+        sscanf("%d", GetRowItemByColumnName(table, row, customerLevelRow), &customerLevel);
         sscanf("%d", GetRowItemByColumnName(table, row, deadlineRow), deadline.value);
 
         BasicDiscount *discount = malloc(sizeof(BasicDiscount));
@@ -77,6 +83,8 @@ LinkedList *GetAllBasicDiscounts()
 
         AppendNode(list, node);
     }
+
+    FreeTable(table);
 
     systemList = list;
     return list;
@@ -168,23 +176,14 @@ void SetBasicDiscountDeadline(BasicDiscount *discount, const Time *value)
     discount->deadline = *value;
 }
 
-int ExistsBasicDiscount(BasicDiscount *discount)
-{
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == discount)
-            return 1;
-        now = now->next;
-    }
-    return 0;
-}
-
 int AppendBasicDiscount(BasicDiscount *discount)
 {
+    if (systemList == NULL) {
+        GetAllBasicDiscounts();
+    }
     if (discount == NULL)
         return 1;
-    if (ExistsBasicDiscount(discount))
+    if (ExistsNode(systemList, discount))
         return 1;
 
     LinkedList *node = malloc(sizeof(LinkedList));
