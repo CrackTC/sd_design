@@ -41,6 +41,16 @@ LinkedList *GetNodeByIndex(const LinkedList *head, int index);
 LinkedList *GetLastNode(const LinkedList *head);
 
 /*
+ * Name: ExistsNode
+ * Description: 判断指定链表是否存在包含指定数据的结点
+ * Arguments:
+ *     list: 指定的列表
+ *     node: 指定的数据
+ * Returns: 若存在这样的结点，返回1，否则返回0
+ * */
+int ExistsNode(LinkedList *list, const void *node);
+
+/*
  * Name: AppendNode
  * Description: 将结点添加到链表尾
  * Arguments:
