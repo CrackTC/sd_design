@@ -17,4 +17,13 @@
  * */
 char *LongLongToString(long long x);
 
+/*
+ * Name: CloneString
+ * Description: 创建一个字符串拷贝
+ * Arguments:
+ *     str: 要拷贝的字符串
+ * Returns: 一个指针，指向拷贝结果
+ * */
+char *CloneString(const char *str);
+
 #endif
