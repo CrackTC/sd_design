@@ -54,6 +54,7 @@ void FreeTableRow(TableRow *row);
  * Arguments:
  *     row: 表格的一个行
  *     item: 要追加的元素
+ * Remark: item以逐字符复制形式加入行
  * */
 void AppendTableRow(TableRow *row, const char *item);
 

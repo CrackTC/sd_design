@@ -235,20 +235,15 @@ void BasicDiscountSave()
         AppendTableRow(row, customerLevelString);
         AppendTableRow(row, deadlineString);
 
+        free(itemIdString);
+        free(ratioString);
+        free(customerLevelString);
+        free(deadlineString);
+
         AppendTable(table, row);
         now = now->next;
     }
-    Serialize(table, path);
 
-    now = table->rows;
-    while (now->next != NULL) {
-        now = now->next;
-        row = now->data;
-        LinkedList *node = row->items;
-        while (node != NULL) {
-            free(node->data);
-            node = node->next;
-        }
-    }
+    Serialize(table, path);
     FreeTable(table);
 }
