@@ -43,7 +43,7 @@ void FreeProfit(Profit *profit);
  * Returns: 一个链表，包含所有的收支条目
  *          若不存在收支条目，返回NULL
  * */
-const LinkedList *GetAllProfits();
+LinkedList *GetAllProfits();
 
 /*
  * Name: GetProfitXXX
@@ -52,9 +52,9 @@ const LinkedList *GetAllProfits();
  *     profit: 指向Profit的指针
  * Returns: 对应的值
  * */
-Amount *GetProfitAmount(const Profit *profit);
+Amount GetProfitAmount(const Profit *profit);
 const char *GetProfitMatter(const Profit *profit);
-Time *GetProfitTime(const Profit *profit);
+Time GetProfitTime(const Profit *profit);
 
 /*
  * Name: SetProfitXXX
@@ -65,7 +65,7 @@ Time *GetProfitTime(const Profit *profit);
  * */
 void SetProfitAmount(Profit *profit, Amount *value);
 void SetProfitMatter(Profit *profit, const char *value);
-void SetProfitTime(Profit *profit, Time *time);
+void SetProfitTime(Profit *profit, Time *value);
 
 /*
  * Name: AppendProfit
