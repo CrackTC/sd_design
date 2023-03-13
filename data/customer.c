@@ -80,8 +80,8 @@ LinkedList *GetAllCustomers()
 
         sscanf("%d", GetRowItemByColumnName(table, row, idRow), &id);
         sscanf("%d", GetRowItemByColumnName(table, row, levelRow), &level);
-        name = GetRowItemByColumnName(table, row, nameRow);
-        contact = GetRowItemByColumnName(table, row, contactRow);
+        name = CloneString(GetRowItemByColumnName(table, row, nameRow));
+        contact = CloneString(GetRowItemByColumnName(table, row, contactRow));
 
         Customer *customer = malloc(sizeof(Customer));
         customer->id = id;
