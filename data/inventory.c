@@ -47,7 +47,7 @@ LinkedList *GetAllInventory()
     }
     else if (result != 0)
         return NULL;
-   
+
     sscanf("%d", GetTableRemark(table), &idCount);
 
     LinkedList *list = NULL;
@@ -111,7 +111,7 @@ LinkedList *GetInventoryByItemId(int itemId)
 {
     if (systemList == NULL)
         GetAllInventory();
-    
+
     LinkedList *list = NULL;
     LinkedList *now = systemList;
     while (now != NULL) {
