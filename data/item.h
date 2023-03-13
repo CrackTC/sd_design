@@ -43,7 +43,7 @@ void FreeItem(Item *item);
  * Returns: 一个链表，包含所有商品
  *          若不存在商品，返回NULL
  * */
-const LinkedList *GetAllItems();
+LinkedList *GetAllItems();
 
 /*
  * Name: GetItemById
