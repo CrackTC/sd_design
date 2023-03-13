@@ -3,6 +3,7 @@
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
+#include "../utils.h"
 #include <malloc.h>
 #include <stdio.h>
 
@@ -46,6 +47,8 @@ LinkedList *GetAllInventory()
     }
     else if (result != 0)
         return NULL;
+   
+    sscanf("%d", GetTableRemark(table), &idCount);
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
@@ -64,15 +67,65 @@ LinkedList *GetAllInventory()
         sscanf("%d", GetRowItemByColumnName(table, row, itemIdRow), &itemId);
         sscanf("%d", GetRowItemByColumnName(table, row, numberRow), &number);
         sscanf("%d", GetRowItemByColumnName(table, row, inboundTimeRow), &inboundTime.value);
+        sscanf("%d", GetRowItemByColumnName(table, row, productionTimeRow), &productionTime.value);
+        sscanf("%lld", GetRowItemByColumnName(table, row, inboundUnitPriceRow), &inboundUnitPrice.value);
+
+        InventoryEntry *entry = malloc(sizeof(InventoryEntry));
+        entry->id = id;
+        entry->itemId = itemId;
+        entry->number = number;
+        entry->inboundTime = inboundTime;
+        entry->productionTime = productionTime;
+        entry->inboundUnitPrice = inboundUnitPrice;
+
+        LinkedList *node = malloc(sizeof(LinkedList));
+        node->data = entry;
+        node->next = NULL;
+
+        AppendNode(list, node);
     }
+
+    FreeTable(table);
+
+    systemList = list;
+    return list;
 }
 
 InventoryEntry *GetInventoryById(int id)
 {
+    if (systemList == NULL)
+        GetAllInventory();
+
+    LinkedList *now = systemList;
+    while (now != NULL) {
+        InventoryEntry *entry = now->data;
+        if (entry->id == id) {
+            return entry;
+        }
+        now = now->next;
+    }
+    return NULL;
 }
 
 LinkedList *GetInventoryByItemId(int itemId)
 {
+    if (systemList == NULL)
+        GetAllInventory();
+    
+    LinkedList *list = NULL;
+    LinkedList *now = systemList;
+    while (now != NULL) {
+        InventoryEntry *entry = now->data;
+        if (entry->itemId == itemId) {
+            LinkedList *node = malloc(sizeof(LinkedList));
+            node->data = entry;
+            node->next = NULL;
+            AppendNode(list, node);
+        }
+        now = now->next;
+    }
+
+    return list;
 }
 
 InventoryEntry *NewInventoryEntry(int itemId, int number, const Time *inboundTime, const Time *productionTime,
@@ -152,12 +205,82 @@ void SetInventoryEntryInboundUnitPrice(InventoryEntry *entry, const Amount *valu
 
 int AppendInventoryEntry(InventoryEntry *entry)
 {
+    if (systemList == NULL) {
+        GetAllInventory();
+    }
+    if (entry == NULL) {
+        return 1;
+    }
+    if (ExistsNode(systemList, entry)) {
+        return 1;
+    }
+
+    LinkedList *node = malloc(sizeof(LinkedList));
+    node->data = entry;
+    node->next =  NULL;
+    AppendNode(systemList, node);
+
+    return 0;
 }
 
 int RemoveInventoryEntry(InventoryEntry *entry)
 {
+    LinkedList *now = systemList;
+    while (now != NULL) {
+        if (now->data == entry) {
+            RemoveNode(systemList, now);
+            return 0;
+        }
+        now = now->next;
+    }
+
+    return 1;
 }
 
 void InventorySave()
 {
+    TableRow *row = NewTableRow();
+    AppendTableRow(row, idRow);
+    AppendTableRow(row, itemIdRow);
+    AppendTableRow(row, numberRow);
+    AppendTableRow(row, inboundTimeRow);
+    AppendTableRow(row, productionTimeRow);
+    AppendTableRow(row, inboundUnitPriceRow);
+
+    char *remark = LongLongToString(idCount);
+    Table *table = NewTable(row, remark);
+    free(remark);
+
+    LinkedList *now = systemList;
+    while (now != NULL) {
+        InventoryEntry *entry = now->data;
+        row = NewTableRow();
+
+        char *idString = LongLongToString(entry->id);
+        char *itemIdString = LongLongToString(entry->itemId);
+        char *numberString = LongLongToString(entry->number);
+        char *inboundTimeString = LongLongToString(entry->inboundTime.value);
+        char *productionTimeString = LongLongToString(entry->productionTime.value);
+        char *inboundUnitPriceString = LongLongToString(entry->inboundUnitPrice.value);
+
+        AppendTableRow(row, idString);
+        AppendTableRow(row, itemIdString);
+        AppendTableRow(row, numberString);
+        AppendTableRow(row, inboundTimeString);
+        AppendTableRow(row, productionTimeString);
+        AppendTableRow(row, inboundUnitPriceString);
+
+        free(idString);
+        free(itemIdString);
+        free(numberString);
+        free(inboundTimeString);
+        free(productionTimeString);
+        free(inboundUnitPriceString);
+
+        AppendTable(table, row);
+        now = now->next;
+    }
+
+    Serialize(table, path);
+    FreeTable(table);
 }
