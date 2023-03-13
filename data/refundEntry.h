@@ -47,7 +47,7 @@ void FreeRefundEntry(RefundEntry *entry);
  * Returns: 一个链表，包含所有退款条目
  *          若不存在退款条目，返回NULL
  * */
-const LinkedList *GetAllRefunds();
+LinkedList *GetAllRefunds();
 
 /*
  * Name: GetRefundByOrderId
@@ -57,7 +57,7 @@ const LinkedList *GetAllRefunds();
  * Returns: 一个指向包含指定订单号的RefundEntry对象的指针
  *          若不存在这样的条目，返回NULL
  * */
-const RefundEntry *GetRefundByOrderId(int orderId);
+RefundEntry *GetRefundByOrderId(int orderId);
 
 /*
  * Name: GetRefundEntryXXX
@@ -68,8 +68,8 @@ const RefundEntry *GetRefundByOrderId(int orderId);
  * */
 int GetRefundEntryOrderId(const RefundEntry *entry);
 const char *GetRefundEntryReason(const RefundEntry *entry);
-Time *GetRefundEntryTime(const RefundEntry *entry);
-Amount *GetRefundEntryAmount(const RefundEntry *entry);
+Time GetRefundEntryTime(const RefundEntry *entry);
+Amount GetRefundEntryAmount(const RefundEntry *entry);
 int GetRefundEntryNumber(const RefundEntry *entry);
 const char *GetRefundEntryRemark(const RefundEntry *entry);
 
