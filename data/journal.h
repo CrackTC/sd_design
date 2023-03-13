@@ -42,7 +42,7 @@ void FreeJournalEntry(JournalEntry *entry);
  * Returns: 一个链表，包含所有日志条目
  *          若不存在日志条目，返回NULL
  * */
-const LinkedList *GetAllJournals();
+LinkedList *GetAllJournals();
 
 /*
  * Name: GetJournalsByStaffId
@@ -52,7 +52,7 @@ const LinkedList *GetAllJournals();
  * Returns: 一个链表，包含所有符合条件的日志条目
  *          若不存在这样的日志条目，返回NULL
  * */
-const LinkedList *GetJournalsByStaffId(int staffId);
+LinkedList *GetJournalsByStaffId(int staffId);
 
 /*
  * Name: GetJournalsByOperation
@@ -62,7 +62,7 @@ const LinkedList *GetJournalsByStaffId(int staffId);
  * Returns: 一个链表，包含所有符合条件的日志条目
  *          若不存在这样的日志条目，返回NULL
  * */
-const LinkedList *GetJournalsByOperation(Operation operation);
+LinkedList *GetJournalsByOperation(Operation operation);
 
 /*
  * Name: GetJournalEntryXXX
@@ -72,9 +72,10 @@ const LinkedList *GetJournalsByOperation(Operation operation);
  * Returns: 对应的值
  * */
 int GetJournalEntryStaffId(const JournalEntry *entry);
-Time *GetJournalEntryTime(const JournalEntry *entry);
+Time GetJournalEntryTime(const JournalEntry *entry);
 Operation GetJournalEntryOperation(const JournalEntry *entry);
-const char **GetJournalEntryArguments(const JournalEntry *entry);
+char **GetJournalEntryArguments(const JournalEntry *entry);
+int GetJournalEntryArgumentCount(const JournalEntry *entry);
 
 /*
  * Name: AppendJournalEntry
