@@ -8,6 +8,7 @@
 #define PERMISSION_H
 
 #include "linkedList.h"
+#include "operation.h"
 
 /*
  * Name: PermissionEntry
@@ -40,7 +41,7 @@ void FreePermissionEntry(PermissionEntry *entry);
  * Returns: 一个链表，包含所有权限条目
  *          若不存在权限条目，返回NULL
  * */
-const LinkedList *GetAllPermissionEntry();
+LinkedList *GetAllPermissionEntry();
 
 /*
  * Name: GetPermissionEntryByStaffId
@@ -64,12 +65,13 @@ const int *GetPermissionEntryPermissions(const PermissionEntry *entry);
 
 /*
  * Name: SetPermissionEntryXXX
- * Description: 设置权限条目的某个成员
+ * Description: 设置权限条目的权限
  * Arguments:
- *     entry: 指向要设置成员的权限条目的指针
- *     value: 要设置成的值
+ *     entry: 指向要设置的权限条目的指针
+ *     operation: 要设置权限的操作
+ *     allow: 允许则为1，不允许则为0
  * */
-void SetPermissionEntryPermissions(PermissionEntry *entry, const int *value);
+void SetPermissionEntryPermissions(PermissionEntry *entry, Operation operation, int allow);
 
 /*
  * Name: AppendPermissionEntry
