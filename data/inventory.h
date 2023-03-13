@@ -23,7 +23,7 @@ typedef struct InventoryEntry InventoryEntry;
  * Returns: 一个链表，包含所有库存条目
  *          若不存在库存条目，返回NULL
  * */
-const LinkedList *GetAllInventory();
+LinkedList *GetAllInventory();
 
 /*
  * Name: GetInventoryById
@@ -33,7 +33,7 @@ const LinkedList *GetAllInventory();
  * Returns: 符合条件的库存条目
  *          若不存在符合条件的条目，返回NULL
  * */
-const InventoryEntry *GetInventoryById(int id);
+InventoryEntry *GetInventoryById(int id);
 
 /*
  * Name: GetInventoryByItemId
@@ -78,9 +78,9 @@ void FreeInventoryEntry(InventoryEntry *entry);
 int GetInventoryEntryId(const InventoryEntry *entry);
 int GetInventoryEntryItemId(const InventoryEntry *entry);
 int GetInventoryEntryNumber(const InventoryEntry *entry);
-const Time *GetInventoryEntryInboundTimePointer(const InventoryEntry *entry);
-const Time *GetInventoryEntryProductionTimePointer(const InventoryEntry *entry);
-const Amount *GetInventoryEntryInboundUnitPricePointer(const InventoryEntry *entry);
+Time GetInventoryEntryInboundTime(const InventoryEntry *entry);
+Time GetInventoryEntryProductionTime(const InventoryEntry *entry);
+Amount GetInventoryEntryInboundUnitPrice(const InventoryEntry *entry);
 
 /*
  * Name: SetInventoryEntryXXX
@@ -91,9 +91,9 @@ const Amount *GetInventoryEntryInboundUnitPricePointer(const InventoryEntry *ent
  * */
 void SetInventoryEntryItemId(InventoryEntry *entry, int value);
 void SetInventoryEntryNumber(InventoryEntry *entry, int value);
-void SetInventoryEntryInboundTimePointer(InventoryEntry *entry, const Time *value);
-void SetInventoryEntryProductionTimePointer(InventoryEntry *entry, const Time *value);
-void SetInventoryEntryInboundUnitPricePointer(InventoryEntry *entry, const Amount *value);
+void SetInventoryEntryInboundTime(InventoryEntry *entry, const Time *value);
+void SetInventoryEntryProductionTime(InventoryEntry *entry, const Time *value);
+void SetInventoryEntryInboundUnitPrice(InventoryEntry *entry, const Amount *value);
 
 /*
  * Name: AppendInventoryEntry
