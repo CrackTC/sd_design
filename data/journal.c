@@ -121,7 +121,7 @@ LinkedList *GetAllJournals()
         node->data = entry;
         node->next = NULL;
 
-        AppendNode(list, node);
+        list = AppendNode(list, node);
     }
 
     FreeTable(table);
@@ -145,7 +145,7 @@ LinkedList *GetJournalsByStaffId(int staffId)
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = entry;
             node->next = NULL;
-            AppendNode(list, node);
+            list = AppendNode(list, node);
         }
         now = now->next;
     }
@@ -168,7 +168,7 @@ LinkedList *GetJournalsByOperation(Operation operation)
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = entry;
             node->next = NULL;
-            AppendNode(list, node);
+            list = AppendNode(list, node);
         }
         now = now->next;
     }
@@ -216,7 +216,7 @@ int AppendJournalEntry(JournalEntry *entry)
     LinkedList *node = malloc(sizeof(LinkedList));
     node->data = entry;
     node->next = NULL;
-    AppendNode(systemList, node);
+    systemList = AppendNode(systemList, node);
 
     return 0;
 }

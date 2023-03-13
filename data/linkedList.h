@@ -28,7 +28,7 @@ typedef struct LinkedList {
  * Returns: 指向链表的第index个结点的指针
  *          若index超出范围，则返回NULL
  * */
-LinkedList *GetNodeByIndex(const LinkedList *head, int index);
+LinkedList *GetNodeByIndex(LinkedList *head, int index);
 
 /*
  * Name: GetLastNode
@@ -38,7 +38,7 @@ LinkedList *GetNodeByIndex(const LinkedList *head, int index);
  * Returns: 链表的最后一个结点
  *          若head为NULL，返回NULL
  * */
-LinkedList *GetLastNode(const LinkedList *head);
+LinkedList *GetLastNode(LinkedList *head);
 
 /*
  * Name: ExistsNode
@@ -67,8 +67,10 @@ LinkedList *AppendNode(LinkedList *head, LinkedList *node);
  * Arguments:
  *     head: 链表的头指针
  *     node: 要删除的结点
+ * Returns: 删除指定结点后的链表
+ *
  * */
-int RemoveNode(LinkedList *head, LinkedList *node);
+LinkedList *RemoveNode(LinkedList *head, LinkedList *node);
 
 /*
  * Name: FreeList

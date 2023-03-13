@@ -82,7 +82,7 @@ LinkedList *GetAllInventory()
         node->data = entry;
         node->next = NULL;
 
-        AppendNode(list, node);
+        list = AppendNode(list, node);
     }
 
     FreeTable(table);
@@ -120,7 +120,7 @@ LinkedList *GetInventoryByItemId(int itemId)
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = entry;
             node->next = NULL;
-            AppendNode(list, node);
+            list = AppendNode(list, node);
         }
         now = now->next;
     }
@@ -218,7 +218,7 @@ int AppendInventoryEntry(InventoryEntry *entry)
     LinkedList *node = malloc(sizeof(LinkedList));
     node->data = entry;
     node->next =  NULL;
-    AppendNode(systemList, node);
+    systemList = AppendNode(systemList, node);
 
     return 0;
 }
@@ -228,7 +228,7 @@ int RemoveInventoryEntry(InventoryEntry *entry)
     LinkedList *now = systemList;
     while (now != NULL) {
         if (now->data == entry) {
-            RemoveNode(systemList, now);
+            systemList = RemoveNode(systemList, now);
             return 0;
         }
         now = now->next;

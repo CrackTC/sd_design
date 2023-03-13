@@ -93,7 +93,7 @@ LinkedList *GetAllItems()
         node->data = item;
         node->next = NULL;
 
-        AppendNode(list, node);
+        list = AppendNode(list, node);
     }
 
     FreeTable(table);
@@ -184,7 +184,7 @@ int AppendItem(Item *item)
     LinkedList *node = malloc(sizeof(LinkedList));
     node->data = item;
     node->next = NULL;
-    AppendNode(systemList, node);
+    systemList = AppendNode(systemList, node);
 
     return 0;
 }
@@ -194,7 +194,7 @@ int RemoveItem(Item *item)
     LinkedList *now = systemList;
     while (now != NULL) {
         if (now->data == item) {
-            RemoveNode(systemList, now);
+            systemList = RemoveNode(systemList, now);
             return 0;
         }
         now = now->next;

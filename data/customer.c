@@ -93,7 +93,7 @@ LinkedList *GetAllCustomers()
         node->data = customer;
         node->next = NULL;
 
-        AppendNode(list, node);
+        list = AppendNode(list, node);
     }
 
     FreeTable(table);
@@ -131,7 +131,7 @@ LinkedList *GetCustomersByLevel(int level)
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = customer;
             node->next = NULL;
-            AppendNode(list, node);
+            list = AppendNode(list, node);
         }
         now = now->next;
     }
@@ -153,7 +153,7 @@ LinkedList *GetCustomersByName(const char *name)
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = customer;
             node->next = NULL;
-            AppendNode(list, node);
+            list = AppendNode(list, node);
         }
         now = now->next;
     }
@@ -211,7 +211,7 @@ int AppendCustomer(Customer *customer)
     LinkedList *node = malloc(sizeof(LinkedList));
     node->data = customer;
     node->next = NULL;
-    AppendNode(systemList, node);
+    systemList = AppendNode(systemList, node);
 
     return 0;
 }
@@ -221,7 +221,7 @@ int RemoveCustomer(Customer *customer)
     LinkedList *now = systemList;
     while (now != NULL) {
         if (now->data == customer) {
-            RemoveNode(systemList, now);
+            systemList = RemoveNode(systemList, now);
             return 0;
         }
         now = now->next;

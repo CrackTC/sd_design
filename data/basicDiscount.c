@@ -81,7 +81,7 @@ LinkedList *GetAllBasicDiscounts()
         node->data = discount;
         node->next = NULL;
 
-        AppendNode(list, node);
+        list = AppendNode(list, node);
     }
 
     FreeTable(table);
@@ -105,7 +105,7 @@ LinkedList *GetBasicDiscountsByItemId(int itemId)
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = discount;
             node->next = NULL;
-            AppendNode(list, node);
+            list = AppendNode(list, node);
         }
         now = now->next;
     }
@@ -128,7 +128,7 @@ LinkedList *GetBasicDiscountsByCustomerLevel(int level)
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = discount;
             node->next = NULL;
-            AppendNode(list, node);
+            list = AppendNode(list, node);
         }
         now = now->next;
     }
@@ -189,7 +189,7 @@ int AppendBasicDiscount(BasicDiscount *discount)
     LinkedList *node = malloc(sizeof(LinkedList));
     node->data = discount;
     node->next = NULL;
-    AppendNode(systemList, node);
+    systemList = AppendNode(systemList, node);
 
     return 0;
 }
@@ -200,7 +200,7 @@ int RemoveBasicDiscount(BasicDiscount *discount)
     while (now != NULL) {
         if (now->data == discount)
         {
-            RemoveNode(systemList, now);
+            systemList = RemoveNode(systemList, now);
             return 0;
         }
         now = now->next;
