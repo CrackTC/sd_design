@@ -74,8 +74,8 @@ Item *GetItemByName(const char *name);
  * */
 int GetItemId(const Item *item);
 const char *GetItemName(const Item *item);
-Amount *GetItemPrice(const Item *item);
-Time *GetItemShelfLife(const Item *item);
+Amount GetItemPrice(const Item *item);
+Time GetItemShelfLife(const Item *item);
 
 /*
  * Name: SetItemXXX
