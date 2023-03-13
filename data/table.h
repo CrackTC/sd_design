@@ -30,7 +30,7 @@ typedef struct Table {
     LinkedList *rows;
 
     // 备注
-    const char *remark;
+    char *remark;
 } Table;
 
 /*
@@ -103,7 +103,7 @@ TableRow *GetTableTitle(const Table *table);
  *     table: 一个指针，指向要获取备注的表格
  * Returns: 表格的备注
  * */
-const char *GetTableRemark(const Table *table);
+char *GetTableRemark(const Table *table);
 
 /*
  * Name: GetRowByIndex
