@@ -8,6 +8,8 @@
 #include <limits.h>
 #include <malloc.h>
 
+static const Amount zero = {0};
+
 int GetAmountYuan(const Amount *amount)
 {
     return amount->value / 100;
@@ -29,68 +31,60 @@ int IsValueValid(long long value)
     return value >= INT_MIN && value <= INT_MAX;
 }
 
-Amount *AmountAdd(const Amount *amountA, const Amount *amountB)
+Amount AmountAdd(const Amount *amountA, const Amount *amountB)
 {
     long long resultValue = amountA->value + amountB->value;
     if (IsValueValid(resultValue / 100))
     {
-        Amount *amount = malloc(sizeof(Amount));
-        amount->value = resultValue;
+        Amount amount = {resultValue};
         return amount;
     }
-    return NULL;
+    return zero;
 }
 
-Amount *AmountMultiply(const Amount *amount, int multiple)
+Amount AmountMultiply(const Amount *amount, int multiple)
 {
     long long resultValue = amount->value * multiple;
     if (IsValueValid(resultValue / 100))
     {
-        Amount *amount = malloc(sizeof(Amount));
-        amount->value = resultValue;
+        Amount amount = {resultValue};
         return amount;
     }
-    return NULL;
+    return zero;
 }
 
-Amount *AmountMultiplyRatio(const Amount *amount, int ratio)
+Amount AmountMultiplyRatio(const Amount *amount, int ratio)
 {
     if (ratio > 100 || ratio < 0)
-        return NULL;
+        return zero;
     long long resultMul100 = amount->value * ratio;
 
     // 舍入判断指标
     int bias = (resultMul100 % 100) / 10;
     long long result = resultMul100 / 100;
-    Amount *resultAmount = malloc(sizeof(Amount));
+    Amount resultAmount;
     if (-4 <= bias && bias <= 4)
     {
-        resultAmount->value = result;
+        resultAmount.value = result;
         return resultAmount;
     }
     else
     {
-        resultAmount->value = bias > 0 ? result + 1 : result - 1;
+        resultAmount.value = bias > 0 ? result + 1 : result - 1;
         return resultAmount;
     }
 }
 
-Amount *NewAmount(int yuan, int jiao, int cent)
+Amount NewAmount(int yuan, int jiao, int cent)
 {
     if (yuan >= 0 && jiao >= 0 && cent >= 0 || yuan <= 0 && jiao <= 0 && cent <= 0)
     {
         if (jiao < -9 || jiao > 9)
-            return NULL;
+            return zero;
         if (cent < -9 || cent > 9)
-            return NULL;
-        Amount *result = malloc(sizeof(Amount));
-        result->value = yuan * 100 + jiao + cent;
+            return zero;
+        Amount result = {yuan * 100 + jiao + cent};
         return result;
     }
-    return NULL;
-}
-
-void FreeAmount(Amount *amount)
-{
-    free(amount);
+    return zero;
 }
