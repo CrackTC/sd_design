@@ -65,7 +65,7 @@ LinkedList *GetAllCustomers()
     else if (result != 0)
         return NULL;
 
-    sscanf("%d", table->remark, &idCount);
+    sscanf("%d", GetTableRemark(table), &idCount);
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
@@ -239,9 +239,7 @@ void CustomerSave()
     AppendTableRow(row, contactRow);
 
     char *remark = LongLongToString(idCount);
-
     Table *table = NewTable(row, remark);
-
     free(remark);
 
     LinkedList *now = systemList;
