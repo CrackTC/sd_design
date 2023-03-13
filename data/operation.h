@@ -7,6 +7,8 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
+#define OPERATION_COUNT 22
+
 /*
  * Name: Operation
  * Description: 定义用户操作的枚举值
