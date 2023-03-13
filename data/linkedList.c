@@ -4,7 +4,7 @@
 
 LinkedList *GetNodeByIndex(LinkedList *head, int index)
 {
-    if (index < 0)
+    if (index < 0 || head == NULL)
     {
         return NULL;
     }
