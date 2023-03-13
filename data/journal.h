@@ -26,7 +26,7 @@ typedef struct JournalEntry JournalEntry;
  *     operation: 操作
  *     arguments: 操作相关参数
  * */
-JournalEntry *NewJournalEntry(int staffId, Time *time, Operation operation, const char **arguments);
+JournalEntry *NewJournalEntry(int staffId, Time *time, Operation operation, const char **arguments, int argumentCount);
 
 /*
  * Name: FreeJournalEntry
