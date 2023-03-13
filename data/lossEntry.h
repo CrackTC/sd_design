@@ -41,7 +41,7 @@ void FreeLossEntry(LossEntry *entry);
  * Returns: 一个链表，包含所有货损条目
  *          若不存在货损条目，返回NULL
  * */
-const LinkedList *GetAllLoss();
+LinkedList *GetAllLoss();
 
 /*
  * Name: GetLossEntriesByInventoryId
@@ -51,7 +51,7 @@ const LinkedList *GetAllLoss();
  * Returns: 一个链表，包含所有符合条件的货损条目
  *          若不存在这样的条目，返回NULL
  * */
-const LinkedList *GetLossEntriesByInventoryId(int inventoryId);
+LinkedList *GetLossEntriesByInventoryId(int inventoryId);
 
 /*
  * Name: GetLossEntryXXX
@@ -62,7 +62,7 @@ const LinkedList *GetLossEntriesByInventoryId(int inventoryId);
  * */
 int GetLossEntryInventoryId(const LossEntry *entry);
 const char *GetLossEntryReason(const LossEntry *entry);
-Time *GetLossEntryTime(const LossEntry *entry);
+Time GetLossEntryTime(const LossEntry *entry);
 
 /*
  * Name: SetLossEntryXXX
@@ -72,7 +72,7 @@ Time *GetLossEntryTime(const LossEntry *entry);
  *     value: 要设置成的值
  * */
 void SetLossEntryInventoryId(LossEntry *entry, int value);
-void SetLossEntryReason(LossEntry *entry, const char *value);
+void SetLossEntryReason(LossEntry *entry, char *value);
 void SetLossEntryTime(LossEntry *entry, Time *value);
 
 /*
