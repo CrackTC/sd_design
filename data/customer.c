@@ -188,11 +188,13 @@ void SetCustomerLevel(Customer *customer, int value)
 
 void SetCustomerName(Customer *customer, const char *name)
 {
+    free(customer->name);
     customer->name = CloneString(name);
 }
 
 void SetCustomerContact(Customer *customer, const char *contact)
 {
+    free(customer->contact);
     customer->contact = CloneString(contact);
 }
 

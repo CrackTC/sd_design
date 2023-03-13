@@ -156,6 +156,7 @@ Time GetItemShelfLife(const Item *item)
 
 void SetItemName(Item *item, const char *value)
 {
+    free(item->name);
     item->name = CloneString(value);
 }
 
