@@ -209,7 +209,7 @@ int AppendCustomer(Customer *customer)
     if (ExistsNode(systemList, customer)) {
         return 1;
     }
-    
+
     LinkedList *node = malloc(sizeof(LinkedList));
     node->data = customer;
     node->next = NULL;
