@@ -41,7 +41,7 @@ void FreeStaff(Staff *staff);
  * Returns: 一个链表，包含所有员工
  *          若不存在员工，返回NULL
  * */
-const LinkedList *GetAllStaff();
+LinkedList *GetAllStaff();
 
 /*
  * Name: GetStaffById
@@ -85,6 +85,7 @@ int VerifyStaffPassword(const Staff *staff, const char *givenPassword);
  * */
 void SetStaffAvailability(Staff *staff, int value);
 void SetStaffName(Staff *staff, const char *value);
+void SetStaffPassword(Staff *staff, const char *value);
 void SetStaffContact(Staff *staff, const char *value);
 
 /*
