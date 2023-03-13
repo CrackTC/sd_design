@@ -43,7 +43,7 @@ void FreeOrder(Order *order);
  * Returns: 一个链表，其中包含所有订单
  *          若不存在订单，则返回NULL
  * */
-const LinkedList *GetAllOrders();
+LinkedList *GetAllOrders();
 
 /*
  * Name: GetOrderById
@@ -53,7 +53,7 @@ const LinkedList *GetAllOrders();
  * Returns: 符合条件的订单
  *          若不存在符合条件的订单，返回NULL
  * */
-const Order *GetOrderById(int id);
+Order *GetOrderById(int id);
 
 /*
  * Name: GetOrdersByCustomerId
@@ -63,7 +63,7 @@ const Order *GetOrderById(int id);
  * Returns: 一个链表，包含所有具有指定客户编号的订单
  *          若不存在这样的订单，返回NULL
  * */
-const LinkedList *GetOrdersByCustomerId(int customerId);
+LinkedList *GetOrdersByCustomerId(int customerId);
 
 /*
  * Name: GetOrderXXX
@@ -75,7 +75,7 @@ const LinkedList *GetOrdersByCustomerId(int customerId);
 int GetOrderId(const Order *order);
 int GetOrderCustomerId(const Order *order);
 int GetOrderNumber(const Order *order);
-Amount *GetOrderAmount(const Order *order);
+Amount GetOrderAmount(const Order *order);
 
 /*
  * Name: SetOrderXXX
