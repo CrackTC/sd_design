@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-char *IntToString(long long x)
+char *LongLongToString(long long x)
 {
     int length = snprintf(NULL, 0, "%lld", x);
     char *str = malloc(length + 1);
