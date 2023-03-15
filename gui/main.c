@@ -13,7 +13,7 @@
 
 #include "layout.h"
 
-#define LAYOUT_COUNT 2
+#define LAYOUT_COUNT 1
 
 static void error_callback(int e, const char *d)
 {
@@ -36,8 +36,7 @@ int ShouldExit(struct nk_context *context)
 
 void InitWindows()
 {
-    windows[0] = NewMainWindow(1, "main");
-    windows[1] = NewLoginWindow(1, "another");
+    windows[0] = NewLoginWindow(1, "login");
 }
 
 int main(int argc, char **argv)
@@ -116,7 +115,7 @@ int main(int argc, char **argv)
             {
                 if (nk_begin(context, windows[i]->title, nk_rect(0, 0, 800, 600),
                              NK_WINDOW_CLOSABLE | NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE |
-                                 NK_WINDOW_MOVABLE))
+                                 NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE))
                 {
                     windows[i]->layoutFunc(context, windows[i]);
                 }
