@@ -30,4 +30,7 @@ struct Window
 Window *NewMainWindow(int isVisible, const char *title);
 Window *NewLoginWindow(int isVisible, const char *title);
 
+void PlaceNothing(struct nk_context *context);
+void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);
+
 #endif
