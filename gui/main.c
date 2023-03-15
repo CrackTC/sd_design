@@ -108,6 +108,8 @@ int main(int argc, char **argv)
         {
             while (windows[i]->next != NULL)
             {
+                Window *tmp = windows[i];
+                tmp->freeFunc(tmp);
                 windows[i] = windows[i]->next;
             }
             if (windows[i]->isVisible)
@@ -116,7 +118,7 @@ int main(int argc, char **argv)
                              NK_WINDOW_CLOSABLE | NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE |
                                  NK_WINDOW_MOVABLE))
                 {
-                    windows[i]->layoutFunc(context, windows[i]->data);
+                    windows[i]->layoutFunc(context, windows[i]);
                 }
                 nk_end(context);
             }
