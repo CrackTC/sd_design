@@ -203,13 +203,16 @@ int GetJournalEntryArgumentCount(const JournalEntry *entry)
 
 int AppendJournalEntry(JournalEntry *entry)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllJournals();
     }
-    if (entry == NULL) {
+    if (entry == NULL)
+    {
         return 1;
     }
-    if (ExistsNode(systemList, entry)) {
+    if (ExistsNode(systemList, entry))
+    {
         return 1;
     }
 
@@ -230,7 +233,8 @@ char *JoinArguments(char **arguments, int argumentCount)
     }
     char *result = malloc(length * sizeof(char));
     int resultIndex = 0;
-    for (int i = 0; i < argumentCount; i++) {
+    for (int i = 0; i < argumentCount; i++)
+    {
         for (int j = 0; arguments[i][j] != '\0'; j++)
         {
             result[resultIndex++] = arguments[i][j];
@@ -253,7 +257,8 @@ void JournalSave()
     Table *table = NewTable(row, NULL);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         JournalEntry *entry = malloc(sizeof(JournalEntry));
         row = NewTableRow();
 

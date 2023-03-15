@@ -13,7 +13,8 @@
  * Name: TableRow
  * Description: 表示一个表格行
  * */
-typedef struct TableRow {
+typedef struct TableRow
+{
     // 表格列数
     int columnCount;
 
@@ -25,7 +26,8 @@ typedef struct TableRow {
  * Name: Table
  * Description: 表示一个表格
  * */
-typedef struct Table {
+typedef struct Table
+{
     // 所有列
     LinkedList *rows;
 

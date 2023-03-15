@@ -1,8 +1,8 @@
 #include "basicDiscount.h"
+#include "../utils.h"
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
-#include "../utils.h"
 #include <malloc.h>
 #include <stdio.h>
 
@@ -178,7 +178,8 @@ void SetBasicDiscountDeadline(BasicDiscount *discount, const Time *value)
 
 int AppendBasicDiscount(BasicDiscount *discount)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllBasicDiscounts();
     }
     if (discount == NULL)
@@ -197,7 +198,8 @@ int AppendBasicDiscount(BasicDiscount *discount)
 int RemoveBasicDiscount(BasicDiscount *discount)
 {
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         if (now->data == discount)
         {
             systemList = RemoveNode(systemList, now);
@@ -220,7 +222,8 @@ void BasicDiscountSave()
     Table *table = NewTable(row, NULL);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         BasicDiscount *discount = now->data;
         row = NewTableRow();
 

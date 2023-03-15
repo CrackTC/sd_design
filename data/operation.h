@@ -13,7 +13,8 @@
  * Name: Operation
  * Description: 定义用户操作的枚举值
  * */
-enum Operation {
+enum Operation
+{
     // 登录
     OP_LOGIN,
 

@@ -51,7 +51,8 @@ LinkedList *GetAllItems()
 
     Table *table;
     int result = Unserialize(&table, path);
-    if (result == 1) {
+    if (result == 1)
+    {
         ItemsSave();
         return NULL;
     }
@@ -62,7 +63,8 @@ LinkedList *GetAllItems()
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
-    while (rowNode->next != NULL) {
+    while (rowNode->next != NULL)
+    {
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
@@ -101,9 +103,11 @@ Item *GetItemById(int id)
         GetAllItems();
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Item *item = now->data;
-        if (item->id == id) {
+        if (item->id == id)
+        {
             return item;
         }
         now = now->next;
@@ -117,9 +121,11 @@ Item *GetItemByName(const char *name)
         GetAllItems();
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Item *item = now->data;
-        if (strcmp(name, item->name)) {
+        if (strcmp(name, item->name))
+        {
             return item;
         }
         now = now->next;
@@ -144,7 +150,8 @@ Amount GetItemPrice(const Item *item)
 
 Time GetItemShelfLife(const Item *item)
 {
-    return item->shelfLife;;
+    return item->shelfLife;
+    ;
 }
 
 void SetItemName(Item *item, const char *value)
@@ -165,13 +172,16 @@ void SetItemShelfLife(Item *item, Time *value)
 
 int AppendItem(Item *item)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllItems();
     }
-    if (item == NULL) {
+    if (item == NULL)
+    {
         return 1;
     }
-    if (ExistsNode(systemList, item)) {
+    if (ExistsNode(systemList, item))
+    {
         return 1;
     }
 
@@ -186,8 +196,10 @@ int AppendItem(Item *item)
 int RemoveItem(Item *item)
 {
     LinkedList *now = systemList;
-    while (now != NULL) {
-        if (now->data == item) {
+    while (now != NULL)
+    {
+        if (now->data == item)
+        {
             systemList = RemoveNode(systemList, now);
             return 0;
         }
@@ -209,7 +221,8 @@ void ItemsSave()
     free(remark);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Item *item = now->data;
         row = NewTableRow();
 

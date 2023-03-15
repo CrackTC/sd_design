@@ -1,9 +1,9 @@
 #include "inventory.h"
+#include "../utils.h"
 #include "customer.h"
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
-#include "../utils.h"
 #include <malloc.h>
 #include <stdio.h>
 
@@ -34,7 +34,8 @@ LinkedList *GetAllInventory()
 
     Table *table;
     int result = Unserialize(&table, path);
-    if (result == 1) {
+    if (result == 1)
+    {
         InventorySave();
         return NULL;
     }
@@ -45,7 +46,8 @@ LinkedList *GetAllInventory()
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
-    while (rowNode->next != NULL) {
+    while (rowNode->next != NULL)
+    {
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
@@ -90,9 +92,11 @@ InventoryEntry *GetInventoryById(int id)
         GetAllInventory();
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         InventoryEntry *entry = now->data;
-        if (entry->id == id) {
+        if (entry->id == id)
+        {
             return entry;
         }
         now = now->next;
@@ -107,9 +111,11 @@ LinkedList *GetInventoryByItemId(int itemId)
 
     LinkedList *list = NULL;
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         InventoryEntry *entry = now->data;
-        if (entry->itemId == itemId) {
+        if (entry->itemId == itemId)
+        {
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = entry;
             node->next = NULL;
@@ -198,19 +204,22 @@ void SetInventoryEntryInboundUnitPrice(InventoryEntry *entry, const Amount *valu
 
 int AppendInventoryEntry(InventoryEntry *entry)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllInventory();
     }
-    if (entry == NULL) {
+    if (entry == NULL)
+    {
         return 1;
     }
-    if (ExistsNode(systemList, entry)) {
+    if (ExistsNode(systemList, entry))
+    {
         return 1;
     }
 
     LinkedList *node = malloc(sizeof(LinkedList));
     node->data = entry;
-    node->next =  NULL;
+    node->next = NULL;
     systemList = AppendNode(systemList, node);
 
     return 0;
@@ -219,8 +228,10 @@ int AppendInventoryEntry(InventoryEntry *entry)
 int RemoveInventoryEntry(InventoryEntry *entry)
 {
     LinkedList *now = systemList;
-    while (now != NULL) {
-        if (now->data == entry) {
+    while (now != NULL)
+    {
+        if (now->data == entry)
+        {
             systemList = RemoveNode(systemList, now);
             return 0;
         }
@@ -245,7 +256,8 @@ void InventorySave()
     free(remark);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         InventoryEntry *entry = now->data;
         row = NewTableRow();
 

@@ -1,6 +1,6 @@
 #include "refundEntry.h"
-#include "linkedList.h"
 #include "../utils.h"
+#include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
 #include <stdio.h>
@@ -54,13 +54,15 @@ void FreeRefundEntry(RefundEntry *entry)
 
 LinkedList *GetAllRefunds()
 {
-    if (systemList != NULL) {
+    if (systemList != NULL)
+    {
         return systemList;
     }
 
     Table *table;
     int result = Unserialize(&table, path);
-    if (result == 1) {
+    if (result == 1)
+    {
         RefundEntrySave();
         return NULL;
     }
@@ -69,7 +71,8 @@ LinkedList *GetAllRefunds()
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
-    while (rowNode->next != NULL) {
+    while (rowNode->next != NULL)
+    {
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
@@ -110,14 +113,17 @@ LinkedList *GetAllRefunds()
 
 RefundEntry *GetRefundByOrderId(int orderId)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllRefunds();
     }
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         RefundEntry *entry = now->data;
-        if (entry->orderId == orderId) {
+        if (entry->orderId == orderId)
+        {
             return entry;
         }
         now = now->next;
@@ -186,13 +192,16 @@ void SetRefundEntryRemark(RefundEntry *entry, const char *remark)
 
 int AppendRefundEntry(RefundEntry *entry)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllRefunds();
     }
-    if (entry == NULL) {
+    if (entry == NULL)
+    {
         return 1;
     }
-    if (ExistsNode(systemList, entry)) {
+    if (ExistsNode(systemList, entry))
+    {
         return 1;
     }
 
@@ -207,8 +216,10 @@ int AppendRefundEntry(RefundEntry *entry)
 int RemoveRefundEntry(RefundEntry *entry)
 {
     LinkedList *now = systemList;
-    while (now != NULL) {
-        if (now->data == entry) {
+    while (now != NULL)
+    {
+        if (now->data == entry)
+        {
             systemList = RemoveNode(systemList, now);
             return 0;
         }
@@ -230,7 +241,8 @@ void RefundEntrySave()
     Table *table = NewTable(row, NULL);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         RefundEntry *entry = now->data;
         row = NewTableRow();
 

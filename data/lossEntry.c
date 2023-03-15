@@ -1,6 +1,6 @@
 #include "lossEntry.h"
-#include "linkedList.h"
 #include "../utils.h"
+#include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
 #include <malloc.h>
@@ -54,7 +54,8 @@ LinkedList *GetAllLoss()
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
-    while (rowNode->next != NULL) {
+    while (rowNode->next != NULL)
+    {
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
@@ -91,9 +92,11 @@ LinkedList *GetLossEntriesByInventoryId(int inventoryId)
 
     LinkedList *list = NULL;
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         LossEntry *entry = now->data;
-        if (entry->inventoryId == inventoryId) {
+        if (entry->inventoryId == inventoryId)
+        {
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = entry;
             node->next = NULL;
@@ -138,13 +141,16 @@ void SetLossEntryTime(LossEntry *entry, Time *value)
 
 int AppendLossEntry(LossEntry *entry)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllLoss();
     }
-    if (entry == NULL) {
+    if (entry == NULL)
+    {
         return 1;
     }
-    if (ExistsNode(systemList, entry)) {
+    if (ExistsNode(systemList, entry))
+    {
         return 1;
     }
 
@@ -159,8 +165,10 @@ int AppendLossEntry(LossEntry *entry)
 int RemoveLossEntry(LossEntry *entry)
 {
     LinkedList *now = systemList;
-    while (now != NULL) {
-        if (now->data == entry) {
+    while (now != NULL)
+    {
+        if (now->data == entry)
+        {
             systemList = RemoveNode(systemList, now);
             return 0;
         }
@@ -180,7 +188,8 @@ void LossEntrySave()
     Table *table = NewTable(row, NULL);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         LossEntry *entry = now->data;
         row = NewTableRow();
 

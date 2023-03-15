@@ -1,10 +1,10 @@
 #include "order.h"
+#include "../utils.h"
 #include "amount.h"
 #include "customer.h"
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
-#include "../utils.h"
 #include <malloc.h>
 #include <stdio.h>
 
@@ -64,7 +64,8 @@ LinkedList *GetAllOrders()
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
-    while (rowNode->next != NULL) {
+    while (rowNode->next != NULL)
+    {
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
@@ -106,9 +107,11 @@ Order *GetOrderById(int id)
         GetAllOrders();
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Order *order = now->data;
-        if (order->id == id) {
+        if (order->id == id)
+        {
             return order;
         }
         now = now->next;
@@ -123,9 +126,11 @@ LinkedList *GetOrdersByCustomerId(int customerId)
 
     LinkedList *list = NULL;
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Order *order = now->data;
-        if (order->customerId == customerId) {
+        if (order->customerId == customerId)
+        {
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = order;
             node->next = NULL;
@@ -174,13 +179,16 @@ void SetOrderAmount(Order *order, Amount *value)
 
 int AppendOrder(Order *order)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllOrders();
     }
-    if (order == NULL) {
+    if (order == NULL)
+    {
         return 1;
     }
-    if (ExistsNode(systemList, order)) {
+    if (ExistsNode(systemList, order))
+    {
         return 1;
     }
 
@@ -195,8 +203,10 @@ int AppendOrder(Order *order)
 int RemoveOrder(Order *order)
 {
     LinkedList *now = systemList;
-    while (now != NULL) {
-        if (now->data == order) {
+    while (now != NULL)
+    {
+        if (now->data == order)
+        {
             systemList = RemoveNode(systemList, now);
             return 0;
         }
@@ -220,7 +230,8 @@ void OrderSave()
     free(remark);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Order *order = now->data;
         row = NewTableRow();
 

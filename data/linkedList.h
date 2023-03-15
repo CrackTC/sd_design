@@ -11,7 +11,8 @@
  * Name: LinkedListNode
  * Description: 表示一个链表结点
  * */
-typedef struct LinkedList {
+typedef struct LinkedList
+{
     // 指向要存储的数据的指针
     void *data;
 

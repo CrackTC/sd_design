@@ -122,7 +122,8 @@ TableRow *GetRowByIndex(const Table *table, int index)
 
 void SetTableRemark(Table *table, const char *value)
 {
-    if (table == NULL) {
+    if (table == NULL)
+    {
         return;
     }
     free(table->remark);

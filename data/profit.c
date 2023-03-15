@@ -1,9 +1,9 @@
 #include "profit.h"
+#include "../utils.h"
 #include "amount.h"
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
-#include "../utils.h"
 #include <malloc.h>
 #include <stdio.h>
 
@@ -22,7 +22,8 @@ struct Profit
 
 Profit *NewProfit(Amount *amount, const char *matter, Time *time)
 {
-    if (amount->value < 0 || matter == NULL || time == NULL) {
+    if (amount->value < 0 || matter == NULL || time == NULL)
+    {
         return NULL;
     }
 
@@ -47,7 +48,8 @@ LinkedList *GetAllProfits()
 
     Table *table;
     int result = Unserialize(&table, path);
-    if (result == 1) {
+    if (result == 1)
+    {
         ProfitSave();
         return NULL;
     }
@@ -56,7 +58,8 @@ LinkedList *GetAllProfits()
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
-    while (rowNode->next != NULL) {
+    while (rowNode->next != NULL)
+    {
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
@@ -93,7 +96,7 @@ Amount GetProfitAmount(const Profit *profit)
 
 const char *GetProfitMatter(const Profit *profit)
 {
-    return  profit->matter;
+    return profit->matter;
 }
 
 Time GetProfitTime(const Profit *profit)
@@ -118,13 +121,16 @@ void SetProfitTime(Profit *profit, Time *value)
 
 int AppendProfit(Profit *profit)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllProfits();
     }
-    if (profit == NULL) {
+    if (profit == NULL)
+    {
         return 1;
     }
-    if (ExistsNode(systemList, profit)) {
+    if (ExistsNode(systemList, profit))
+    {
         return 1;
     }
 
@@ -139,8 +145,10 @@ int AppendProfit(Profit *profit)
 int RemoveProfit(Profit *profit)
 {
     LinkedList *now = systemList;
-    while (now != NULL) {
-        if (now->data == profit) {
+    while (now != NULL)
+    {
+        if (now->data == profit)
+        {
             systemList = RemoveNode(systemList, now);
             return 0;
         }
@@ -160,7 +168,8 @@ void ProfitSave()
     Table *table = NewTable(row, NULL);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Profit *profit = now->data;
         row = NewTableRow();
 

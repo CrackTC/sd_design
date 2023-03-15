@@ -154,7 +154,8 @@ const char *GetStaffContact(const Staff *staff)
 
 int VerifyStaffPassword(const Staff *staff, const char *givenPassword)
 {
-    if (staff == NULL || givenPassword == NULL) {
+    if (staff == NULL || givenPassword == NULL)
+    {
         return 0;
     }
     return strcmp(staff->password, givenPassword) == 0;
@@ -185,13 +186,16 @@ void SetStaffContact(Staff *staff, const char *value)
 
 int AppendStaff(Staff *staff)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllStaff();
     }
-    if (staff == NULL) {
+    if (staff == NULL)
+    {
         return 1;
     }
-    if (ExistsNode(systemList, staff)) {
+    if (ExistsNode(systemList, staff))
+    {
         return 1;
     }
 
@@ -206,8 +210,10 @@ int AppendStaff(Staff *staff)
 int RemoveStaff(Staff *staff)
 {
     LinkedList *now = systemList;
-    while (now != NULL) {
-        if (now->data == staff) {
+    while (now != NULL)
+    {
+        if (now->data == staff)
+        {
             systemList = RemoveNode(systemList, now);
             return 0;
         }
@@ -231,7 +237,8 @@ void StaffSave()
     free(remark);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Staff *staff = now->data;
         row = NewTableRow();
 
@@ -253,5 +260,4 @@ void StaffSave()
 
     Serialize(table, path);
     FreeTable(table);
-
 }

@@ -7,9 +7,9 @@
 #ifndef JOURNAL_H
 #define JOURNAL_H
 
-#include "time.h"
-#include "operation.h"
 #include "linkedList.h"
+#include "operation.h"
+#include "time.h"
 
 /*
  * Name: JournalEntry

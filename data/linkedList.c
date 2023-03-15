@@ -17,10 +17,12 @@ LinkedList *GetNodeByIndex(LinkedList *head, int index)
 
 LinkedList *GetLastNode(LinkedList *head)
 {
-    if (head == NULL) {
+    if (head == NULL)
+    {
         return NULL;
     }
-    if (head->next == NULL) {
+    if (head->next == NULL)
+    {
         return head;
     }
     return GetLastNode(head->next);
@@ -28,10 +30,12 @@ LinkedList *GetLastNode(LinkedList *head)
 
 int ExistsNode(LinkedList *list, const void *node)
 {
-    if (list == NULL) {
+    if (list == NULL)
+    {
         return 0;
     }
-    if (list->data == node) {
+    if (list->data == node)
+    {
         return 1;
     }
     return ExistsNode(list->next, node);
@@ -45,15 +49,18 @@ LinkedList *AppendNode(LinkedList *head, LinkedList *node)
 
 LinkedList *RemoveNode(LinkedList *head, LinkedList *node)
 {
-    if (node == NULL) {
+    if (node == NULL)
+    {
         return head;
     }
     if (head == node)
         return head->next;
-    
+
     LinkedList *now = head;
-    while (now != NULL) {
-        if (now->next == node) {
+    while (now != NULL)
+    {
+        if (now->next == node)
+        {
             now->next = now->next->next;
             return head;
         }

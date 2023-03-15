@@ -1,8 +1,8 @@
 #include "customer.h"
-#include "linkedList.h"
-#include "table.h"
-#include "serialization.h"
 #include "../utils.h"
+#include "linkedList.h"
+#include "serialization.h"
+#include "table.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
@@ -62,7 +62,8 @@ LinkedList *GetAllCustomers()
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
-    while (rowNode->next != NULL) {
+    while (rowNode->next != NULL)
+    {
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
@@ -101,9 +102,11 @@ Customer *GetCustomerById(int id)
         GetAllCustomers();
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Customer *customer = now->data;
-        if (customer->id == id) {
+        if (customer->id == id)
+        {
             return customer;
         }
         now = now->next;
@@ -118,9 +121,11 @@ LinkedList *GetCustomersByLevel(int level)
 
     LinkedList *list = NULL;
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Customer *customer = now->data;
-        if (customer->level == level) {
+        if (customer->level == level)
+        {
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = customer;
             node->next = NULL;
@@ -134,15 +139,18 @@ LinkedList *GetCustomersByLevel(int level)
 
 LinkedList *GetCustomersByName(const char *name)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllCustomers();
     }
 
     LinkedList *list = NULL;
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Customer *customer = now->data;
-        if (strcmp(name, customer->name) == 0) {
+        if (strcmp(name, customer->name) == 0)
+        {
             LinkedList *node = malloc(sizeof(LinkedList));
             node->data = customer;
             node->next = NULL;
@@ -193,13 +201,16 @@ void SetCustomerContact(Customer *customer, const char *contact)
 
 int AppendCustomer(Customer *customer)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllCustomers();
     }
-    if (customer == NULL) {
+    if (customer == NULL)
+    {
         return 1;
     }
-    if (ExistsNode(systemList, customer)) {
+    if (ExistsNode(systemList, customer))
+    {
         return 1;
     }
 
@@ -214,8 +225,10 @@ int AppendCustomer(Customer *customer)
 int RemoveCustomer(Customer *customer)
 {
     LinkedList *now = systemList;
-    while (now != NULL) {
-        if (now->data == customer) {
+    while (now != NULL)
+    {
+        if (now->data == customer)
+        {
             systemList = RemoveNode(systemList, now);
             return 0;
         }
@@ -238,7 +251,8 @@ void CustomerSave()
     free(remark);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         Customer *customer = now->data;
         row = NewTableRow();
 

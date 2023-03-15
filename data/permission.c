@@ -1,9 +1,9 @@
 #include "permission.h"
+#include "../utils.h"
 #include "linkedList.h"
 #include "operation.h"
 #include "serialization.h"
 #include "table.h"
-#include "../utils.h"
 #include <malloc.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -27,7 +27,8 @@ PermissionEntry *NewPermissionEntry(int staffId, const int *hasPermission)
 
     for (int i = 0; i < OPERATION_COUNT; i++)
     {
-        if (hasPermission[i] < 0 || hasPermission[i] > 1) {
+        if (hasPermission[i] < 0 || hasPermission[i] > 1)
+        {
             return NULL;
         }
     }
@@ -54,7 +55,8 @@ LinkedList *GetAllPermissionEntry()
 
     Table *table;
     int result = Unserialize(&table, path);
-    if (result == 1) {
+    if (result == 1)
+    {
         PermissionSave();
         return NULL;
     }
@@ -101,9 +103,11 @@ PermissionEntry *GetPermissionEntryByStaffId(int staffId)
         GetAllPermissionEntry();
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         PermissionEntry *entry = now->data;
-        if (entry->staffId == staffId) {
+        if (entry->staffId == staffId)
+        {
             return entry;
         }
     }
@@ -122,20 +126,24 @@ const int *GetPermissionEntryPermissions(const PermissionEntry *entry)
 
 void SetPermissionEntryPermissions(PermissionEntry *entry, Operation operation, int allow)
 {
-    if ((allow == 0 || allow == 1) && operation >= 0 && operation < OPERATION_COUNT) {
+    if ((allow == 0 || allow == 1) && operation >= 0 && operation < OPERATION_COUNT)
+    {
         entry->hasPermission[operation] = allow;
     }
 }
 
 int AppendPermissionEntry(PermissionEntry *entry)
 {
-    if (systemList == NULL) {
+    if (systemList == NULL)
+    {
         GetAllPermissionEntry();
     }
-    if (entry == NULL) {
+    if (entry == NULL)
+    {
         return 1;
     }
-    if (ExistsNode(systemList, entry)) {
+    if (ExistsNode(systemList, entry))
+    {
         return 1;
     }
 
@@ -150,8 +158,10 @@ int AppendPermissionEntry(PermissionEntry *entry)
 int RemovePermissionEntry(PermissionEntry *entry)
 {
     LinkedList *now = systemList;
-    while (now != NULL) {
-        if (now->data == entry) {
+    while (now != NULL)
+    {
+        if (now->data == entry)
+        {
             systemList = RemoveNode(systemList, now);
             return 0;
         }
@@ -170,7 +180,8 @@ void PermissionSave()
     Table *table = NewTable(row, NULL);
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         PermissionEntry *entry = now->data;
         row = NewTableRow();
 
