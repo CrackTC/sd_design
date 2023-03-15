@@ -2,6 +2,7 @@
 #include <string.h>
 
 static const char *operationStrings[] = {
+    "Login",
     "Add Staff",
     "Delete Staff",
     "Update Staff",

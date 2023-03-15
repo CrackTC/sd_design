@@ -56,3 +56,11 @@ char *JoinPath(const char *pathA, const char *pathB)
 
     return result;
 }
+
+int GenerateId(void *systemList, LinkedList *(*initialize)(), int *idCount)
+{
+    if (systemList == NULL) {
+        initialize();
+    }
+    return (*idCount)++;
+}

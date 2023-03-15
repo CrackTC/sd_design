@@ -26,20 +26,13 @@ struct Item
     Time shelfLife;
 };
 
-int GenerateId()
-{
-    if (systemList == NULL)
-        GetAllItems();
-    return idCount++;
-}
-
 Item *NewItem(const char *name, Amount *price, Time *shelfLife)
 {
     if (name == NULL || price->value < 0)
         return NULL;
 
     Item *item = malloc(sizeof(Item));
-    item->id = GenerateId();
+    item->id = GenerateId(systemList, GetAllItems, &idCount);
     item->name = CloneString(name);
     item->shelfLife = *shelfLife;
     return item;

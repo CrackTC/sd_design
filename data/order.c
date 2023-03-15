@@ -26,20 +26,13 @@ struct Order
     Amount amount;
 };
 
-int GenerateId()
-{
-    if (systemList == NULL)
-        GetAllOrders();
-    return idCount++;
-}
-
 Order *NewOrder(int inventoryId, int number, int customerId, Amount *amount)
 {
     if (inventoryId < 0 || number < 0 || customerId < 0 || amount->value < 0)
         return NULL;
 
     Order *order = malloc(sizeof(Order));
-    order->id = GenerateId();
+    order->id = GenerateId(systemList, GetAllOrders, &idCount);
     order->inventoryId = inventoryId;
     order->number = number;
     order->customerId = customerId;

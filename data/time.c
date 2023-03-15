@@ -22,13 +22,12 @@ int CompareTime(const Time *timeA, const Time *timeB)
     return -1;
 }
 
-char *TimeToString(const Time *time)
+char *TimeToString(const TimeInfo info)
 {
-    TimeInfo info = GetTimeInfo(time);
     char *result = malloc(20 * sizeof(char));
     sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d", info.year, info.month, info.day, info.hour, info.minute,
             info.second);
-    return CloneString(ctime(&time->value));
+    return result;
 }
 
 Time NewDateTime(int year, int month, int day, int hour, int minute, int second)

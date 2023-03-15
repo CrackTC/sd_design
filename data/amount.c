@@ -77,7 +77,7 @@ Amount AmountMultiplyRatio(const Amount *amount, int ratio)
 
 Amount NewAmount(int yuan, int jiao, int cent)
 {
-    if (yuan >= 0 && jiao >= 0 && cent >= 0 || yuan <= 0 && jiao <= 0 && cent <= 0)
+    if ((yuan >= 0 && jiao >= 0 && cent >= 0) || (yuan <= 0 && jiao <= 0 && cent <= 0))
     {
         if (jiao < -9 || jiao > 9)
             return zero;

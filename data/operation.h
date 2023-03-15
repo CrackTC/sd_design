@@ -7,13 +7,16 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-#define OPERATION_COUNT 22
+#define OPERATION_COUNT 23
 
 /*
  * Name: Operation
  * Description: 定义用户操作的枚举值
  * */
 enum Operation {
+    // 登录
+    OP_LOGIN,
+
     // 添加员工
     OP_ADD_STAFF,
 

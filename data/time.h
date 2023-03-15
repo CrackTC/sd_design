@@ -53,13 +53,13 @@ int CompareTime(const Time *timeA, const Time *timeB);
 
 /*
  * Name: TimeToString
- * Description: 获取Time的字符串表示
+ * Description: 获取TimeInfo的字符串表示
  * Arguments:
- *     time: 要获取字符串表示的Time
+ *     info: 要获取字符串表示的TimeInfo
  * Returns: 字符串表示
  * Remarks: 需要在使用完毕后释放返回的字符串
  * */
-char *TimeToString(const Time *time);
+char *TimeToString(const TimeInfo info);
 
 /*
  * Name: NewDateTime

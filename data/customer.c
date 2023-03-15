@@ -23,20 +23,13 @@ struct Customer
     char *contact;
 };
 
-int GenerateId()
-{
-    if (systemList == NULL)
-        GetAllCustomers();
-    return idCount++;
-}
-
 Customer *NewCustomer(int level, char *name, char *contact)
 {
     if (level < 0 || name == NULL || contact == NULL)
         return NULL;
 
     Customer *customer = malloc(sizeof(Customer));
-    customer->id = GenerateId();
+    customer->id = GenerateId(systemList, GetAllCustomers, &idCount);
     customer->level = level;
     customer->name = CloneString(name);
     customer->contact = CloneString(contact);

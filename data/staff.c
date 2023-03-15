@@ -26,13 +26,6 @@ struct Staff
     char *contact;
 };
 
-int GenerateId()
-{
-    if (systemList == NULL)
-        GetAllStaff();
-    return idCount++;
-}
-
 Staff *NewStaff(int isEnabled, const char *name, const char *password, const char *contact)
 {
     if (name == NULL || password == NULL || contact == NULL)
@@ -41,7 +34,7 @@ Staff *NewStaff(int isEnabled, const char *name, const char *password, const cha
     }
 
     Staff *staff = malloc(sizeof(Staff));
-    staff->id = GenerateId();
+    staff->id = GenerateId(systemList, GetAllStaff, &idCount);
     staff->isEnabled = isEnabled;
     staff->name = CloneString(name);
     staff->password = CloneString(password);

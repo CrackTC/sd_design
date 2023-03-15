@@ -27,13 +27,6 @@ struct InventoryEntry
     Amount inboundUnitPrice;
 };
 
-int GenerateId()
-{
-    if (systemList == NULL)
-        GetAllInventory();
-    return idCount++;
-}
-
 LinkedList *GetAllInventory()
 {
     if (systemList != NULL)
@@ -135,7 +128,7 @@ InventoryEntry *NewInventoryEntry(int itemId, int number, const Time *inboundTim
         return NULL;
 
     InventoryEntry *entry = malloc(sizeof(InventoryEntry));
-    entry->id = GenerateId();
+    entry->id = GenerateId(systemList, GetAllInventory, &idCount);
     entry->number = number;
     entry->inboundTime = *inboundTime;
     entry->productionTime = *productionTime;

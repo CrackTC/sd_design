@@ -7,6 +7,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "data/linkedList.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -47,5 +48,16 @@ char *GetDirectory(const char *path);
  * Returns: 连接后的路径，若pathA或pathB为NULL，返回NULL
  * */
 char *JoinPath(const char *pathA, const char *pathB);
+
+/*
+ * Name: GenerateId
+ * Description: 生成递增id
+ * Arguments:
+ *     systemList: 系统表格，用于判断是否已初始化idCount
+ *     initialize: 指向初始化函数的指针
+ *     idCount: id计数器
+ * Returns: 生成的id
+ * */
+int GenerateId(void *systemList, LinkedList *(*initialize)(), int *idCount);
 
 #endif
