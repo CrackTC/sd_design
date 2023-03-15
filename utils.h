@@ -7,6 +7,9 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <stdlib.h>
+#include <string.h>
+
 /*
  * Name: IntToString
  * Description: 将整数转换为对应的字符串表示
@@ -25,5 +28,24 @@ char *LongLongToString(long long x);
  * Returns: 一个指针，指向拷贝结果
  * */
 char *CloneString(const char *str);
+
+/*
+ * Name: GetDirectory
+ * Description: 获取文件路径的目录部分
+ * Arguments:
+ *     path: 文件路径
+ * Returns: 路径对应的目录部分，若path为NULL或目录部分不存在，返回NULL
+ * */
+char *GetDirectory(const char *path);
+
+/*
+ * Name: JoinPath
+ * Description: 连接两个路径
+ * Arguments:
+ *      pathA: 第一个路径
+ *      pathB: 第二个路径
+ * Returns: 连接后的路径，若pathA或pathB为NULL，返回NULL
+ * */
+char *JoinPath(const char *pathA, const char *pathB);
 
 #endif

@@ -40,10 +40,12 @@ void InitWindows()
     windows[1] = NewLoginWindow(1, "another");
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    int window_width = 800;
-    int window_height = 600;
+    char *path = GetDirectory(argv[0]);
+    printf("%s\n", path);
+    int window_width = 1920;
+    int window_height = 1080;
 
     struct nk_glfw glfw = {0};
     static GLFWwindow *window;
@@ -58,7 +60,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DECORATED, GL_FALSE);
-#ifdef APPLE
+#ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
@@ -85,7 +87,8 @@ int main()
         struct nk_font_atlas *atlas;
 
         nk_glfw3_font_stash_begin(&glfw, &atlas);
-        struct nk_font *font = nk_font_atlas_add_from_file(atlas, "resources/MiSans-Medium.ttf", 30.0f, &config);
+        struct nk_font *font =
+            nk_font_atlas_add_from_file(atlas, JoinPath(path, "resources/MiSans-Medium.ttf"), 30.0f, &config);
         nk_glfw3_font_stash_end(&glfw);
 
         if (font)
@@ -103,12 +106,13 @@ int main()
 
         for (int i = 0; i < LAYOUT_COUNT; i++)
         {
-            while (windows[i]->next != NULL) {
+            while (windows[i]->next != NULL)
+            {
                 windows[i] = windows[i]->next;
             }
             if (windows[i]->isVisible)
             {
-                if (nk_begin(context, windows[i]->title, nk_rect(0, 0, window_width, window_height),
+                if (nk_begin(context, windows[i]->title, nk_rect(0, 0, 800, 600),
                              NK_WINDOW_CLOSABLE | NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE |
                                  NK_WINDOW_MOVABLE))
                 {
