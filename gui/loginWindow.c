@@ -13,7 +13,7 @@ struct Data
 
 int SendLoginRequest(const char *id, const char *password)
 {
-#error
+#warning
 }
 
 void loginWindowLayout(struct nk_context *context, void *data)
@@ -56,7 +56,7 @@ void loginWindowLayout(struct nk_context *context, void *data)
     if (nk_button_label(context, "登录"))
     {
         if (SendLoginRequest(d->id, d->password)) {
-#error
+#warning
         }
         else
         {
