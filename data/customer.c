@@ -65,7 +65,7 @@ LinkedList *GetAllCustomers()
     else if (result != 0)
         return NULL;
 
-    sscanf("%d", GetTableRemark(table), &idCount);
+    sscanf(GetTableRemark(table), "%d", &idCount);
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
@@ -78,8 +78,8 @@ LinkedList *GetAllCustomers()
         char *name;
         char *contact;
 
-        sscanf("%d", GetRowItemByColumnName(table, row, idRow), &id);
-        sscanf("%d", GetRowItemByColumnName(table, row, levelRow), &level);
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &id);
+        sscanf(GetRowItemByColumnName(table, row, levelRow), "%d", &level);
         name = CloneString(GetRowItemByColumnName(table, row, nameRow));
         contact = CloneString(GetRowItemByColumnName(table, row, contactRow));
 

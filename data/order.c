@@ -67,7 +67,7 @@ LinkedList *GetAllOrders()
     else if (result != 0)
         return NULL;
 
-    sscanf("%d", GetTableRemark(table), &idCount);
+    sscanf(GetTableRemark(table), "%d", &idCount);
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
@@ -81,11 +81,11 @@ LinkedList *GetAllOrders()
         int customerId;
         Amount amount;
 
-        sscanf("%d", GetRowItemByColumnName(table, row, idRow), &id);
-        sscanf("%d", GetRowItemByColumnName(table, row, inventoryIdRow), &inventoryId);
-        sscanf("%d", GetRowItemByColumnName(table, row, numberRow), &number);
-        sscanf("%d", GetRowItemByColumnName(table, row, customerIdRow), &customerId);
-        sscanf("%d", GetRowItemByColumnName(table, row, amountRow), &amount.value);
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &id);
+        sscanf(GetRowItemByColumnName(table, row, inventoryIdRow), "%d", &inventoryId);
+        sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &number);
+        sscanf(GetRowItemByColumnName(table, row, customerIdRow), "%d", &customerId);
+        sscanf(GetRowItemByColumnName(table, row, amountRow), "%lld", &amount.value);
 
         Order *order = malloc(sizeof(Order));
         order->id = id;

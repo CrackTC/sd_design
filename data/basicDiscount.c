@@ -66,9 +66,9 @@ LinkedList *GetAllBasicDiscounts()
         int customerLevel;
         Time deadline;
 
-        sscanf("%d", GetRowItemByColumnName(table, row, itemIdRow), &itemId);
-        sscanf("%d", GetRowItemByColumnName(table, row, ratioRow), &ratio);
-        sscanf("%d", GetRowItemByColumnName(table, row, customerLevelRow), &customerLevel);
+        sscanf(GetRowItemByColumnName(table, row, itemIdRow), "%d", &itemId);
+        sscanf(GetRowItemByColumnName(table, row, ratioRow), "%d", &ratio);
+        sscanf(GetRowItemByColumnName(table, row, customerLevelRow), "%d", &customerLevel);
         sscanf("%d", GetRowItemByColumnName(table, row, deadlineRow), deadline.value);
 
         BasicDiscount *discount = malloc(sizeof(BasicDiscount));

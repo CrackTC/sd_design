@@ -62,9 +62,9 @@ LinkedList *GetAllLoss()
         char *reason;
         Time time;
 
-        sscanf("%d", GetRowItemByColumnName(table, row, inventoryIdRow), &inventoryId);
+        sscanf(GetRowItemByColumnName(table, row, inventoryIdRow), "%d", &inventoryId);
         reason = CloneString(GetRowItemByColumnName(table, row, reasonRow));
-        sscanf("%d", GetRowItemByColumnName(table, row, timeRow), &time.value);
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &time.value);
 
         LossEntry *entry = malloc(sizeof(LossEntry));
         entry->inventoryId = inventoryId;

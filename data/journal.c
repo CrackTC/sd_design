@@ -83,11 +83,11 @@ LinkedList *GetAllJournals()
 
         char *joinedArgument;
 
-        sscanf("%d", GetRowItemByColumnName(table, row, staffIdRow), &staffId);
-        sscanf("%d", GetRowItemByColumnName(table, row, timeRow), &time.value);
-        sscanf("%d", GetRowItemByColumnName(table, row, operationRow), &operation);
+        sscanf(GetRowItemByColumnName(table, row, staffIdRow), "%d", &staffId);
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &time.value);
+        sscanf(GetRowItemByColumnName(table, row, operationRow), "%d", &operation);
         joinedArgument = CloneString(GetRowItemByColumnName(table, row, argumentsRow));
-        sscanf("%d", GetRowItemByColumnName(table, row, argumentCountRow), &argumentCount);
+        sscanf(GetRowItemByColumnName(table, row, argumentCountRow), "%d", &argumentCount);
 
         arguments = malloc(argumentCount * sizeof(char *));
         int startIndex = 0;

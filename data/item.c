@@ -65,7 +65,7 @@ LinkedList *GetAllItems()
     else if (result != 0)
         return NULL;
 
-    sscanf("%d", GetTableRemark(table), &idCount);
+    sscanf(GetTableRemark(table), "%d", &idCount);
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
@@ -78,10 +78,10 @@ LinkedList *GetAllItems()
         Amount price;
         Time shelfLife;
 
-        sscanf("%d", GetRowItemByColumnName(table, row, idRow), &id);
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &id);
         name = CloneString(GetRowItemByColumnName(table, row, nameRow));
-        sscanf("%lld", GetRowItemByColumnName(table, row, priceRow), &price.value);
-        sscanf("%d", GetRowItemByColumnName(table, row, shelfLifeRow), &shelfLife.value);
+        sscanf(GetRowItemByColumnName(table, row, priceRow), "%lld", &price.value);
+        sscanf(GetRowItemByColumnName(table, row, shelfLifeRow), "%ld", &shelfLife.value);
 
         Item *item = malloc(sizeof(Item));
         item->id = id;

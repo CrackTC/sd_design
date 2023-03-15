@@ -71,7 +71,7 @@ LinkedList *GetAllPermissionEntry()
         int staffId;
         int *hasPermission;
 
-        sscanf("%d", GetRowItemByColumnName(table, row, staffIdRow), &staffId);
+        sscanf(GetRowItemByColumnName(table, row, staffIdRow), "%d", &staffId);
         char *permissionString = GetRowItemByColumnName(table, row, permissionRow);
 
         hasPermission = malloc(OPERATION_COUNT * sizeof(int));

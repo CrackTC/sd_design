@@ -80,7 +80,7 @@ LinkedList *GetAllStaff()
     else if (result != 0)
         return NULL;
 
-    sscanf("%d", GetTableRemark(table), &idCount);
+    sscanf(GetTableRemark(table), "%d", &idCount);
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
@@ -95,8 +95,8 @@ LinkedList *GetAllStaff()
         char *password;
         char *contact;
 
-        sscanf("%d", GetRowItemByColumnName(table, row, idRow), &id);
-        sscanf("%d", GetRowItemByColumnName(table, row, enableRow), &isEnabled);
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &id);
+        sscanf(GetRowItemByColumnName(table, row, enableRow), "%d", &isEnabled);
         name = CloneString(GetRowItemByColumnName(table, row, nameRow));
         password = CloneString(GetRowItemByColumnName(table, row, passwordRow));
         contact = CloneString(GetRowItemByColumnName(table, row, contactRow));

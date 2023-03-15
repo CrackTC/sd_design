@@ -80,11 +80,11 @@ LinkedList *GetAllRefunds()
         int number;
         char *remark;
 
-        sscanf("%d", GetRowItemByColumnName(table, row, orderIdRow), &orderId);
+        sscanf(GetRowItemByColumnName(table, row, orderIdRow), "%d", &orderId);
         reason = CloneString(GetRowItemByColumnName(table, row, reasonRow));
-        sscanf("%d", GetRowItemByColumnName(table, row, timeRow), &time.value);
-        sscanf("%lld", GetRowItemByColumnName(table, row, refundAmountRow), refundAmount.value);
-        sscanf("%d", GetRowItemByColumnName(table, row, numberRow), &number);
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &time.value);
+        sscanf(GetRowItemByColumnName(table, row, refundAmountRow), "%lld", &refundAmount.value);
+        sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &number);
         remark = CloneString(GetRowItemByColumnName(table, row, remarkRow));
 
         RefundEntry *entry = malloc(sizeof(RefundEntry));

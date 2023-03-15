@@ -48,7 +48,7 @@ LinkedList *GetAllInventory()
     else if (result != 0)
         return NULL;
 
-    sscanf("%d", GetTableRemark(table), &idCount);
+    sscanf(GetTableRemark(table), "%d", &idCount);
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
@@ -63,12 +63,12 @@ LinkedList *GetAllInventory()
         Time productionTime;
         Amount inboundUnitPrice;
 
-        sscanf("%d", GetRowItemByColumnName(table, row, idRow), &id);
-        sscanf("%d", GetRowItemByColumnName(table, row, itemIdRow), &itemId);
-        sscanf("%d", GetRowItemByColumnName(table, row, numberRow), &number);
-        sscanf("%d", GetRowItemByColumnName(table, row, inboundTimeRow), &inboundTime.value);
-        sscanf("%d", GetRowItemByColumnName(table, row, productionTimeRow), &productionTime.value);
-        sscanf("%lld", GetRowItemByColumnName(table, row, inboundUnitPriceRow), &inboundUnitPrice.value);
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &id);
+        sscanf(GetRowItemByColumnName(table, row, itemIdRow), "%d", &itemId);
+        sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &number);
+        sscanf(GetRowItemByColumnName(table, row, inboundTimeRow), "%ld", &inboundTime.value);
+        sscanf(GetRowItemByColumnName(table, row, productionTimeRow), "%ld", &productionTime.value);
+        sscanf(GetRowItemByColumnName(table, row, inboundUnitPriceRow), "%lld", &inboundUnitPrice.value);
 
         InventoryEntry *entry = malloc(sizeof(InventoryEntry));
         entry->id = id;

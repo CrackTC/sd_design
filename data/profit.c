@@ -64,9 +64,9 @@ LinkedList *GetAllProfits()
         char *matter;
         Time time;
 
-        sscanf("%lld", GetRowItemByColumnName(table, row, amountRow), &amount.value);
+        sscanf(GetRowItemByColumnName(table, row, amountRow), "%lld", &amount.value);
         matter = CloneString(GetRowItemByColumnName(table, row, matterRow));
-        sscanf("%d", GetRowItemByColumnName(table, row, timeRow), &time.value);
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &time.value);
 
         Profit *profit = malloc(sizeof(Profit));
         profit->amount = amount;
