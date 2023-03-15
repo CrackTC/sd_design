@@ -8,20 +8,20 @@
 #include "lossEntry.h"
 #include "linkedlist.h"
 #include "profit.h"
-Table* AddInventory(Table* a);//Ïò»õ´æÏµÍ³ÖĞÌí¼ÓÒ»Åú»õÎï
-Table* UpdateInventory();//²éÑé»õ´æÏµÍ³ÖĞµÄ»õÎïÊÇ·ñ¹ıÆÚ²¢½«¹ıÆÚµÄ»õÎï·ÅÈë»õËğÏµÍ³ÖĞ
-Table* DeleteInventory(Table* a);//É¾³ı»õ´æÏµÍ³ÖĞµÄÄ³Ò»Åú»õÎïµÄÈ«²¿ĞÅÏ¢
-Table* ReviseInventory(Table* a);//ĞŞ¸Ä»õ´æÏµÍ³ÖĞµÄÄ³Ò»Åú»õÎïµÄÈ«²¿ĞÅÏ¢
-Table* AddItem(Table* a);//Ìí¼ÓÒ»¸öÉÌÆ·ÖÖÀà
-Table* DeleteItem(Table* a);//É¾³ıÒ»¸ö»õÆ·ÖÖÀà
-Table* ShowInventory();//Õ¹Ê¾ËùÓĞµÄ»õ´æ
-Table* ShowItem();//Õ¹Ê¾ËùÓĞµÄÉÌÆ·
-Table* ShowSingleInventory(Table* a);//Õ¹Ê¾Ä³Ò»¸ö»õ´æµÄÈ«²¿ĞÅÏ¢
-Table* ShowSingleItem(Table* a);//Õ¹Ê¾Ä³Ò»¸öÉÌÆ·µÄÈ«²¿ĞÅÏ¢
-Table* ReviseItem(Table* a);//ĞŞ¸ÄÄ³Ò»¸öÉÌÆ·µÄÈ«²¿ĞÅÏ¢
-Table* AddLossInventory(Table* a);//Ôö¼ÓÒ»¸ö»õËğĞÅÏ¢
-Table* DeleteInventory(Table* a);//É¾³ıÒ»¸ö»õËğĞÅÏ¢
-Table* ShowLossInventory();//Õ¹Ê¾ËùÓĞµÄ»õËğĞÅÏ¢
-Table* ShowSingleInventory(Table* a);//Õ¹Ê¾Ä³Ò»¸ö»õËğĞÅÏ¢
-Table* ReviseLossInventory(Table* a);//ĞŞ¸ÄÄ³Ò»¸ö»õËğĞÅÏ¢
+Table* AddInventory(Table* a);//å‘è´§å­˜ç³»ç»Ÿä¸­æ·»åŠ ä¸€æ‰¹è´§ç‰©
+Table* UpdateInventory();//æŸ¥éªŒè´§å­˜ç³»ç»Ÿä¸­çš„è´§ç‰©æ˜¯å¦è¿‡æœŸå¹¶å°†è¿‡æœŸçš„è´§ç‰©æ”¾å…¥è´§æŸç³»ç»Ÿä¸­
+Table* DeleteInventory(Table* a);//åˆ é™¤è´§å­˜ç³»ç»Ÿä¸­çš„æŸä¸€æ‰¹è´§ç‰©çš„å…¨éƒ¨ä¿¡æ¯
+Table* ReviseInventory(Table* a);//ä¿®æ”¹è´§å­˜ç³»ç»Ÿä¸­çš„æŸä¸€æ‰¹è´§ç‰©çš„å…¨éƒ¨ä¿¡æ¯
+Table* AddItem(Table* a);//æ·»åŠ ä¸€ä¸ªå•†å“ç§ç±»
+Table* DeleteItem(Table* a);//åˆ é™¤ä¸€ä¸ªè´§å“ç§ç±»
+Table* ShowInventory();//å±•ç¤ºæ‰€æœ‰çš„è´§å­˜
+Table* ShowItem();//å±•ç¤ºæ‰€æœ‰çš„å•†å“
+Table* ShowSingleInventory(Table* a);//å±•ç¤ºæŸä¸€ä¸ªè´§å­˜çš„å…¨éƒ¨ä¿¡æ¯
+Table* ShowSingleItem(Table* a);//å±•ç¤ºæŸä¸€ä¸ªå•†å“çš„å…¨éƒ¨ä¿¡æ¯
+Table* ReviseItem(Table* a);//ä¿®æ”¹æŸä¸€ä¸ªå•†å“çš„å…¨éƒ¨ä¿¡æ¯
+Table* AddLossInventory(Table* a);//å¢åŠ ä¸€ä¸ªè´§æŸä¿¡æ¯
+Table* DeleteInventory(Table* a);//åˆ é™¤ä¸€ä¸ªè´§æŸä¿¡æ¯
+Table* ShowLossInventory();//å±•ç¤ºæ‰€æœ‰çš„è´§æŸä¿¡æ¯
+Table* ShowSingleInventory(Table* a);//å±•ç¤ºæŸä¸€ä¸ªè´§æŸä¿¡æ¯
+Table* ReviseLossInventory(Table* a);//ä¿®æ”¹æŸä¸€ä¸ªè´§æŸä¿¡æ¯
 #endif
