@@ -29,7 +29,7 @@ struct Window
     struct Window *next;
 };
 
-Window *NewMainWindow(int isVisible, const char *title);
+Window *NewMainWindow(int isVisible, const char *title, const char *id, const char *password);
 Window *NewLoginWindow(int isVisible, const char *title);
 
 void PlaceNothing(struct nk_context *context);
