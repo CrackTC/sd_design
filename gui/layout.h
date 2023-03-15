@@ -12,6 +12,8 @@
 #include "nuklear/nuklear.h"
 #include "nuklear/nuklear_glfw_gl3.h"
 
+#define BUFFER_SIZE 256
+
 typedef struct Window Window;
 
 typedef void (*LayoutFunc)(struct nk_context *context, Window *window);

@@ -2,7 +2,6 @@
 #include "../data/table.h"
 #include <malloc.h>
 #include <string.h>
-#define BUFFER_SIZE 256
 
 struct Data
 {
