@@ -92,4 +92,13 @@ typedef enum Operation Operation;
  * */
 const char *OperationToString(Operation operation);
 
+/*
+ * Name: StringToOperation
+ * Description: 获取字符串表示对应的操作
+ * Arguments:
+ *     string: 操作的字符串表示
+ * Returns: 对应的操作，若不存在，返回-1
+ * */
+Operation StringToOperation(const char *string);
+
 #endif

@@ -1,4 +1,5 @@
 #include "operation.h"
+#include <string.h>
 
 static const char *operationStrings[] = {
     "Add Staff",
@@ -28,4 +29,14 @@ static const char *operationStrings[] = {
 const char *OperationToString(Operation operation)
 {
     return operationStrings[operation];
+}
+
+Operation StringToOperation(const char *string)
+{
+    for (int i = 0; i < OPERATION_COUNT; i++) {
+        if (strcmp(string, operationStrings[i]) == 0) {
+            return i;
+        }
+    }
+    return -1;
 }
