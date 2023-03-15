@@ -8,30 +8,42 @@
 
 #define MAX_VERTEX_BUFFER 16 * 1024 * 1024
 #define MAX_ELEMENT_BUFFER 4 * 1024 * 1024
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
 #define NK_IMPLEMENTATION
 #define NK_GLFW_GL3_IMPLEMENTATION
-#define NK_KEYSTATE_BASED_INPUT
-#include "nuklear/nuklear.h"
-#include "nuklear/nuklear_glfw_gl3.h"
 
 #include "layout.h"
+
+#define LAYOUT_COUNT 2
 
 static void error_callback(int e, const char *d)
 {
     printf("Error %d: %s\n", e, d);
 }
 
+Window *windows[LAYOUT_COUNT];
+
+int ShouldExit(struct nk_context *context)
+{
+    for (int i = 0; i < LAYOUT_COUNT; i++)
+    {
+        if (!nk_window_is_closed(context, windows[i]->title))
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+void InitWindows()
+{
+    windows[0] = NewMainWindow(1, "main");
+    windows[1] = NewLoginWindow(1, "another");
+}
+
 int main()
 {
-    int window_width = 1920;
-    int window_height = 1080;
+    int window_width = 800;
+    int window_height = 600;
 
     struct nk_glfw glfw = {0};
     static GLFWwindow *window;
@@ -80,29 +92,39 @@ int main()
             nk_style_set_font(context, &font->handle);
     }
 
+    InitWindows();
 
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
         nk_glfw3_new_frame(&glfw);
 
-        glfwGetFramebufferSize(window, &window_width, &window_height);
+        /* glfwGetFramebufferSize(window, &window_width, &window_height); */
 
-        if (nk_begin(context, "Demo", nk_rect(0, 0, window_width, window_height), NK_WINDOW_CLOSABLE | NK_WINDOW_TITLE))
+        for (int i = 0; i < LAYOUT_COUNT; i++)
         {
-            layout(context);
+            while (windows[i]->next != NULL) {
+                windows[i] = windows[i]->next;
+            }
+            if (windows[i]->isVisible)
+            {
+                if (nk_begin(context, windows[i]->title, nk_rect(0, 0, window_width, window_height),
+                             NK_WINDOW_CLOSABLE | NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE |
+                                 NK_WINDOW_MOVABLE))
+                {
+                    windows[i]->layoutFunc(context, windows[i]->data);
+                }
+                nk_end(context);
+            }
         }
-        nk_end(context);
 
         glViewport(0, 0, window_width, window_height);
         glClear(GL_COLOR_BUFFER_BIT);
         nk_glfw3_render(&glfw, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
         glfwSwapBuffers(window);
 
-        if (nk_window_is_closed(context, "Demo"))
-        {
+        if (ShouldExit(context))
             break;
-        }
     }
 
     nk_glfw3_shutdown(&glfw);
