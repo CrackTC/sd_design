@@ -120,6 +120,15 @@ TableRow *GetRowByIndex(const Table *table, int index)
     return GetNodeByIndex(table->rows, index)->data;
 }
 
+void SetTableRemark(Table *table, const char *value)
+{
+    if (table == NULL) {
+        return;
+    }
+    free(table->remark);
+    table->remark = CloneString(value);
+}
+
 char *GetRowItemByColumnName(const Table *table, const TableRow *row, const char *columnName)
 {
     if (table == NULL || row == NULL || columnName == NULL)

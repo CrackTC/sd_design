@@ -115,6 +115,15 @@ char *GetTableRemark(const Table *table);
 TableRow *GetRowByIndex(const Table *table, int index);
 
 /*
+ * Name: SetTableRemark
+ * Description: 设置表格的备注部分
+ * Arguments:
+ *     table: 一个指针，指向要设置备注的表格
+ *     value: 备注
+ * */
+void SetTableRemark(Table *table, const char *value);
+
+/*
  * Name: GetRowItemByColumnName
  * Description: 根据指定列名获取指定表格的特定行的特定元素
  * Arguments:
