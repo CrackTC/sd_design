@@ -12,16 +12,20 @@
 #include "nuklear/nuklear.h"
 #include "nuklear/nuklear_glfw_gl3.h"
 
-typedef void (*LayoutFunc)(struct nk_context *context, void *data);
+typedef struct Window Window;
 
-typedef struct Window
+typedef void (*LayoutFunc)(struct nk_context *context, Window *window);
+typedef void (*FreeFunc)(Window *window);
+
+struct Window
 {
     int isVisible;
     LayoutFunc layoutFunc;
+    FreeFunc freeFunc;
     const char *title;
     void *data;
     struct Window *next;
-} Window;
+};
 
 Window *NewMainWindow(int isVisible, const char *title);
 Window *NewLoginWindow(int isVisible, const char *title);
