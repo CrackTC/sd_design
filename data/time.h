@@ -19,6 +19,16 @@ typedef struct Time
     time_t value;
 } Time;
 
+typedef struct TimeInfo
+{
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    int second;
+} TimeInfo;
+
 /*
  * Name: AddTime
  * Description: 获取表示基础时间经过特定时间间隔后所表示的时间的Time
@@ -80,6 +90,16 @@ Time NewDateTime(int year, int month, int day, int hour, int minute, int second)
  *          否则，返回所创建的Time
  * */
 Time NewTimeSpan(int year, int month, int day, int hour, int minute, int second);
+
+/*
+ * Name: GetTimeInfo
+ * Description: 获取指定时间的友好表示
+ * Arguments:
+ *     time: 指定的时间
+ *     isDateTime: 指示传递的时间是否是日期时间
+ * Returns: 一个TimeInfo，包含时间相关的信息
+ * */
+TimeInfo GetTimeInfo(const Time *time, int isDateTime);
 
 /*
  * Name: GetSystemTime

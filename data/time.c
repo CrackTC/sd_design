@@ -1,5 +1,6 @@
 #include "time.h"
 #include "../utils.h"
+#include <stdio.h>
 #include <time.h>
 
 Time AddTime(const Time *baseTime, const Time *timeSpan)
@@ -23,6 +24,10 @@ int CompareTime(const Time *timeA, const Time *timeB)
 
 char *TimeToString(const Time *time)
 {
+    TimeInfo info = GetTimeInfo(time);
+    char *result = malloc(20 * sizeof(char));
+    sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d", info.year, info.month, info.day, info.hour, info.minute,
+            info.second);
     return CloneString(ctime(&time->value));
 }
 
@@ -54,6 +59,22 @@ Time NewTimeSpan(int year, int month, int day, int hour, int minute, int second)
 
     Time result = {mktime(&info)};
     return result;
+}
+
+TimeInfo GetTimeInfo(const Time *time, int isDateTime)
+{
+    struct tm *info = localtime(&time->value);
+    if (isDateTime)
+    {
+        TimeInfo result = {info->tm_year + 1900, info->tm_mon + 1, info->tm_mday,
+                           info->tm_hour,        info->tm_min,     info->tm_sec};
+        return result;
+    }
+    else
+    {
+        TimeInfo result = {info->tm_year, info->tm_mon, info->tm_mday - 1, info->tm_hour, info->tm_min, info->tm_sec};
+        return result;
+    }
 }
 
 Time GetSystemTime()
