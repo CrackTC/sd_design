@@ -1,5 +1,6 @@
 #include "staff.h"
 #include "../utils.h"
+#include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
 #include <stddef.h>
@@ -66,6 +67,13 @@ LinkedList *GetAllStaff()
     int result = Unserialize(&table, path);
     if (result == 1)
     {
+        // 添加一个默认管理员账户
+        Staff *staff = NewStaff(1, "admin", "admin123", "");
+        LinkedList *node = malloc(sizeof(LinkedList));
+        node->data = staff;
+        node->next = NULL;
+        systemList = AppendNode(systemList, node);
+
         StaffSave();
         return NULL;
     }
