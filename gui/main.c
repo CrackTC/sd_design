@@ -21,6 +21,8 @@
 #include "nuklear/nuklear.h"
 #include "nuklear/nuklear_glfw_gl3.h"
 
+#include "layout.h"
+
 static void error_callback(int e, const char *d)
 {
     printf("Error %d: %s\n", e, d);
@@ -28,8 +30,8 @@ static void error_callback(int e, const char *d)
 
 int main()
 {
-    int window_width = 800;
-    int window_height = 600;
+    int window_width = 1920;
+    int window_height = 1080;
 
     struct nk_glfw glfw = {0};
     static GLFWwindow *window;
@@ -60,8 +62,8 @@ int main()
 
     struct nk_context *context = nk_glfw3_init(&glfw, window, NK_GLFW3_INSTALL_CALLBACKS);
 
+    // font baking
     {
-        // font baking
         struct nk_font_config config = nk_font_config(30.0f);
         config.oversample_h = 1;
         config.oversample_v = 1;
@@ -69,16 +71,15 @@ int main()
         config.pixel_snap = 1;
 
         struct nk_font_atlas *atlas;
+
         nk_glfw3_font_stash_begin(&glfw, &atlas);
         struct nk_font *font = nk_font_atlas_add_from_file(atlas, "resources/MiSans-Medium.ttf", 30.0f, &config);
         nk_glfw3_font_stash_end(&glfw);
-        // set the font
+
         if (font)
             nk_style_set_font(context, &font->handle);
     }
 
-    int i = 0;
-    char *text = LongLongToString(-1);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -89,18 +90,7 @@ int main()
 
         if (nk_begin(context, "Demo", nk_rect(0, 0, window_width, window_height), NK_WINDOW_CLOSABLE | NK_WINDOW_TITLE))
         {
-            nk_layout_row_dynamic(context, 120, 1);
-            nk_label(context, text, NK_TEXT_CENTERED);
-
-            nk_layout_row_dynamic(context, 80, 3);
-            struct nk_rect space;
-            nk_widget(&space, context);
-            if (nk_button_label(context, "按钮"))
-            {
-                printf("button pressed\n");
-                free(text);
-                text = LongLongToString(i++);
-            }
+            layout(context);
         }
         nk_end(context);
 
