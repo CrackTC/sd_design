@@ -1,27 +1,38 @@
-#ifndef INVENTORYMANAGEMENT_H
-#define INVENTORYMANAGEMENT_H
-#include "../data/amount.h"
-#include "../data/inventory.h"
-#include "../data/item.h"
-#include "../data/linkedList.h"
-#include "../data/lossEntry.h"
-#include "../data/profit.h"
+#ifndef INVENTORY_SERVICE_H
+#define INVENTORY_SERVICE_H
 #include "../data/table.h"
-#include "../data/time.h"
-Table *AddInventory(Table *a); // å‘è´§å­˜ç³»ç»Ÿä¸­æ·»åŠ ä¸€æ‰¹è´§ç‰©
-Table *UpdateInventory();      // æŸ¥éªŒè´§å­˜ç³»ç»Ÿä¸­çš„è´§ç‰©æ˜¯å¦è¿‡æœŸå¹¶å°†è¿‡æœŸçš„è´§ç‰©æ”¾å…¥è´§æŸç³»ç»Ÿä¸­
-Table *DeleteInventory(Table *a);     // åˆ é™¤è´§å­˜ç³»ç»Ÿä¸­çš„æŸä¸€æ‰¹è´§ç‰©çš„å…¨éƒ¨ä¿¡æ¯
-Table *ReviseInventory(Table *a);     // ä¿®æ”¹è´§å­˜ç³»ç»Ÿä¸­çš„æŸä¸€æ‰¹è´§ç‰©çš„å…¨éƒ¨ä¿¡æ¯
-Table *AddItem(Table *a);             // æ·»åŠ ä¸€ä¸ªå•†å“ç§ç±»
-Table *DeleteItem(Table *a);          // åˆ é™¤ä¸€ä¸ªè´§å“ç§ç±»
-Table *ShowInventory();               // å±•ç¤ºæ‰€æœ‰çš„è´§å­˜
-Table *ShowItem();                    // å±•ç¤ºæ‰€æœ‰çš„å•†å“
-Table *ShowSingleInventory(Table *a); // å±•ç¤ºæŸä¸€ä¸ªè´§å­˜çš„å…¨éƒ¨ä¿¡æ¯
-Table *ShowSingleItem(Table *a);      // å±•ç¤ºæŸä¸€ä¸ªå•†å“çš„å…¨éƒ¨ä¿¡æ¯
-Table *ReviseItem(Table *a);          // ä¿®æ”¹æŸä¸€ä¸ªå•†å“çš„å…¨éƒ¨ä¿¡æ¯
-Table *AddLossInventory(Table *a);    // å¢åŠ ä¸€ä¸ªè´§æŸä¿¡æ¯
-Table *DeleteInventory(Table *a);     // åˆ é™¤ä¸€ä¸ªè´§æŸä¿¡æ¯
-Table *ShowLossInventory();           // å±•ç¤ºæ‰€æœ‰çš„è´§æŸä¿¡æ¯
-Table *ShowSingleInventory(Table *a); // å±•ç¤ºæŸä¸€ä¸ªè´§æŸä¿¡æ¯
-Table *ReviseLossInventory(Table *a); // ä¿®æ”¹æŸä¸€ä¸ªè´§æŸä¿¡æ¯
+
+Table *UpdateInventory();   // ²éÑé»õ´æÏµÍ³ÖĞµÄ»õÎïÊÇ·ñ¹ıÆÚ²¢½«¹ıÆÚµÄ»õÎï·ÅÈë»õËğÏµÍ³ÖĞ
+Table *ShowLackInventory(); // Õ¹Ê¾¿â´æ½ôÈ±µÄ»õ´æĞÅÏ¢
+
+// ÏòÄ³Ò»¸öÏµÍ³ÖĞÌí¼ÓÄ³Ò»¸ö½á¹¹ÌåµÄº¯Êı
+Table *AddInventory(Table *a);     // Ïò»õ´æÏµÍ³ÖĞÌí¼ÓÒ»Åú»õÎï
+Table *AddItem(Table *a);          // Ìí¼ÓÒ»¸öÉÌÆ·ÖÖÀà
+Table *AddLossInventory(Table *a); // Ôö¼ÓÒ»¸ö»õËğĞÅÏ¢
+
+// ²éÕÒ²¢Õ¹Ê¾Ä³Ò»¸öĞÅÏ¢µÄº¯Êı
+Table *ShowSingleInventoryById(Table *a);     // Õ¹Ê¾Ä³Ò»¸ö»õ´æµÄÈ«²¿ĞÅÏ¢ ÒÔ»õ´æ±àºÅÎªË÷Òı
+Table *ShowSingleInventoryByItemId(Table *a); // Õ¹Ê¾Í¬Ò»¸öÉÌÆ·±àºÅµÄÈ«²¿»õ´æĞÅÏ¢ ÒÔÉÌÆ·±àºÅÎªË÷Òı
+Table *ShowAllInventoryByItemName(Table *a); // Õ¹Ê¾Í¬Ò»¸öÉÌÆ·Ãû³ÆµÄÈ«²¿»õ´æĞÅÏ¢ ÒÔÉÌÆ·Ãû³ÆÎªË÷Òı
+Table *ShowSingleItemByItemname(Table *a);   // Õ¹Ê¾Ä³Ò»¸öÉÌÆ·µÄÈ«²¿ĞÅÏ¢ ÒÔÉÌÆ·Ãû³ÆÎªË÷Òı
+Table *ShowSingleItemByItemId(Table *a);     // Õ¹Ê¾Ä³Ò»¸öÉÌÆ·µÄÈ«²¿ĞÅÏ¢ ÒÔÉÌÆ·±àºÅÎªË÷Òı
+Table *ShowSingleLossInventoryById(Table *a); // Õ¹Ê¾Ò»¸ö»õËğµÄĞÅÏ¢ ÒÔ»õËğ±àºÅÎªË÷Òı
+
+// É¾³ıÄ³Ò»¸öÏµÍ³ÖĞµÄÒ»¸ö½á¹¹ÌåĞÅÏ¢µÄº¯Êı
+Table *DeleteInventoryById(Table *a); // É¾³ı»õ´æÏµÍ³ÖĞµÄÄ³Ò»Åú»õÎïµÄÈ«²¿ĞÅÏ¢ ÒÔ»õ´æ±àºÅÎªË÷Òı
+Table *DeleteALossInventoryById(Table *a); // É¾³ıÄ³Ò»¸ö»õËğĞÅÏ¢
+Table *DeleteItemByName(Table *a);         // É¾³ıÒ»¸öÉÌÆ·ÖÖÀà ÒÔÉÌÆ·Ãû³ÆÎªË÷Òı
+Table *DeleteItemById(Table *a);           // É¾³ıÒ»¸öÉÌÆ·ÖÖÀà ÒÔÉÌÆ·±àºÅÎªË÷Òı
+
+// ĞŞ¸ÄÄ³Ò»¸öÏµÍ³ÖĞÒ»¸ö½á¹¹ÌåµÄĞÅÏ¢µÄº¯Êı
+Table *ReviseInventory(Table *a); // ĞŞ¸Ä»õ´æÏµÍ³ÖĞµÄÄ³Ò»Åú»õÎïµÄÈ«²¿ĞÅÏ¢ ÒÔ»õ´æ±àºÅÎªË÷Òı
+Table *ReviseAnItemByItemName(Table *a); // ĞŞ¸ÄÄ³Ò»¸öÉÌÆ·µÄÈ«²¿ĞÅÏ¢ ÒÔÉÌÆ·Ãû³ÆÎªË÷Òı
+Table *ReviseAnItemByItemId(Table *a);   // ĞŞ¸ÄÄ³Ò»¸öÉÌÆ·µÄÈ«²¿ĞÅÏ¢ ÒÔÉÌÆ·±àºÅÎªË÷Òı
+Table *ReviseLossInventory(Table *a);    // ĞŞ¸ÄÄ³Ò»¸ö»õËğĞÅÏ¢
+
+// Õ¹Ê¾Ä³Ò»¸öÏµÍ³ÖĞËù´¢´æµÄÈ«²¿ĞÅÏ¢
+Table *ShowInventory();     // Õ¹Ê¾ËùÓĞµÄ»õ´æ
+Table *ShowItem();          // Õ¹Ê¾ËùÓĞµÄÉÌÆ·
+Table *ShowLossInventory(); // Õ¹Ê¾ËùÓĞµÄ»õËğĞÅÏ¢
+
 #endif
