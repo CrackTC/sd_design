@@ -99,7 +99,7 @@ int GetLossEntryInventoryId(const LossEntry *entry)
     return entry->inventoryId;
 }
 
-const char *GetLossEntryReason(const LossEntry *entry)
+char *GetLossEntryReason(const LossEntry *entry)
 {
     return entry->reason;
 }

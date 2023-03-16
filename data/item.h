@@ -73,7 +73,7 @@ Item *GetItemByName(const char *name);
  * Returns: 对应的值
  * */
 int GetItemId(const Item *item);
-const char *GetItemName(const Item *item);
+char *GetItemName(const Item *item);
 Amount GetItemPrice(const Item *item);
 Time GetItemShelfLife(const Item *item);
 

@@ -125,7 +125,7 @@ int GetItemId(const Item *item)
     return item->id;
 }
 
-const char *GetItemName(const Item *item)
+char *GetItemName(const Item *item)
 {
     return item->name;
 }

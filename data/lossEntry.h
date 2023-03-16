@@ -61,7 +61,7 @@ LinkedList *GetLossEntriesByInventoryId(int inventoryId);
  * Returns: 对应的值
  * */
 int GetLossEntryInventoryId(const LossEntry *entry);
-const char *GetLossEntryReason(const LossEntry *entry);
+char *GetLossEntryReason(const LossEntry *entry);
 Time GetLossEntryTime(const LossEntry *entry);
 
 /*
