@@ -63,24 +63,13 @@ LinkedList *GetAllProfits()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        Amount amount;
-        char *matter;
-        Time time;
-
-        sscanf(GetRowItemByColumnName(table, row, amountRow), "%lld", &amount.value);
-        matter = CloneString(GetRowItemByColumnName(table, row, matterRow));
-        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &time.value);
-
         Profit *profit = malloc(sizeof(Profit));
-        profit->amount = amount;
-        profit->matter = matter;
-        profit->time = time;
 
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = profit;
-        node->next = NULL;
+        sscanf(GetRowItemByColumnName(table, row, amountRow), "%lld", &profit->amount.value);
+        profit->matter = CloneString(GetRowItemByColumnName(table, row, matterRow));
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &profit->time.value);
 
-        list = AppendNode(list, node);
+        list = AppendData(list, profit);
     }
 
     FreeTable(table);
@@ -134,36 +123,21 @@ int AppendProfit(Profit *profit)
         return 1;
     }
 
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = profit;
-    node->next = NULL;
-    systemList = AppendNode(systemList, node);
-
+    systemList = AppendData(systemList, profit);
     return 0;
 }
 
-int RemoveProfit(Profit *profit)
+void RemoveProfit(Profit *profit)
 {
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == profit)
-        {
-            systemList = RemoveNode(systemList, now);
-            return 0;
-        }
-        now = now->next;
-    }
-
-    return 1;
+    systemList = RemoveNode(systemList, profit);
 }
 
 void ProfitSave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, amountRow);
-    AppendTableRow(row, matterRow);
-    AppendTableRow(row, timeRow);
+    free(AppendTableRow(row, CloneString(amountRow)));
+    free(AppendTableRow(row, CloneString(matterRow)));
+    free(AppendTableRow(row, CloneString(timeRow)));
 
     Table *table = NewTable(row, NULL);
 
@@ -173,15 +147,9 @@ void ProfitSave()
         Profit *profit = now->data;
         row = NewTableRow();
 
-        char *amountString = LongLongToString(profit->amount.value);
-        char *timeString = LongLongToString(profit->time.value);
-
-        AppendTableRow(row, amountString);
+        free(AppendTableRow(row, LongLongToString(profit->amount.value)));
         AppendTableRow(row, profit->matter);
-        AppendTableRow(row, timeString);
-
-        free(amountString);
-        free(timeString);
+        free(AppendTableRow(row, LongLongToString(profit->time.value)));
 
         AppendTable(table, row);
         now = now->next;

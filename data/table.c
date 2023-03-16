@@ -28,17 +28,15 @@ void FreeTableRow(TableRow *row)
     free(row);
 }
 
-void AppendTableRow(TableRow *row, const char *item)
+char *AppendTableRow(TableRow *row, char *item)
 {
     if (row == NULL || item == NULL)
     {
-        return;
+        return NULL;
     }
     row->columnCount++;
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = CloneString(item);
-    node->next = NULL;
-    row->items = AppendNode(row->items, node);
+    row->items = AppendData(row->items, CloneString(item));
+    return item;
 }
 
 Table *NewTable(TableRow *title, const char *remark)
@@ -85,11 +83,7 @@ int AppendTable(Table *table, TableRow *row)
         return 1;
     }
 
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = row;
-    node->next = NULL;
-    table->rows = AppendNode(table->rows, node);
-
+    table->rows = AppendData(table->rows, row);
     return 0;
 }
 

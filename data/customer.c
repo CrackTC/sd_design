@@ -67,27 +67,14 @@ LinkedList *GetAllCustomers()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        int id;
-        int level;
-        char *name;
-        char *contact;
-
-        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &id);
-        sscanf(GetRowItemByColumnName(table, row, levelRow), "%d", &level);
-        name = CloneString(GetRowItemByColumnName(table, row, nameRow));
-        contact = CloneString(GetRowItemByColumnName(table, row, contactRow));
-
         Customer *customer = malloc(sizeof(Customer));
-        customer->id = id;
-        customer->level = level;
-        customer->name = name;
-        customer->contact = contact;
 
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = customer;
-        node->next = NULL;
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &customer->id);
+        sscanf(GetRowItemByColumnName(table, row, levelRow), "%d", &customer->level);
+        customer->name = CloneString(GetRowItemByColumnName(table, row, nameRow));
+        customer->contact = CloneString(GetRowItemByColumnName(table, row, contactRow));
 
-        list = AppendNode(list, node);
+        list = AppendData(list, customer);
     }
 
     FreeTable(table);
@@ -126,10 +113,7 @@ LinkedList *GetCustomersByLevel(int level)
         Customer *customer = now->data;
         if (customer->level == level)
         {
-            LinkedList *node = malloc(sizeof(LinkedList));
-            node->data = customer;
-            node->next = NULL;
-            list = AppendNode(list, node);
+            list = AppendData(list, customer);
         }
         now = now->next;
     }
@@ -151,10 +135,7 @@ LinkedList *GetCustomersByName(const char *name)
         Customer *customer = now->data;
         if (strcmp(name, customer->name) == 0)
         {
-            LinkedList *node = malloc(sizeof(LinkedList));
-            node->data = customer;
-            node->next = NULL;
-            list = AppendNode(list, node);
+            list = AppendData(list, customer);
         }
         now = now->next;
     }
@@ -214,37 +195,22 @@ int AppendCustomer(Customer *customer)
         return 1;
     }
 
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = customer;
-    node->next = NULL;
-    systemList = AppendNode(systemList, node);
-
+    systemList = AppendData(systemList, customer);
     return 0;
 }
 
-int RemoveCustomer(Customer *customer)
+void RemoveCustomer(Customer *customer)
 {
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == customer)
-        {
-            systemList = RemoveNode(systemList, now);
-            return 0;
-        }
-        now = now->next;
-    }
-
-    return 1;
+    systemList = RemoveNode(systemList, customer);
 }
 
 void CustomerSave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, idRow);
-    AppendTableRow(row, levelRow);
-    AppendTableRow(row, nameRow);
-    AppendTableRow(row, contactRow);
+    free(AppendTableRow(row, CloneString(idRow)));
+    free(AppendTableRow(row, CloneString(levelRow)));
+    free(AppendTableRow(row, CloneString(nameRow)));
+    free(AppendTableRow(row, CloneString(contactRow)));
 
     char *remark = LongLongToString(idCount);
     Table *table = NewTable(row, remark);
@@ -259,13 +225,10 @@ void CustomerSave()
         char *idString = LongLongToString(customer->id);
         char *levelString = LongLongToString(customer->level);
 
-        AppendTableRow(row, idString);
-        AppendTableRow(row, levelString);
+        free(AppendTableRow(row, LongLongToString(customer->id)));
+        free(AppendTableRow(row, LongLongToString(customer->level)));
         AppendTableRow(row, customer->name);
         AppendTableRow(row, customer->contact);
-
-        free(idString);
-        free(levelString);
 
         AppendTable(table, row);
         now = now->next;

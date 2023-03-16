@@ -52,26 +52,26 @@ LinkedList *GetLastNode(LinkedList *head);
 int ExistsNode(LinkedList *list, const void *node);
 
 /*
- * Name: AppendNode
+ * Name: AppendData
  * Description: 将结点添加到链表尾
  * Arguments:
  *     head: 链表的头指针
- *     node: 要添加的结点
+ *     data: 要添加的结点所包含的数据
  * Returns: 添加结点后链表的头指针
  *          若head为NULL，则返回node
  * */
-LinkedList *AppendNode(LinkedList *head, LinkedList *node);
+LinkedList *AppendData(LinkedList *head, void *data);
 
 /*
  * Name: RemoveNode
- * Description: 删除指定的链表结点
+ * Description: 删除包含指定数据的链表结点
  * Arguments:
  *     head: 链表的头指针
- *     node: 要删除的结点
+ *     data: 指定的数据
  * Returns: 删除指定结点后的链表
  *
  * */
-LinkedList *RemoveNode(LinkedList *head, LinkedList *node);
+LinkedList *RemoveNode(LinkedList *head, void *data);
 
 /*
  * Name: FreeList

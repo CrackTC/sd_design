@@ -61,27 +61,14 @@ LinkedList *GetAllBasicDiscounts()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        int itemId;
-        int ratio;
-        int customerLevel;
-        Time deadline;
-
-        sscanf(GetRowItemByColumnName(table, row, itemIdRow), "%d", &itemId);
-        sscanf(GetRowItemByColumnName(table, row, ratioRow), "%d", &ratio);
-        sscanf(GetRowItemByColumnName(table, row, customerLevelRow), "%d", &customerLevel);
-        sscanf("%d", GetRowItemByColumnName(table, row, deadlineRow), deadline.value);
-
         BasicDiscount *discount = malloc(sizeof(BasicDiscount));
-        discount->itemId = itemId;
-        discount->ratio = ratio;
-        discount->customerLevel = customerLevel;
-        discount->deadline = deadline;
 
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = discount;
-        node->next = NULL;
+        sscanf(GetRowItemByColumnName(table, row, itemIdRow), "%d", &discount->itemId);
+        sscanf(GetRowItemByColumnName(table, row, ratioRow), "%d", &discount->ratio);
+        sscanf(GetRowItemByColumnName(table, row, customerLevelRow), "%d", &discount->customerLevel);
+        sscanf("%d", GetRowItemByColumnName(table, row, deadlineRow), &discount->deadline.value);
 
-        list = AppendNode(list, node);
+        list = AppendData(list, discount);
     }
 
     FreeTable(table);
@@ -102,10 +89,7 @@ LinkedList *GetBasicDiscountsByItemId(int itemId)
         BasicDiscount *discount = now->data;
         if (discount->itemId == itemId)
         {
-            LinkedList *node = malloc(sizeof(LinkedList));
-            node->data = discount;
-            node->next = NULL;
-            list = AppendNode(list, node);
+            list = AppendData(list, discount);
         }
         now = now->next;
     }
@@ -125,10 +109,7 @@ LinkedList *GetBasicDiscountsByCustomerLevel(int level)
         BasicDiscount *discount = now->data;
         if (discount->customerLevel == level)
         {
-            LinkedList *node = malloc(sizeof(LinkedList));
-            node->data = discount;
-            node->next = NULL;
-            list = AppendNode(list, node);
+            list = AppendData(list, discount);
         }
         now = now->next;
     }
@@ -187,37 +168,22 @@ int AppendBasicDiscount(BasicDiscount *discount)
     if (ExistsNode(systemList, discount))
         return 1;
 
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = discount;
-    node->next = NULL;
-    systemList = AppendNode(systemList, node);
-
+    systemList = AppendData(systemList, discount);
     return 0;
 }
 
-int RemoveBasicDiscount(BasicDiscount *discount)
+void RemoveBasicDiscount(BasicDiscount *discount)
 {
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == discount)
-        {
-            systemList = RemoveNode(systemList, now);
-            return 0;
-        }
-        now = now->next;
-    }
-
-    return 1;
+    systemList = RemoveNode(systemList, discount);
 }
 
 void BasicDiscountSave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, itemIdRow);
-    AppendTableRow(row, ratioRow);
-    AppendTableRow(row, customerLevelRow);
-    AppendTableRow(row, deadlineRow);
+    free(AppendTableRow(row, CloneString(itemIdRow)));
+    free(AppendTableRow(row, CloneString(ratioRow)));
+    free(AppendTableRow(row, CloneString(customerLevelRow)));
+    free(AppendTableRow(row, CloneString(deadlineRow)));
 
     Table *table = NewTable(row, NULL);
 
@@ -227,20 +193,10 @@ void BasicDiscountSave()
         BasicDiscount *discount = now->data;
         row = NewTableRow();
 
-        char *itemIdString = LongLongToString(discount->itemId);
-        char *ratioString = LongLongToString(discount->ratio);
-        char *customerLevelString = LongLongToString(discount->customerLevel);
-        char *deadlineString = LongLongToString(discount->deadline.value);
-
-        AppendTableRow(row, itemIdString);
-        AppendTableRow(row, ratioString);
-        AppendTableRow(row, customerLevelString);
-        AppendTableRow(row, deadlineString);
-
-        free(itemIdString);
-        free(ratioString);
-        free(customerLevelString);
-        free(deadlineString);
+        free(AppendTableRow(row, LongLongToString(discount->itemId)));
+        free(AppendTableRow(row, LongLongToString(discount->ratio)));
+        free(AppendTableRow(row, LongLongToString(discount->customerLevel)));
+        free(AppendTableRow(row, LongLongToString(discount->deadline.value)));
 
         AppendTable(table, row);
         now = now->next;

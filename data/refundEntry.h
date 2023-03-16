@@ -102,10 +102,8 @@ int AppendRefundEntry(RefundEntry *entry);
  * Description: 从系统中删除一个RefundEntry对象
  * Arguments:
  *     entry: 一个指针，指向要删除的RefundEntry对象
- * Returns: 如果成功删除，返回0
- *          否则，返回1
  * */
-int RemoveRefundEntry(RefundEntry *entry);
+void RemoveRefundEntry(RefundEntry *entry);
 
 /*
  * Name: RefundEntrySave

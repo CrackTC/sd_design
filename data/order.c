@@ -69,30 +69,15 @@ LinkedList *GetAllOrders()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        int id;
-        int inventoryId;
-        int number;
-        int customerId;
-        Amount amount;
-
-        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &id);
-        sscanf(GetRowItemByColumnName(table, row, inventoryIdRow), "%d", &inventoryId);
-        sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &number);
-        sscanf(GetRowItemByColumnName(table, row, customerIdRow), "%d", &customerId);
-        sscanf(GetRowItemByColumnName(table, row, amountRow), "%lld", &amount.value);
-
         Order *order = malloc(sizeof(Order));
-        order->id = id;
-        order->inventoryId = inventoryId;
-        order->number = number;
-        order->customerId = customerId;
-        order->amount = amount;
 
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = order;
-        node->next = NULL;
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &order->id);
+        sscanf(GetRowItemByColumnName(table, row, inventoryIdRow), "%d", &order->inventoryId);
+        sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &order->number);
+        sscanf(GetRowItemByColumnName(table, row, customerIdRow), "%d", &order->customerId);
+        sscanf(GetRowItemByColumnName(table, row, amountRow), "%lld", &order->amount.value);
 
-        list = AppendNode(list, node);
+        list = AppendData(list, order);
     }
 
     FreeTable(table);
@@ -131,10 +116,7 @@ LinkedList *GetOrdersByCustomerId(int customerId)
         Order *order = now->data;
         if (order->customerId == customerId)
         {
-            LinkedList *node = malloc(sizeof(LinkedList));
-            node->data = order;
-            node->next = NULL;
-            list = AppendNode(list, node);
+            list = AppendData(list, order);
         }
         now = now->next;
     }
@@ -192,38 +174,23 @@ int AppendOrder(Order *order)
         return 1;
     }
 
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = order;
-    node->next = NULL;
-    systemList = AppendNode(systemList, node);
-
+    systemList = AppendData(systemList, order);
     return 0;
 }
 
-int RemoveOrder(Order *order)
+void RemoveOrder(Order *order)
 {
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == order)
-        {
-            systemList = RemoveNode(systemList, now);
-            return 0;
-        }
-        now = now->next;
-    }
-
-    return 1;
+    systemList = RemoveNode(systemList, order);
 }
 
 void OrderSave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, idRow);
-    AppendTableRow(row, inventoryIdRow);
-    AppendTableRow(row, numberRow);
-    AppendTableRow(row, customerIdRow);
-    AppendTableRow(row, amountRow);
+    free(AppendTableRow(row, CloneString(idRow)));
+    free(AppendTableRow(row, CloneString(inventoryIdRow)));
+    free(AppendTableRow(row, CloneString(numberRow)));
+    free(AppendTableRow(row, CloneString(customerIdRow)));
+    free(AppendTableRow(row, CloneString(amountRow)));
 
     char *remark = LongLongToString(idCount);
     Table *table = NewTable(row, remark);
@@ -235,23 +202,11 @@ void OrderSave()
         Order *order = now->data;
         row = NewTableRow();
 
-        char *idString = LongLongToString(order->id);
-        char *inventoryIdString = LongLongToString(order->inventoryId);
-        char *numberString = LongLongToString(order->number);
-        char *customerIdString = LongLongToString(order->customerId);
-        char *amountString = LongLongToString(order->amount.value);
-
-        AppendTableRow(row, idString);
-        AppendTableRow(row, inventoryIdString);
-        AppendTableRow(row, numberString);
-        AppendTableRow(row, customerIdString);
-        AppendTableRow(row, amountString);
-
-        free(idString);
-        free(inventoryIdString);
-        free(numberString);
-        free(customerIdString);
-        free(amountString);
+        free(AppendTableRow(row, LongLongToString(order->id)));
+        free(AppendTableRow(row, LongLongToString(order->inventoryId)));
+        free(AppendTableRow(row, LongLongToString(order->number)));
+        free(AppendTableRow(row, LongLongToString(order->customerId)));
+        free(AppendTableRow(row, LongLongToString(order->amount.value)));
 
         AppendTable(table, row);
         now = now->next;

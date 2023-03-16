@@ -82,10 +82,8 @@ int AppendProfit(Profit *profit);
  * Description: 向系统中删除一个Profit对象
  * Arguments:
  *     profit: 一个指针，指向要删除的Profit对象
- * Returns: 如果成功删除，返回0
- *          否则，返回1
  * */
-int RemoveProfit(Profit *profit);
+void RemoveProfit(Profit *profit);
 
 /*
  * Name: ProfitSave

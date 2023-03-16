@@ -68,27 +68,14 @@ LinkedList *GetAllItems()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        int id;
-        char *name;
-        Amount price;
-        Time shelfLife;
-
-        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &id);
-        name = CloneString(GetRowItemByColumnName(table, row, nameRow));
-        sscanf(GetRowItemByColumnName(table, row, priceRow), "%lld", &price.value);
-        sscanf(GetRowItemByColumnName(table, row, shelfLifeRow), "%ld", &shelfLife.value);
-
         Item *item = malloc(sizeof(Item));
-        item->id = id;
-        item->name = name;
-        item->price = price;
-        item->shelfLife = shelfLife;
 
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = item;
-        node->next = NULL;
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &item->id);
+        item->name = CloneString(GetRowItemByColumnName(table, row, nameRow));
+        sscanf(GetRowItemByColumnName(table, row, priceRow), "%lld", &item->price.value);
+        sscanf(GetRowItemByColumnName(table, row, shelfLifeRow), "%ld", &item->shelfLife.value);
 
-        list = AppendNode(list, node);
+        list = AppendData(list, item);
     }
 
     FreeTable(table);
@@ -185,36 +172,22 @@ int AppendItem(Item *item)
         return 1;
     }
 
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = item;
-    node->next = NULL;
-    systemList = AppendNode(systemList, node);
-
+    systemList = AppendData(systemList, item);
     return 0;
 }
 
-int RemoveItem(Item *item)
+void RemoveItem(Item *item)
 {
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == item)
-        {
-            systemList = RemoveNode(systemList, now);
-            return 0;
-        }
-        now = now->next;
-    }
-    return 1;
+    systemList = RemoveNode(systemList, item);
 }
 
 void ItemsSave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, idRow);
-    AppendTableRow(row, nameRow);
-    AppendTableRow(row, priceRow);
-    AppendTableRow(row, shelfLifeRow);
+    free(AppendTableRow(row, CloneString(idRow)));
+    free(AppendTableRow(row, CloneString(nameRow)));
+    free(AppendTableRow(row, CloneString(priceRow)));
+    free(AppendTableRow(row, CloneString(shelfLifeRow)));
 
     char *remark = LongLongToString(idCount);
     Table *table = NewTable(row, remark);
@@ -226,18 +199,10 @@ void ItemsSave()
         Item *item = now->data;
         row = NewTableRow();
 
-        char *idString = LongLongToString(item->id);
-        char *priceString = LongLongToString(item->price.value);
-        char *shelfLifeString = LongLongToString(item->shelfLife.value);
-
-        AppendTableRow(row, idString);
+        free(AppendTableRow(row, LongLongToString(item->id)));
         AppendTableRow(row, item->name);
-        AppendTableRow(row, priceString);
-        AppendTableRow(row, shelfLifeString);
-
-        free(idString);
-        free(priceString);
-        free(shelfLifeString);
+        free(AppendTableRow(row, LongLongToString(item->price.value)));
+        free(AppendTableRow(row, LongLongToString(item->shelfLife.value)));
 
         AppendTable(table, row);
         now = now->next;

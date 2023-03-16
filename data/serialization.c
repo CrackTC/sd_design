@@ -110,7 +110,7 @@ int Unserialize(Table **destination, const char *path)
 
     while (1)
     {
-        char ch = fgetc(filePointer);
+        int ch = fgetc(filePointer);
         if (ch == EOF)
             break;
         ungetc(ch, filePointer);

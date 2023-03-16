@@ -59,24 +59,13 @@ LinkedList *GetAllLoss()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        int inventoryId;
-        char *reason;
-        Time time;
-
-        sscanf(GetRowItemByColumnName(table, row, inventoryIdRow), "%d", &inventoryId);
-        reason = CloneString(GetRowItemByColumnName(table, row, reasonRow));
-        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &time.value);
-
         LossEntry *entry = malloc(sizeof(LossEntry));
-        entry->inventoryId = inventoryId;
-        entry->reason = reason;
-        entry->time = time;
 
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = entry;
-        node->next = NULL;
+        sscanf(GetRowItemByColumnName(table, row, inventoryIdRow), "%d", &entry->inventoryId);
+        entry->reason = CloneString(GetRowItemByColumnName(table, row, reasonRow));
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &entry->time.value);
 
-        list = AppendNode(list, node);
+        list = AppendData(list, entry);
     }
 
     FreeTable(table);
@@ -97,10 +86,7 @@ LinkedList *GetLossEntriesByInventoryId(int inventoryId)
         LossEntry *entry = now->data;
         if (entry->inventoryId == inventoryId)
         {
-            LinkedList *node = malloc(sizeof(LinkedList));
-            node->data = entry;
-            node->next = NULL;
-            list = AppendNode(list, node);
+            list = AppendData(list, entry);
         }
         now = now->next;
     }
@@ -157,33 +143,22 @@ int AppendLossEntry(LossEntry *entry)
     LinkedList *node = malloc(sizeof(LinkedList));
     node->data = entry;
     node->next = NULL;
-    systemList = AppendNode(systemList, node);
+    systemList = AppendData(systemList, entry);
 
     return 0;
 }
 
-int RemoveLossEntry(LossEntry *entry)
+void RemoveLossEntry(LossEntry *entry)
 {
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == entry)
-        {
-            systemList = RemoveNode(systemList, now);
-            return 0;
-        }
-        now = now->next;
-    }
-
-    return 1;
+    systemList = RemoveNode(systemList, entry);
 }
 
 void LossEntrySave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, inventoryIdRow);
-    AppendTableRow(row, reasonRow);
-    AppendTableRow(row, timeRow);
+    free(AppendTableRow(row, CloneString(inventoryIdRow)));
+    free(AppendTableRow(row, CloneString(reasonRow)));
+    free(AppendTableRow(row, CloneString(timeRow)));
 
     Table *table = NewTable(row, NULL);
 
@@ -193,15 +168,9 @@ void LossEntrySave()
         LossEntry *entry = now->data;
         row = NewTableRow();
 
-        char *inventoryIdString = LongLongToString(entry->inventoryId);
-        char *timeString = LongLongToString(entry->time.value);
-
-        AppendTableRow(row, inventoryIdString);
+        free(AppendTableRow(row, LongLongToString(entry->inventoryId)));
         AppendTableRow(row, entry->reason);
-        AppendTableRow(row, timeString);
-
-        free(inventoryIdString);
-        free(timeString);
+        free(AppendTableRow(row, LongLongToString(entry->time.value)));
 
         AppendTable(table, row);
         now = now->next;

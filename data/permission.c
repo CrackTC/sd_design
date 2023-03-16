@@ -70,25 +70,16 @@ LinkedList *GetAllPermissionEntry()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        int staffId;
-        int *hasPermission;
+        PermissionEntry *entry = malloc(sizeof(PermissionEntry));
 
-        sscanf(GetRowItemByColumnName(table, row, staffIdRow), "%d", &staffId);
+        sscanf(GetRowItemByColumnName(table, row, staffIdRow), "%d", &entry->staffId);
         char *permissionString = GetRowItemByColumnName(table, row, permissionRow);
 
-        hasPermission = malloc(OPERATION_COUNT * sizeof(int));
+        entry->hasPermission = malloc(OPERATION_COUNT * sizeof(int));
         for (int i = 0; i < OPERATION_COUNT; i++)
-            hasPermission[i] = permissionString[i] - '0';
+            entry->hasPermission[i] = permissionString[i] - '0';
 
-        PermissionEntry *entry = malloc(sizeof(PermissionEntry));
-        entry->staffId = staffId;
-        entry->hasPermission = hasPermission;
-
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = entry;
-        node->next = NULL;
-
-        list = AppendNode(list, node);
+        list = AppendData(list, entry);
     }
 
     FreeTable(table);
@@ -147,35 +138,20 @@ int AppendPermissionEntry(PermissionEntry *entry)
         return 1;
     }
 
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = entry;
-    node->next = NULL;
-    systemList = AppendNode(systemList, node);
-
+    systemList = AppendData(systemList, entry);
     return 0;
 }
 
-int RemovePermissionEntry(PermissionEntry *entry)
+void RemovePermissionEntry(PermissionEntry *entry)
 {
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == entry)
-        {
-            systemList = RemoveNode(systemList, now);
-            return 0;
-        }
-        now = now->next;
-    }
-
-    return 1;
+    systemList = RemoveNode(systemList, entry);
 }
 
 void PermissionSave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, staffIdRow);
-    AppendTableRow(row, permissionRow);
+    free(AppendTableRow(row, CloneString(staffIdRow)));
+    free(AppendTableRow(row, CloneString(permissionRow)));
 
     Table *table = NewTable(row, NULL);
 
@@ -185,17 +161,13 @@ void PermissionSave()
         PermissionEntry *entry = now->data;
         row = NewTableRow();
 
-        char *staffIdString = LongLongToString(entry->staffId);
         char *permissionString = malloc((OPERATION_COUNT + 1) * sizeof(char));
         for (int i = 0; i < OPERATION_COUNT; i++)
             permissionString[i] = entry->hasPermission[i] + '0';
         permissionString[OPERATION_COUNT] = '\0';
 
-        AppendTableRow(row, staffIdString);
-        AppendTableRow(row, permissionString);
-
-        free(staffIdString);
-        free(permissionString);
+        free(AppendTableRow(row, LongLongToString(entry->staffId)));
+        free(AppendTableRow(row, permissionString));
 
         AppendTable(table, row);
         now = now->next;

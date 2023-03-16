@@ -103,10 +103,8 @@ int AppendItem(Item *item);
  * Description: 向系统中删除一个Item对象
  * Arguments:
  *     items: 一个指针，指向要删除的Item对象
- * Returns: 如果成功删除，返回0
- *          否则，返回1
  * */
-int RemoveItem(Item *item);
+void RemoveItem(Item *item);
 
 /*
  * Name: ItemsSave

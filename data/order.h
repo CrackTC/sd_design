@@ -103,10 +103,8 @@ int AppendOrder(Order *order);
  * Description: 向系统中删除一个Order对象
  * Arguments:
  *     order: 一个指针，指向要删除的Order对象
- * Returns: 如果成功删除，返回0
- *          否则，返回1
  * */
-int RemoveOrder(Order *order);
+void RemoveOrder(Order *order);
 
 /*
  * Name: OrderSave

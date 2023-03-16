@@ -41,25 +41,27 @@ int ExistsNode(LinkedList *list, const void *node)
     return ExistsNode(list->next, node);
 }
 
-LinkedList *AppendNode(LinkedList *head, LinkedList *node)
+LinkedList *AppendData(LinkedList *head, void *data)
 {
+    LinkedList *node = malloc(sizeof(LinkedList));
+    node->data = data;
     node->next = head;
     return node;
 }
 
-LinkedList *RemoveNode(LinkedList *head, LinkedList *node)
+LinkedList *RemoveNode(LinkedList *head, void *data)
 {
-    if (node == NULL)
+    if (data == NULL)
     {
         return head;
     }
-    if (head == node)
+    if (head->data == data)
         return head->next;
 
     LinkedList *now = head;
-    while (now != NULL)
+    while (now->next != NULL)
     {
-        if (now->next == node)
+        if (now->next->data == data)
         {
             now->next = now->next->next;
             return head;

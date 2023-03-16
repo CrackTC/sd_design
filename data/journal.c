@@ -75,25 +75,21 @@ LinkedList *GetAllJournals()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        int staffId;
-        Time time;
-        Operation operation;
         char **arguments;
-        int argumentCount;
-
         char *joinedArgument;
+        JournalEntry *entry = malloc(sizeof(JournalEntry));
 
-        sscanf(GetRowItemByColumnName(table, row, staffIdRow), "%d", &staffId);
-        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &time.value);
-        sscanf(GetRowItemByColumnName(table, row, operationRow), "%d", &operation);
+        sscanf(GetRowItemByColumnName(table, row, staffIdRow), "%d", &entry->staffId);
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &entry->time.value);
+        sscanf(GetRowItemByColumnName(table, row, operationRow), "%d", &entry->operation);
         joinedArgument = CloneString(GetRowItemByColumnName(table, row, argumentsRow));
-        sscanf(GetRowItemByColumnName(table, row, argumentCountRow), "%d", &argumentCount);
+        sscanf(GetRowItemByColumnName(table, row, argumentCountRow), "%d", &entry->argumentCount);
 
-        arguments = malloc(argumentCount * sizeof(char *));
+        arguments = malloc(entry->argumentCount * sizeof(char *));
         int startIndex = 0;
         int endIndex = 0;
         int argumentIndex = 0;
-        while (argumentIndex < argumentCount)
+        while (argumentIndex < entry->argumentCount)
         {
             while (joinedArgument[endIndex] != '\n' && joinedArgument[endIndex] != '\0')
                 endIndex++;
@@ -109,19 +105,9 @@ LinkedList *GetAllJournals()
         }
 
         free(joinedArgument);
-
-        JournalEntry *entry = malloc(sizeof(JournalEntry));
-        entry->staffId = staffId;
-        entry->time = time;
-        entry->operation = operation;
         entry->arguments = arguments;
-        entry->argumentCount = argumentCount;
 
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = entry;
-        node->next = NULL;
-
-        list = AppendNode(list, node);
+        list = AppendData(list, entry);
     }
 
     FreeTable(table);
@@ -142,10 +128,7 @@ LinkedList *GetJournalsByStaffId(int staffId)
         JournalEntry *entry = now->data;
         if (entry->staffId == staffId)
         {
-            LinkedList *node = malloc(sizeof(LinkedList));
-            node->data = entry;
-            node->next = NULL;
-            list = AppendNode(list, node);
+            list = AppendData(list, entry);
         }
         now = now->next;
     }
@@ -165,10 +148,7 @@ LinkedList *GetJournalsByOperation(Operation operation)
         JournalEntry *entry = now->data;
         if (entry->operation == operation)
         {
-            LinkedList *node = malloc(sizeof(LinkedList));
-            node->data = entry;
-            node->next = NULL;
-            list = AppendNode(list, node);
+            list = AppendData(list, entry);
         }
         now = now->next;
     }
@@ -216,11 +196,7 @@ int AppendJournalEntry(JournalEntry *entry)
         return 1;
     }
 
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = entry;
-    node->next = NULL;
-    systemList = AppendNode(systemList, node);
-
+    systemList = AppendData(systemList, entry);
     return 0;
 }
 
@@ -248,11 +224,11 @@ char *JoinArguments(char **arguments, int argumentCount)
 void JournalSave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, staffIdRow);
-    AppendTableRow(row, timeRow);
-    AppendTableRow(row, operationRow);
-    AppendTableRow(row, argumentsRow);
-    AppendTableRow(row, argumentCountRow);
+    free(AppendTableRow(row, CloneString(staffIdRow)));
+    free(AppendTableRow(row, CloneString(timeRow)));
+    free(AppendTableRow(row, CloneString(operationRow)));
+    free(AppendTableRow(row, CloneString(argumentsRow)));
+    free(AppendTableRow(row, CloneString(argumentCountRow)));
 
     Table *table = NewTable(row, NULL);
 
@@ -262,23 +238,11 @@ void JournalSave()
         JournalEntry *entry = malloc(sizeof(JournalEntry));
         row = NewTableRow();
 
-        char *staffIdString = LongLongToString(entry->staffId);
-        char *timeString = LongLongToString(entry->time.value);
-        char *operationString = LongLongToString(entry->operation);
-        char *argumentsString = JoinArguments(entry->arguments, entry->argumentCount);
-        char *argumentCountString = LongLongToString(entry->argumentCount);
-
-        AppendTableRow(row, staffIdString);
-        AppendTableRow(row, timeString);
-        AppendTableRow(row, operationString);
-        AppendTableRow(row, argumentsString);
-        AppendTableRow(row, argumentCountString);
-
-        free(staffIdString);
-        free(timeString);
-        free(operationString);
-        free(argumentsString);
-        free(argumentCountString);
+        free(AppendTableRow(row, LongLongToString(entry->staffId)));
+        free(AppendTableRow(row, LongLongToString(entry->time.value)));
+        free(AppendTableRow(row, LongLongToString(entry->operation)));
+        free(AppendTableRow(row, JoinArguments(entry->arguments, entry->argumentCount)));
+        free(AppendTableRow(row, LongLongToString(entry->argumentCount)));
 
         AppendTable(table, row);
         now = now->next;

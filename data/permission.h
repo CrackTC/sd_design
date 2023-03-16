@@ -88,10 +88,8 @@ int AppendPermissionEntry(PermissionEntry *entry);
  * Description: 向系统中删除一个PermissionEntry对象
  * Arguments:
  *     entry: 一个指针，指向要删除的对象
- * Returns: 若成功删除，返回0
- *          否则，返回1
  * */
-int RemovePermissionEntry(PermissionEntry *entry);
+void RemovePermissionEntry(PermissionEntry *entry);
 
 /*
  * Name: PermissionSave

@@ -76,33 +76,16 @@ LinkedList *GetAllRefunds()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        int orderId;
-        char *reason;
-        Time time;
-        Amount refundAmount;
-        int number;
-        char *remark;
-
-        sscanf(GetRowItemByColumnName(table, row, orderIdRow), "%d", &orderId);
-        reason = CloneString(GetRowItemByColumnName(table, row, reasonRow));
-        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &time.value);
-        sscanf(GetRowItemByColumnName(table, row, refundAmountRow), "%lld", &refundAmount.value);
-        sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &number);
-        remark = CloneString(GetRowItemByColumnName(table, row, remarkRow));
-
         RefundEntry *entry = malloc(sizeof(RefundEntry));
-        entry->orderId = orderId;
-        entry->reason = reason;
-        entry->time = time;
-        entry->refundAmount = refundAmount;
-        entry->number = number;
-        entry->remark = remark;
 
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = entry;
-        node->next = NULL;
+        sscanf(GetRowItemByColumnName(table, row, orderIdRow), "%d", &entry->orderId);
+        entry->reason = CloneString(GetRowItemByColumnName(table, row, reasonRow));
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &entry->time.value);
+        sscanf(GetRowItemByColumnName(table, row, refundAmountRow), "%lld", &entry->refundAmount.value);
+        sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &entry->number);
+        entry->remark = CloneString(GetRowItemByColumnName(table, row, remarkRow));
 
-        list = AppendNode(list, node);
+        list = AppendData(list, entry);
     }
 
     FreeTable(table);
@@ -205,27 +188,13 @@ int AppendRefundEntry(RefundEntry *entry)
         return 1;
     }
 
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = entry;
-    node->next = NULL;
-    systemList = AppendNode(systemList, node);
-
+    systemList = AppendData(systemList, entry);
     return 0;
 }
 
-int RemoveRefundEntry(RefundEntry *entry)
+void RemoveRefundEntry(RefundEntry *entry)
 {
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == entry)
-        {
-            systemList = RemoveNode(systemList, now);
-            return 0;
-        }
-        now = now->next;
-    }
-    return 1;
+    systemList = RemoveNode(systemList, entry);
 }
 
 void RefundEntrySave()
@@ -246,22 +215,12 @@ void RefundEntrySave()
         RefundEntry *entry = now->data;
         row = NewTableRow();
 
-        char *orderIdString = LongLongToString(entry->orderId);
-        char *timeString = LongLongToString(entry->time.value);
-        char *refundAmountString = LongLongToString(entry->refundAmount.value);
-        char *numberString = LongLongToString(entry->number);
-
-        AppendTableRow(row, orderIdString);
+        free(AppendTableRow(row, LongLongToString(entry->orderId)));
         AppendTableRow(row, entry->reason);
-        AppendTableRow(row, timeString);
-        AppendTableRow(row, refundAmountString);
-        AppendTableRow(row, numberString);
+        free(AppendTableRow(row, LongLongToString(entry->time.value)));
+        free(AppendTableRow(row, LongLongToString(entry->refundAmount.value)));
+        free(AppendTableRow(row, LongLongToString(entry->number)));
         AppendTableRow(row, entry->remark);
-
-        free(orderIdString);
-        free(timeString);
-        free(refundAmountString);
-        free(numberString);
 
         AppendTable(table, row);
         now = now->next;

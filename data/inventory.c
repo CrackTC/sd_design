@@ -51,33 +51,16 @@ LinkedList *GetAllInventory()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        int id;
-        int itemId;
-        int number;
-        Time inboundTime;
-        Time productionTime;
-        Amount inboundUnitPrice;
-
-        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &id);
-        sscanf(GetRowItemByColumnName(table, row, itemIdRow), "%d", &itemId);
-        sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &number);
-        sscanf(GetRowItemByColumnName(table, row, inboundTimeRow), "%ld", &inboundTime.value);
-        sscanf(GetRowItemByColumnName(table, row, productionTimeRow), "%ld", &productionTime.value);
-        sscanf(GetRowItemByColumnName(table, row, inboundUnitPriceRow), "%lld", &inboundUnitPrice.value);
-
         InventoryEntry *entry = malloc(sizeof(InventoryEntry));
-        entry->id = id;
-        entry->itemId = itemId;
-        entry->number = number;
-        entry->inboundTime = inboundTime;
-        entry->productionTime = productionTime;
-        entry->inboundUnitPrice = inboundUnitPrice;
 
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = entry;
-        node->next = NULL;
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &entry->id);
+        sscanf(GetRowItemByColumnName(table, row, itemIdRow), "%d", &entry->itemId);
+        sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &entry->number);
+        sscanf(GetRowItemByColumnName(table, row, inboundTimeRow), "%ld", &entry->inboundTime.value);
+        sscanf(GetRowItemByColumnName(table, row, productionTimeRow), "%ld", &entry->productionTime.value);
+        sscanf(GetRowItemByColumnName(table, row, inboundUnitPriceRow), "%lld", &entry->inboundUnitPrice.value);
 
-        list = AppendNode(list, node);
+        list = AppendData(list, entry);
     }
 
     FreeTable(table);
@@ -116,10 +99,7 @@ LinkedList *GetInventoryByItemId(int itemId)
         InventoryEntry *entry = now->data;
         if (entry->itemId == itemId)
         {
-            LinkedList *node = malloc(sizeof(LinkedList));
-            node->data = entry;
-            node->next = NULL;
-            list = AppendNode(list, node);
+            list = AppendData(list, entry);
         }
         now = now->next;
     }
@@ -220,36 +200,25 @@ int AppendInventoryEntry(InventoryEntry *entry)
     LinkedList *node = malloc(sizeof(LinkedList));
     node->data = entry;
     node->next = NULL;
-    systemList = AppendNode(systemList, node);
+    systemList = AppendData(systemList, entry);
 
     return 0;
 }
 
-int RemoveInventoryEntry(InventoryEntry *entry)
+void RemoveInventoryEntry(InventoryEntry *entry)
 {
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == entry)
-        {
-            systemList = RemoveNode(systemList, now);
-            return 0;
-        }
-        now = now->next;
-    }
-
-    return 1;
+    systemList = RemoveNode(systemList, entry);
 }
 
 void InventorySave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, idRow);
-    AppendTableRow(row, itemIdRow);
-    AppendTableRow(row, numberRow);
-    AppendTableRow(row, inboundTimeRow);
-    AppendTableRow(row, productionTimeRow);
-    AppendTableRow(row, inboundUnitPriceRow);
+    free(AppendTableRow(row, CloneString(idRow)));
+    free(AppendTableRow(row, CloneString(itemIdRow)));
+    free(AppendTableRow(row, CloneString(numberRow)));
+    free(AppendTableRow(row, CloneString(inboundTimeRow)));
+    free(AppendTableRow(row, CloneString(productionTimeRow)));
+    free(AppendTableRow(row, CloneString(inboundUnitPriceRow)));
 
     char *remark = LongLongToString(idCount);
     Table *table = NewTable(row, remark);
@@ -261,26 +230,12 @@ void InventorySave()
         InventoryEntry *entry = now->data;
         row = NewTableRow();
 
-        char *idString = LongLongToString(entry->id);
-        char *itemIdString = LongLongToString(entry->itemId);
-        char *numberString = LongLongToString(entry->number);
-        char *inboundTimeString = LongLongToString(entry->inboundTime.value);
-        char *productionTimeString = LongLongToString(entry->productionTime.value);
-        char *inboundUnitPriceString = LongLongToString(entry->inboundUnitPrice.value);
-
-        AppendTableRow(row, idString);
-        AppendTableRow(row, itemIdString);
-        AppendTableRow(row, numberString);
-        AppendTableRow(row, inboundTimeString);
-        AppendTableRow(row, productionTimeString);
-        AppendTableRow(row, inboundUnitPriceString);
-
-        free(idString);
-        free(itemIdString);
-        free(numberString);
-        free(inboundTimeString);
-        free(productionTimeString);
-        free(inboundUnitPriceString);
+        free(AppendTableRow(row, LongLongToString(entry->id)));
+        free(AppendTableRow(row, LongLongToString(entry->itemId)));
+        free(AppendTableRow(row, LongLongToString(entry->number)));
+        free(AppendTableRow(row, LongLongToString(entry->inboundTime.value)));
+        free(AppendTableRow(row, LongLongToString(entry->productionTime.value)));
+        free(AppendTableRow(row, LongLongToString(entry->inboundUnitPrice.value)));
 
         AppendTable(table, row);
         now = now->next;

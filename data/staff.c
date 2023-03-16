@@ -62,10 +62,7 @@ LinkedList *GetAllStaff()
     {
         // 添加一个默认管理员账户
         Staff *staff = NewStaff(1, "admin", "admin123", "");
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = staff;
-        node->next = NULL;
-        systemList = AppendNode(systemList, node);
+        systemList = AppendData(systemList, staff);
 
         StaffSave();
         return NULL;
@@ -82,30 +79,15 @@ LinkedList *GetAllStaff()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        int id;
-        int isEnabled;
-        char *name;
-        char *password;
-        char *contact;
-
-        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &id);
-        sscanf(GetRowItemByColumnName(table, row, enableRow), "%d", &isEnabled);
-        name = CloneString(GetRowItemByColumnName(table, row, nameRow));
-        password = CloneString(GetRowItemByColumnName(table, row, passwordRow));
-        contact = CloneString(GetRowItemByColumnName(table, row, contactRow));
-
         Staff *staff = malloc(sizeof(Staff));
-        staff->id = id;
-        staff->isEnabled = isEnabled;
-        staff->name = name;
-        staff->password = password;
-        staff->contact = contact;
 
-        LinkedList *node = malloc(sizeof(LinkedList));
-        node->data = staff;
-        node->next = NULL;
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &staff->id);
+        sscanf(GetRowItemByColumnName(table, row, enableRow), "%d", &staff->isEnabled);
+        staff->name = CloneString(GetRowItemByColumnName(table, row, nameRow));
+        staff->password = CloneString(GetRowItemByColumnName(table, row, passwordRow));
+        staff->contact = CloneString(GetRowItemByColumnName(table, row, contactRow));
 
-        list = AppendNode(list, node);
+        list = AppendData(list, staff);
     }
 
     FreeTable(table);
@@ -199,38 +181,24 @@ int AppendStaff(Staff *staff)
         return 1;
     }
 
-    LinkedList *node = malloc(sizeof(LinkedList));
-    node->data = staff;
-    node->next = NULL;
-    systemList = AppendNode(systemList, node);
+    systemList = AppendData(systemList, staff);
 
     return 0;
 }
 
-int RemoveStaff(Staff *staff)
+void RemoveStaff(Staff *staff)
 {
-    LinkedList *now = systemList;
-    while (now != NULL)
-    {
-        if (now->data == staff)
-        {
-            systemList = RemoveNode(systemList, now);
-            return 0;
-        }
-        now = now->next;
-    }
-
-    return 1;
+    systemList = RemoveNode(systemList, staff);
 }
 
 void StaffSave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, idRow);
-    AppendTableRow(row, enableRow);
-    AppendTableRow(row, nameRow);
-    AppendTableRow(row, passwordRow);
-    AppendTableRow(row, contactRow);
+    free(AppendTableRow(row, CloneString(idRow)));
+    free(AppendTableRow(row, CloneString(enableRow)));
+    free(AppendTableRow(row, CloneString(nameRow)));
+    free(AppendTableRow(row, CloneString(passwordRow)));
+    free(AppendTableRow(row, CloneString(contactRow)));
 
     char *remark = LongLongToString(idCount);
     Table *table = NewTable(row, remark);
@@ -242,17 +210,11 @@ void StaffSave()
         Staff *staff = now->data;
         row = NewTableRow();
 
-        char *idString = LongLongToString(staff->id);
-        char *enableString = LongLongToString(staff->isEnabled);
-
-        AppendTableRow(row, idString);
-        AppendTableRow(row, enableString);
+        free(AppendTableRow(row, LongLongToString(staff->id)));
+        free(AppendTableRow(row, LongLongToString(staff->isEnabled)));
         AppendTableRow(row, staff->name);
         AppendTableRow(row, staff->password);
         AppendTableRow(row, staff->contact);
-
-        free(idString);
-        free(enableString);
 
         AppendTable(table, row);
         now = now->next;
