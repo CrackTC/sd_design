@@ -6,7 +6,9 @@
 #include <malloc.h>
 #include <stdio.h>
 
+static int idCount = 0;
 static const char *path = "data/lossEntry.txt";
+static const char *idRow = "id";
 static const char *inventoryIdRow = "inventoryId";
 static const char *numberRow = "number";
 static const char *reasonRow = "reason";
@@ -15,6 +17,7 @@ static LinkedList *systemList = NULL;
 
 struct LossEntry
 {
+    int id;
     int inventoryId;
     int number;
     char *reason;
@@ -27,6 +30,7 @@ LossEntry *NewLossEntry(int inventoryId, int number, const char *reason, Time *t
         return NULL;
 
     LossEntry *entry = malloc(sizeof(LossEntry));
+    entry->id = GenerateId(systemList, GetAllLoss, &idCount);
     entry->inventoryId = inventoryId;
     entry->number = number;
     entry->reason = CloneString(reason);
@@ -65,6 +69,7 @@ LinkedList *GetAllLoss()
 
         LossEntry *entry = malloc(sizeof(LossEntry));
 
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &entry->id);
         sscanf(GetRowItemByColumnName(table, row, inventoryIdRow), "%d", &entry->inventoryId);
         sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &entry->number);
         entry->reason = CloneString(GetRowItemByColumnName(table, row, reasonRow));
@@ -77,6 +82,23 @@ LinkedList *GetAllLoss()
 
     systemList = list;
     return list;
+}
+
+LossEntry *GetLossEntryById(int id)
+{
+    if (systemList == NULL) {
+        GetAllLoss();
+    }
+
+    LinkedList *now = systemList;
+    while (now != NULL) {
+        LossEntry *entry = now->data;
+        if (entry->id == id) {
+            return entry;
+        }
+        now = now->next;
+    }
+    return NULL;
 }
 
 LinkedList *GetLossEntriesByInventoryId(int inventoryId)
@@ -97,6 +119,11 @@ LinkedList *GetLossEntriesByInventoryId(int inventoryId)
     }
 
     return list;
+}
+
+int GetLossEntryId(const LossEntry *entry)
+{
+    return entry->id;
 }
 
 int GetLossEntryInventoryId(const LossEntry *entry)
@@ -171,6 +198,7 @@ void RemoveLossEntry(LossEntry *entry)
 void LossEntrySave()
 {
     TableRow *row = NewTableRow();
+    free(AppendTableRow(row, CloneString(idRow)));
     free(AppendTableRow(row, CloneString(inventoryIdRow)));
     free(AppendTableRow(row, CloneString(numberRow)));
     free(AppendTableRow(row, CloneString(reasonRow)));
@@ -184,6 +212,7 @@ void LossEntrySave()
         LossEntry *entry = now->data;
         row = NewTableRow();
 
+        free(AppendTableRow(row, LongLongToString(entry->id)));
         free(AppendTableRow(row, LongLongToString(entry->inventoryId)));
         free(AppendTableRow(row, LongLongToString(entry->number)));
         AppendTableRow(row, entry->reason);

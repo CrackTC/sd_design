@@ -8,6 +8,7 @@
 #include "time.h"
 #include <malloc.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 static int idCount = 0;
 static const char *path = "data/order.txt";
@@ -120,6 +121,26 @@ LinkedList *GetOrdersByCustomerId(int customerId)
     {
         Order *order = now->data;
         if (order->customerId == customerId)
+        {
+            list = AppendData(list, order);
+        }
+        now = now->next;
+    }
+
+    return list;
+}
+
+LinkedList *GetOrdersByInventoryId(int inventoryId)
+{
+    if (systemList == NULL)
+        GetAllOrders();
+
+    LinkedList *list = NULL;
+    LinkedList *now = systemList;
+    while (now != NULL)
+    {
+        Order *order = now->data;
+        if (order->inventoryId == inventoryId)
         {
             list = AppendData(list, order);
         }

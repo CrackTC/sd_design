@@ -68,6 +68,16 @@ Order *GetOrderById(int id);
 LinkedList *GetOrdersByCustomerId(int customerId);
 
 /*
+ * Name: GetOrdersByInventoryId
+ * Description: 获取具有指定库存编号的所有订单
+ * Arguments:
+ *     inventoryId: 指定的库存编号
+ * Returns: 一个链表，包含所有具有指定库存编号的订单
+ *          若不存在这样的订单，返回NULL
+ * */
+LinkedList *GetOrdersByInventoryId(int inventoryId);
+
+/*
  * Name: GetOrderXXX
  * Description: 获取订单的特定信息
  * Arguments:

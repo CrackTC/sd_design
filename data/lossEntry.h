@@ -45,6 +45,15 @@ void FreeLossEntry(LossEntry *entry);
 LinkedList *GetAllLoss();
 
 /*
+ * Name: GetLossEntryById
+ * Description: 获取具有指定id的LossEntry
+ * Arguments:
+ *     id: 指定的id
+ * Returns: 具有指定id的LossEntry，若不存在，返回NULL
+ * */
+LossEntry *GetLossEntryById(int id);
+
+/*
  * Name: GetLossEntriesByInventoryId
  * Description: 获取包含指定库存编号的货损条目
  * Arguments:
@@ -61,6 +70,7 @@ LinkedList *GetLossEntriesByInventoryId(int inventoryId);
  *     entry: 指向LossEntry的指针
  * Returns: 对应的值
  * */
+int GetLossEntryId(const LossEntry *entry);
 int GetLossEntryInventoryId(const LossEntry *entry);
 int GetLossEntryNumber(const LossEntry *entry);
 char *GetLossEntryReason(const LossEntry *entry);
