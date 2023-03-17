@@ -9,7 +9,6 @@
 #include "../data/profit.h"
 #include "../data/time.h"
 #include "../utils.h"
-#include <cstdint>
 #include <stdio.h>
 #include <string.h>
 
