@@ -222,9 +222,6 @@ void CustomerSave()
         Customer *customer = now->data;
         row = NewTableRow();
 
-        char *idString = LongLongToString(customer->id);
-        char *levelString = LongLongToString(customer->level);
-
         free(AppendTableRow(row, LongLongToString(customer->id)));
         free(AppendTableRow(row, LongLongToString(customer->level)));
         AppendTableRow(row, customer->name);

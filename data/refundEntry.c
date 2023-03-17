@@ -200,12 +200,12 @@ void RemoveRefundEntry(RefundEntry *entry)
 void RefundEntrySave()
 {
     TableRow *row = NewTableRow();
-    AppendTableRow(row, orderIdRow);
-    AppendTableRow(row, reasonRow);
-    AppendTableRow(row, timeRow);
-    AppendTableRow(row, refundAmountRow);
-    AppendTableRow(row, numberRow);
-    AppendTableRow(row, remarkRow);
+    AppendTableRow(row, CloneString(orderIdRow));
+    AppendTableRow(row, CloneString(reasonRow));
+    AppendTableRow(row, CloneString(timeRow));
+    AppendTableRow(row, CloneString(refundAmountRow));
+    AppendTableRow(row, CloneString(numberRow));
+    AppendTableRow(row, CloneString(remarkRow));
 
     Table *table = NewTable(row, NULL);
 
