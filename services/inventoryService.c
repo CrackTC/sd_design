@@ -9,6 +9,7 @@
 #include "../data/profit.h"
 #include "../data/time.h"
 #include "../utils.h"
+#include <cstdint>
 #include <stdio.h>
 #include <string.h>
 
@@ -227,14 +228,14 @@ Table *ShowLackInventory(Table *input)
     if (lackCount != 0)
     {
         // 表格备注的具体实现
-        char o[100] = "以下为货存系统中缺货的全部信息 一共记录了";
-        char *p = LongLongToString(lackCount);
-        char *q = "条信息";
-        strcat(o, p);
-        strcat(o, q);
-        SetTableRemark(tableLack, o); // 重新设置备注
+        char remark[100] = "以下为货存系统中缺货的全部信息 一共记录了";
+        char *lackCountString = LongLongToString(lackCount);
 
-        free(p);
+        strcat(remark, lackCountString);
+        strcat(remark, "条信息");
+        SetTableRemark(tableLack, remark); // 重新设置备注
+
+        free(lackCountString);
         FreeTable(tableOk);
         return tableLack;
     }
@@ -481,493 +482,435 @@ Table *ShowInventory(Table *input)
     }
 
     // 备注的具体实现
-    char o[100] = "以下为货存系统中的全部信息 一共记录了";
-    char *p = LongLongToString(inventoryCount);
-    char *q = "条信息";
-    strcat(o, p);
-    strcat(o, q);
-    free(p);
+    char remark[100] = "以下为货存系统中的全部信息 一共记录了";
+    char *inventoryCountString = LongLongToString(inventoryCount);
+    strcat(remark, inventoryCountString);
+    strcat(remark, "条信息");
+    free(inventoryCountString);
 
-    SetTableRemark(table, o); // 重新设置备注
+    SetTableRemark(table, remark); // 重新设置备注
     return table;
 }
 
 // 展示商品系统中的全部信息
 Table *ShowItem(Table *input)
 {
-    int count1 = 0;                      // 用于记录一共有多少中商品
-    TableRow *tablerow1 = NewTableRow(); // 创建表格的表头
-    AppendTableRow(tablerow1, "商品编号");
-    AppendTableRow(tablerow1, "商品名称");
-    AppendTableRow(tablerow1, "售价");
-    AppendTableRow(tablerow1, "保质期");
+    int itemCount = 0;             // 用于记录一共有多少中商品
+    TableRow *row = NewTableRow(); // 创建表格的表头
+    AppendTableRow(row, "商品编号");
+    AppendTableRow(row, "商品名称");
+    AppendTableRow(row, "售价");
+    AppendTableRow(row, "保质期");
 
-    Table *table1 = NewTable(tablerow1, NULL);
+    Table *table = NewTable(row, NULL);
 
     LinkedList *head = GetAllItems();
 
     while (head != NULL)
     {
-        count1++; // 用于记录一共有多少个商品
-        const Item *tmp = head->data;
-        TableRow *tablerow2 = NewTableRow();
+        itemCount++; // 用于记录一共有多少个商品
+        const Item *item = head->data;
+        row = NewTableRow();
 
         // 得到商品编号
-        int itemid = GetItemId(tmp);
-        char *itemId = LongLongToString(itemid);
-        AppendTableRow(tablerow2, itemId);
+        free(AppendTableRow(row, LongLongToString(GetItemId(item))));
 
         // 得到商品名称
-        char *name = GetItemName(tmp);
-        AppendTableRow(tablerow2, name);
+        AppendTableRow(row, GetItemName(item));
 
         // 得到商品的售价
-        Amount saleprice = GetItemPrice(tmp);
-        char t[15];
+        Amount saleprice = GetItemPrice(item);
+        char t[30];
         AmountToString(&saleprice, t);
-        AppendTableRow(tablerow2, t);
+        AppendTableRow(row, t);
 
         // 得到商品的保质期
-        Time shelflife = GetItemShelfLife(tmp);
-        char *o = TimeToString(GetTimeInfo(&shelflife, 0));
-        AppendTableRow(tablerow2, o);
+        Time shelflife = GetItemShelfLife(item);
+        free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelflife, 0))));
 
-        AppendTable(table1, tablerow2);
-        free(o);
+        AppendTable(table, row);
         head = head->next;
     }
 
     // 备注的具体实现
-    char o[100] = "以下为商品系统中的全部信息 一共记录了";
-    char *p = LongLongToString(count1);
-    char *q = "条信息";
-    strcat(o, p);
-    strcat(o, q);
-    free(p);
-    SetTableRemark(table1, o); // 重新设置备注
-    return table1;
+    char remark[100] = "以下为商品系统中的全部信息 一共记录了";
+    char *itemCountString = LongLongToString(itemCount);
+    strcat(remark, itemCountString);
+    strcat(remark, "条信息");
+    free(itemCountString);
+    SetTableRemark(table, remark); // 重新设置备注
+    return table;
 }
 
-Table *ShowLossInventory()
+Table *ShowLossInventory(Table *input)
 {
     LinkedList *head = GetAllLoss();
-    Table *table1;
-    TableRow *tablerow1 = NewTableRow();
-    AppendTableRow(tablerow1, "货损编号");
-    AppendTableRow(tablerow1, "货损原因");
-    AppendTableRow(tablerow1, "进入货损时的时间");
+    Table *table;
+    TableRow *row = NewTableRow();
+    AppendTableRow(row, "货损编号");
+    AppendTableRow(row, "货损原因");
+    AppendTableRow(row, "进入货损时的时间");
 
-    table1 = NewTable(tablerow1, NULL);
-    int count1 = 0; // 用于记录一共有多少条货损记录
+    table = NewTable(row, NULL);
+    int lossCount = 0; // 用于记录一共有多少条货损记录
 
     while (head != NULL)
     {
-        count1++; // 用于记录有多少条信息
-        LossEntry *tmp = head->data;
-        TableRow *tablerow2 = NewTableRow();
-        // 字符化Id
-        int id = GetLossEntryInventoryId(tmp);
-        char *Id = LongLongToString(id);
-        AppendTableRow(tablerow2, Id);
-        // 获取损坏原因
-        const char *reason = GetLossEntryReason(tmp);
-        free(AppendTableRow(tablerow2, CloneString(reason)));
-        // 获取进入货损时的时间
-        Time time1 = GetLossEntryTime(tmp);
-        char *time2 = TimeToString(GetTimeInfo(&time1, 1));
-        AppendTableRow(tablerow2, time2);
+        lossCount++; // 用于记录有多少条信息
+        LossEntry *entry = head->data;
 
-        AppendTable(table1, tablerow2);
-        free(Id);
-        free(time2);
+        row = NewTableRow();
+        // 字符化Id
+        free(AppendTableRow(row, LongLongToString(GetLossEntryInventoryId(entry))));
+        // 获取损坏原因
+        free(AppendTableRow(row, CloneString(GetLossEntryReason(entry))));
+        // 获取进入货损时的时间
+        Time time = GetLossEntryTime(entry);
+        free(AppendTableRow(row, TimeToString(GetTimeInfo(&time, 1))));
+
+        AppendTable(table, row);
         head = head->next;
     }
+
     // 备注的具体实现
-    char o[100] = "以下为货损系统中的全部信息 一共记录了";
-    char *p = LongLongToString(count1);
-    char *q = "条信息";
-    strcat(o, p);
-    strcat(o, q);
-    free(p);
-    free(q);
-    SetTableRemark(table1, o); // 重新设置备注
-    return table1;
+    char remark[100] = "以下为货损系统中的全部信息 一共记录了";
+    char *lossCountString = LongLongToString(lossCount);
+    strcat(remark, lossCountString);
+    strcat(remark, "条信息");
+    free(lossCountString);
+    SetTableRemark(table, remark); // 重新设置备注
+    return table;
 }
 
-TableRow *ShowSingleInventoryByOperation(InventoryEntry *tmp)
+TableRow *ShowSingleInventoryByOperation(InventoryEntry *entry)
 {
-    TableRow *tablerow2 = NewTableRow();
+    TableRow *row = NewTableRow();
     // 获取Id信息
-    int id = GetInventoryEntryId(tmp);
-    AppendTableRow(tablerow2, LongLongToString(id)); // 将Id信息加入
+    free(AppendTableRow(row, LongLongToString(GetInventoryEntryId(entry)))); // 将Id信息加入
 
     // 获取该批货存的商品编号
-    int itemid = GetInventoryEntryItemId(tmp);
-    char *itemId = LongLongToString(itemid); // 字符化itemid
-    AppendTableRow(tablerow2, itemId);       // 将itemId信息加入
+    int itemId = GetInventoryEntryItemId(entry);
+    free(AppendTableRow(row, LongLongToString(itemId))); // 将itemId信息加入
 
     // 获取商品名称
-    Item *item1 = GetItemById(itemid);
-    char *itemName = GetItemName(item1); // 得到商品名称
-    AppendTableRow(tablerow2, itemName);
+    AppendTableRow(row, GetItemName(GetItemById(itemId)));
 
     // 获取该批货存的数量
-    int number = GetInventoryEntryNumber(tmp);
-    char *Number = LongLongToString(number); // 字符化id
-    AppendTableRow(tablerow2, Number);
+    free(AppendTableRow(row, LongLongToString(GetInventoryEntryNumber(entry))));
 
     // 获取该批货物的入库时间
-    Time InboundTime = GetInventoryEntryInboundTime(tmp);
-    char *r = TimeToString(GetTimeInfo(&InboundTime, 1)); // 用于存放字符化后的入库时间
-    AppendTableRow(tablerow2, r);
+    Time inboundTime = GetInventoryEntryInboundTime(entry);
+    free(AppendTableRow(row, TimeToString(GetTimeInfo(&inboundTime, 1))));
 
     // 获取该批货物的生产日期
-    Time productionTime = GetInventoryEntryProductionTime(tmp);
-    char *s = TimeToString(GetTimeInfo(&productionTime, 1)); // 将生产日期字符化
-    AppendTableRow(tablerow2, s);
+    Time productionTime = GetInventoryEntryProductionTime(entry);
+    free(AppendTableRow(row, TimeToString(GetTimeInfo(&productionTime, 1))));
 
     // 获取该批货物的进价
-    Amount unitprice = GetInventoryEntryInboundUnitPrice(tmp);
-    char t[15];
-    AmountToString(&unitprice, t); // 将金钱字符化
-    AppendTableRow(tablerow2, t);
+    Amount unitPrice = GetInventoryEntryInboundUnitPrice(entry);
+    char unitPriceString[15];
+    AmountToString(&unitPrice, unitPriceString); // 将金钱字符化
+    AppendTableRow(row, unitPriceString);
 
-    free(itemId);
-    free(Number);
-    free(r);
-    free(s);
-    return tablerow2;
+    return row;
 }
 
 // 查找某一批货物的全部信息 以Id为索引
-Table *ShowSingleInventoryById(Table *a)
+Table *ShowSingleInventoryById(Table *input)
 {
-    Table *table1; // 用于存放该批货物的表格
-    TableRow *row = GetRowByIndex(a, 1);
+    Table *table; // 用于存放该批货物的表格
+    TableRow *row = GetRowByIndex(input, 1);
     // 获取表格中相应的信息
-    char *id = GetRowItemByColumnName(a, row, "Id"); // 获取商品的编号的字符串
-    int Id = change(id);
-    InventoryEntry *tmp = GetInventoryById(Id);
-    if (tmp != NULL)
+    int id = change(GetRowItemByColumnName(input, row, "Id"));
+    InventoryEntry *entry = GetInventoryById(id);
+    if (entry != NULL)
     {
-        TableRow *tablerow1 = NewTableRow(); // 创建货存信息表格的表头
-        AppendTableRow(tablerow1, "Id");
-        AppendTableRow(tablerow1, "商品编号");
-        AppendTableRow(tablerow1, "商品名称");
-        AppendTableRow(tablerow1, "数量");
-        AppendTableRow(tablerow1, "入库时间");
-        AppendTableRow(tablerow1, "生产日期");
-        AppendTableRow(tablerow1, "购入单价");
+        row = NewTableRow(); // 创建货存信息表格的表头
+        AppendTableRow(row, "Id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "数量");
+        AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "生产日期");
+        AppendTableRow(row, "购入单价");
 
-        table1 = NewTable(tablerow1, "以下为要查找的信息");
+        table = NewTable(row, "以下为要查找的信息");
 
-        TableRow *tablerow2 = NewTableRow();
-        tablerow2 = ShowSingleInventoryByOperation(tmp);
-        AppendTable(table1, tablerow2);
+        row = NewTableRow();
+        row = ShowSingleInventoryByOperation(entry);
+        AppendTable(table, row);
     }
     else
-        table1 = NewTable(NULL, "输入的Id有误 未查找到与该Id相关的货物信息");
-    return table1;
+        table = NewTable(NULL, "输入的Id有误 未查找到与该Id相关的货物信息");
+    return table;
 }
 
-Table *ShowSingleInventoryByItemId(Table *a)
+Table *ShowSingleInventoryByItemId(Table *input)
 {
-    Table *table1; // 用于存放该批货物的表格
-    TableRow *row = GetRowByIndex(a, 1);
+    Table *table; // 用于存放该批货物的表格
+    TableRow *row = GetRowByIndex(input, 1);
     // 获取表格中相应的信息
-    char *itemid = GetRowItemByColumnName(a, row, "itemid"); // 获取商品的编号的字符串
-    int itemId = change(itemid);
-    LinkedList *head = GetInventoryByItemId(itemId);
+    LinkedList *head = GetInventoryByItemId(change(GetRowItemByColumnName(input, row, "itemId")));
     if (head != NULL)
     {
+        row = NewTableRow(); // 创建货存信息表格的表头
+        AppendTableRow(row, "Id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "数量");
+        AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "生产日期");
+        AppendTableRow(row, "购入单价");
 
-        TableRow *tablerow1 = NewTableRow(); // 创建货存信息表格的表头
-        AppendTableRow(tablerow1, "Id");
-        AppendTableRow(tablerow1, "商品编号");
-        AppendTableRow(tablerow1, "商品名称");
-        AppendTableRow(tablerow1, "数量");
-        AppendTableRow(tablerow1, "入库时间");
-        AppendTableRow(tablerow1, "生产日期");
-        AppendTableRow(tablerow1, "购入单价");
-
-        int count1 = 0; // 用于记录有哪些货存
-        table1 = NewTable(tablerow1, NULL);
+        int inventoryCount = 0; // 用于记录有哪些货存
+        table = NewTable(row, NULL);
         while (head != NULL)
         {
-            count1++;
-            InventoryEntry *tmp = head->data; // 获取货存信息
-            TableRow *tablerow2 = NewTableRow();
-            tablerow2 = ShowSingleInventoryByOperation(tmp);
-            AppendTable(table1, tablerow2);
+            inventoryCount++;
+            InventoryEntry *entry = head->data; // 获取货存信息
+            row = ShowSingleInventoryByOperation(entry);
+            AppendTable(table, row);
             head = head->next;
         }
         // 备注的具体实现
-        char o[100] = "以下为货存系统中满足条件的全部信息 一共记录了";
-        char *p = LongLongToString(count1);
-        char *q = "条信息";
-        strcat(o, p);
-        strcat(o, q);
-        free(p);
-        SetTableRemark(table1, o); // 重新设置备注
+        char remark[100] = "以下为货存系统中满足条件的全部信息 一共记录了";
+        char *inventoryCountString = LongLongToString(inventoryCount);
+        strcat(remark, inventoryCountString);
+        strcat(remark, "条信息");
+        free(inventoryCountString);
+        SetTableRemark(table, remark); // 重新设置备注
     }
     else
-        table1 = NewTable(NULL, "输入的商品id有误 未查找到与该商品id相关的货物信息");
-    return table1;
+        table = NewTable(NULL, "输入的商品id有误 未查找到与该商品id相关的货物信息");
+    return table;
 }
 
 // 展示一种商品在货存系统中的全部数据 用商品名称索引
-Table *ShowAllInventoryByItemName(Table *a)
+Table *ShowAllInventoryByItemName(Table *input)
 {
-    Table *table1; // 用于存放该批货物的表格
-    TableRow *row = GetRowByIndex(a, 1);
+    Table *table; // 用于存放该批货物的表格
+    TableRow *row = GetRowByIndex(input, 1);
+
     // 获取表格中相应的信息
-    const char *itemIdString = GetRowItemByColumnName(a, row, "itemId"); // 获取商品的编号的字符串
     int itemId;
-    sscanf(itemIdString, "%d", &itemId);
+    sscanf(GetRowItemByColumnName(input, row, "itemId"), "%d", &itemId);
     LinkedList *head = GetInventoryByItemId(itemId);
     if (head != NULL)
     {
 
-        TableRow *tablerow1 = NewTableRow(); // 创建货存信息表格的表头
-        AppendTableRow(tablerow1, "Id");
-        AppendTableRow(tablerow1, "商品编号");
-        AppendTableRow(tablerow1, "商品名称");
-        AppendTableRow(tablerow1, "数量");
-        AppendTableRow(tablerow1, "入库时间");
-        AppendTableRow(tablerow1, "生产日期");
-        AppendTableRow(tablerow1, "购入单价");
+        row = NewTableRow(); // 创建货存信息表格的表头
+        AppendTableRow(row, "Id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "数量");
+        AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "生产日期");
+        AppendTableRow(row, "购入单价");
 
-        int count1 = 0; // 用于记录有哪些货存
-        table1 = NewTable(tablerow1, NULL);
+        int inventoryCount = 0; // 用于记录有哪些货存
+        table = NewTable(row, NULL);
         while (head != NULL)
         {
-            count1++;
-            InventoryEntry *tmp = head->data; // 获取货存信息
-            TableRow *tablerow2 = NewTableRow();
-            tablerow2 = ShowSingleInventoryByOperation(tmp);
-            AppendTable(table1, tablerow2);
+            inventoryCount++;
+            InventoryEntry *entry = head->data; // 获取货存信息
+            row = NewTableRow();
+            row = ShowSingleInventoryByOperation(entry);
+            AppendTable(table, row);
             head = head->next;
         }
         // 备注的具体实现
-        char o[100] = "以下为货存系统中满足条件的全部信息 一共记录了";
-        char *p = LongLongToString(count1);
-        char *q = "条信息";
-        strcat(o, p);
-        strcat(o, q);
-        free(p);
-        free(q);
-        SetTableRemark(table1, o); // 重新设置备注
+        char remark[100] = "以下为货存系统中满足条件的全部信息 一共记录了";
+        char *inventoryCountString = LongLongToString(inventoryCount);
+        strcat(remark, inventoryCountString);
+        strcat(remark, "条信息");
+        free(inventoryCountString);
+        SetTableRemark(table, remark); // 重新设置备注
     }
     else
-        table1 = NewTable(NULL, "输入的商品id有误 未查找到与该商品id相关的货物信息");
-    return table1;
+        table = NewTable(NULL, "输入的商品id有误 未查找到与该商品id相关的货物信息");
+    return table;
 }
-TableRow *ShowSingleItemByOperation(Item *tmp)
+TableRow *ShowSingleItemByOperation(Item *item)
 {
-    TableRow *tablerow2 = NewTableRow();
+    TableRow *row = NewTableRow();
     // 写入商品编号
-    int id = GetItemId(tmp);
-    char *Id = LongLongToString(id); // 将id字符化
-    AppendTableRow(tablerow2, Id);
+    free(AppendTableRow(row, LongLongToString(GetItemId(item))));
 
     // 写入商品名称
-    char *itemname = GetItemName(tmp);
-    AppendTableRow(tablerow2, itemname);
+    AppendTableRow(row, GetItemName(item));
 
     // 写入商品售价
-    Amount saleprice = GetItemPrice(tmp);
-    char t[15];
-    AmountToString(&saleprice, t);
-    AppendTableRow(tablerow2, t);
+    Amount price = GetItemPrice(item);
+    char priceString[15];
+    AmountToString(&price, priceString);
+    AppendTableRow(row, priceString);
 
     // 得到商品的保质期
-    Time shelflife = GetItemShelfLife(tmp);
-    char *o = TimeToString(GetTimeInfo(&shelflife, 0));
-    AppendTableRow(tablerow2, o);
-    free(Id);
-    free(o);
-    return tablerow2;
+    Time shelfLife = GetItemShelfLife(item);
+    free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelfLife, 0))));
+
+    return row;
 }
 
 // 展示一个商品的全部信息 以商品名称为索引
-Table *ShowSingleItemByItemname(Table *a)
+Table *ShowSingleItemByItemname(Table *input)
 {
 
-    Table *table1; // 用于存放该商品信息的表格
-    TableRow *row = GetRowByIndex(a, 1);
+    Table *table; // 用于存放该商品信息的表格
+    TableRow *row = GetRowByIndex(input, 1);
+
     // 获取表格中相应的信息
-    const char *itemname = GetRowItemByColumnName(a, row, "itemname"); // 获取商品的名称
-    Item *tmp = GetItemByName(itemname);
-    if (tmp == NULL)
+    Item *item = GetItemByName(GetRowItemByColumnName(input, row, "itemName"));
+    if (item != NULL)
     {
 
         // 创建表头
-        TableRow *tablerow1 = NewTableRow();
-        AppendTableRow(tablerow1, "商品编号");
-        AppendTableRow(tablerow1, "商品名称");
-        AppendTableRow(tablerow1, "售价");
-        AppendTableRow(tablerow1, "保质期");
-        table1 = NewTable(NULL, "以下为该商品的全部信息");
+        row = NewTableRow();
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "售价");
+        AppendTableRow(row, "保质期");
+        table = NewTable(NULL, "以下为该商品的全部信息");
 
-        TableRow *tablerow2 = NewTableRow();
-        tablerow2 = ShowSingleItemByOperation(tmp);
-        AppendTable(table1, tablerow2);
+        row = ShowSingleItemByOperation(item);
+        AppendTable(table, row);
     }
     else
-        table1 = NewTable(NULL, "输入商品名称有误 未查询到相关的商品名称");
+        table = NewTable(NULL, "输入商品名称有误 未查询到相关的商品名称");
 
-    return table1;
+    return table;
 }
 
-Table *ShowSingleItemByItemId(Table *a)
+Table *ShowSingleItemByItemId(Table *input)
 {
-    Table *table1; // 用于存放该商品信息的表格
-    TableRow *row = GetRowByIndex(a, 1);
+    Table *table; // 用于存放该商品信息的表格
+    TableRow *row = GetRowByIndex(input, 1);
+
     // 获取表格中相应的信息
-    char *id = GetRowItemByColumnName(a, row, "itemId"); // 获取商品的名称
-    int Id = change(id);
-    Item *tmp = GetItemById(Id);
-    if (tmp == NULL)
+    Item *item = GetItemById(change(GetRowItemByColumnName(input, row, "itemId")));
+    if (item != NULL)
     {
 
         // 创建表头
-        TableRow *tablerow1 = NewTableRow();
-        AppendTableRow(tablerow1, "商品编号");
-        AppendTableRow(tablerow1, "商品名称");
-        AppendTableRow(tablerow1, "售价");
-        AppendTableRow(tablerow1, "保质期");
-        table1 = NewTable(NULL, "以下为该商品的全部信息");
+        row = NewTableRow();
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "售价");
+        AppendTableRow(row, "保质期");
+        table = NewTable(NULL, "以下为该商品的全部信息");
 
-        TableRow *tablerow2 = NewTableRow();
-        tablerow2 = ShowSingleItemByOperation(tmp);
-        AppendTable(table1, tablerow2);
+        row = ShowSingleItemByOperation(item);
+        AppendTable(table, row);
     }
     else
-        table1 = NewTable(NULL, "输入商品编号有误 未查询到相关的商品编号");
+        table = NewTable(NULL, "输入商品编号有误 未查询到相关的商品编号");
 
-    return table1;
+    return table;
 }
 
-Table *ShowSingleLossInventoryById(Table *a)
+Table *ShowSingleLossInventoryById(Table *input)
 {
-    TableRow *row = GetRowByIndex(a, 1);
 
-    Table *table1; // 用于存放货损信息的表格
-    TableRow *tablerow1;
-    tablerow1 = NewTableRow();
-    AppendTableRow(tablerow1, "库存编号");
-    AppendTableRow(tablerow1, "货损原因");
-    AppendTableRow(tablerow1, "损耗时间");
+    Table *table; // 用于存放货损信息的表格
+    TableRow *row = NewTableRow();
+    AppendTableRow(row, "库存编号");
+    AppendTableRow(row, "货损原因");
+    AppendTableRow(row, "损耗时间");
 
-    table1 = NewTable(tablerow1, "以下为要查询的货损信息");
+    table = NewTable(row, "以下为要查询的货损信息");
 
     // 获取表格中相应的信息
-    char *id = GetRowItemByColumnName(a, row, "itemId"); // 获取商品的名称
-    int Id = change(id);
-    LinkedList *tmp = GetLossEntriesByInventoryId(Id);
+    LinkedList *head =
+        GetLossEntriesByInventoryId(change(GetRowItemByColumnName(input, GetRowByIndex(input, 1), "itemId")));
 
-    if (tmp != NULL)
+    if (head != NULL)
     {
-        tablerow1 = NewTableRow();
-        int id = GetLossEntryInventoryId(tmp->data);
-        char *Id = LongLongToString(id);
-        AppendTableRow(tablerow1, Id);
-        char *reason = GetLossEntryReason(tmp->data);
-        AppendTableRow(tablerow1, reason);
-        Time time1 = GetLossEntryTime(tmp->data);
-        char *time2 = TimeToString(GetTimeInfo(&time1, 1));
-        AppendTableRow(tablerow1, time2);
-        free(Id);
-        free(time2);
+        row = NewTableRow();
+        free(AppendTableRow(row, LongLongToString(GetLossEntryInventoryId(head->data))));
+        AppendTableRow(row, GetLossEntryReason(head->data));
+
+        Time time = GetLossEntryTime(head->data);
+        free(AppendTableRow(row, TimeToString(GetTimeInfo(&time, 1))));
     }
     else
-        table1 = NewTable(NULL, "输入Id有误 未查找到与相关Id有关的货损信息");
+        table = NewTable(NULL, "输入Id有误 未查找到与相关Id有关的货损信息");
 
-    return table1;
+    return table;
 }
 
 // 修改某一个商品的全部信息
-Table *ReviseAnItemByItemName(Table *a)
+Table *ReviseAnItemByItemName(Table *input)
 {
-    Table *table1; // 用于存放该商品信息的表格
-    TableRow *row = GetRowByIndex(a, 1);
+    Table *table; // 用于存放该商品信息的表格
+    TableRow *row = GetRowByIndex(input, 1);
     // 获取表格中相应的信息
-    const char *itemname = GetRowItemByColumnName(a, row, "olditemname"); // 获取商品的旧名称
-    Item *tmp = GetItemByName(itemname);
-    if (tmp != NULL)
+    Item *item = GetItemByName(GetRowItemByColumnName(input, row, "oldItemName"));
+    if (item != NULL)
     {
-        // 获取商品的新名称
-        itemname = GetRowItemByColumnName(a, row, "newitemname");
         // 获取商品的价格信息
-        char *Yuan = GetRowItemByColumnName(a, row, "yuan");
-        char *Jiao = GetRowItemByColumnName(a, row, "jiao");
-        char *Cent = GetRowItemByColumnName(a, row, "cent");
-        int yuan = change(Yuan);
-        int jiao = change(Jiao);
-        int cent = change(Cent);
+        int yuan = change(GetRowItemByColumnName(input, row, "yuan"));
+        int jiao = change(GetRowItemByColumnName(input, row, "jiao"));
+        int cent = change(GetRowItemByColumnName(input, row, "cent"));
         Amount saleprice = NewAmount(yuan, jiao, cent);
 
         // 获取商品的保质期信息
-        char *y = GetRowItemByColumnName(a, row, "y");
-        char *m = GetRowItemByColumnName(a, row, "m");
-        char *d = GetRowItemByColumnName(a, row, "d");
-        char *h = GetRowItemByColumnName(a, row, "h");
-        char *min = GetRowItemByColumnName(a, row, "min");
-        char *s = GetRowItemByColumnName(a, row, "s");
+        char *y = GetRowItemByColumnName(input, row, "y");
+        char *m = GetRowItemByColumnName(input, row, "m");
+        char *d = GetRowItemByColumnName(input, row, "d");
+        char *h = GetRowItemByColumnName(input, row, "h");
+        char *min = GetRowItemByColumnName(input, row, "min");
+        char *s = GetRowItemByColumnName(input, row, "s");
         Time shelflife = NewDateTime(change(y), change(m), change(d), change(h), change(min), change(s));
 
         // 将要修改的各类信息传入到item中
-        SetItemName(tmp, itemname);
-        SetItemPrice(tmp, &saleprice);
-        SetItemShelfLife(tmp, &shelflife);
-        table1 = NewTable(NULL, "修改成功");
+        SetItemName(item, GetRowItemByColumnName(input, row, "newItemName"));
+        SetItemPrice(item, &saleprice);
+        SetItemShelfLife(item, &shelflife);
+        table = NewTable(NULL, "修改成功");
         ItemsSave();
     }
     else
-        table1 = NewTable(NULL, "输入商品名称有误 未查询到相关的商品名称");
-    return table1;
+        table = NewTable(NULL, "输入商品名称有误 未查询到相关的商品名称");
+    return table;
 }
 
-Table *ReviseAnItemByItemId(Table *a)
+Table *ReviseAnItemByItemId(Table *input)
 {
-    Table *table1; // 用于存放该商品信息的表格
-    TableRow *row = GetRowByIndex(a, 1);
+    Table *table; // 用于存放该商品信息的表格
+    TableRow *row = GetRowByIndex(input, 1);
     // 获取表格中相应的信息
-    char *itemid = GetRowItemByColumnName(a, row, "Id"); // 获取商品的旧名称
-    int itemId = change(itemid);
-    Item *tmp = GetItemById(itemId);
-    if (tmp != NULL)
+    Item *item = GetItemById(change(GetRowItemByColumnName(input, row, "Id")));
+    if (item != NULL)
     {
         // 获取商品的新名称
-        const char *itemname = GetRowItemByColumnName(a, row, "newitemname");
+        const char *itemName = GetRowItemByColumnName(input, row, "newItemName");
+
         // 获取商品的价格信息
-        char *Yuan = GetRowItemByColumnName(a, row, "yuan");
-        char *Jiao = GetRowItemByColumnName(a, row, "jiao");
-        char *Cent = GetRowItemByColumnName(a, row, "cent");
-        int yuan = change(Yuan);
-        int jiao = change(Jiao);
-        int cent = change(Cent);
+        int yuan = change(GetRowItemByColumnName(input, row, "yuan"));
+        int jiao = change(GetRowItemByColumnName(input, row, "jiao"));
+        int cent = change(GetRowItemByColumnName(input, row, "cent"));
         Amount saleprice = NewAmount(yuan, jiao, cent);
+#warning
 
         // 获取商品的保质期信息
-        char *y = GetRowItemByColumnName(a, row, "y");
-        char *m = GetRowItemByColumnName(a, row, "m");
-        char *d = GetRowItemByColumnName(a, row, "d");
-        char *h = GetRowItemByColumnName(a, row, "h");
-        char *min = GetRowItemByColumnName(a, row, "min");
-        char *s = GetRowItemByColumnName(a, row, "s");
+        char *y = GetRowItemByColumnName(input, row, "y");
+        char *m = GetRowItemByColumnName(input, row, "m");
+        char *d = GetRowItemByColumnName(input, row, "d");
+        char *h = GetRowItemByColumnName(input, row, "h");
+        char *min = GetRowItemByColumnName(input, row, "min");
+        char *s = GetRowItemByColumnName(input, row, "s");
         Time shelflife = NewDateTime(change(y), change(m), change(d), change(h), change(min), change(s));
 
         // 将要修改的各类信息传入到item中
-        SetItemName(tmp, itemname);
-        SetItemPrice(tmp, &saleprice);
-        SetItemShelfLife(tmp, &shelflife);
-        table1 = NewTable(NULL, "修改成功");
+        SetItemName(item, itemName);
+        SetItemPrice(item, &saleprice);
+        SetItemShelfLife(item, &shelflife);
+        table = NewTable(NULL, "修改成功");
         ItemsSave();
     }
     else
-        table1 = NewTable(NULL, "输入商品名称有误 未查询到相关的商品名称");
-    return table1;
+        table = NewTable(NULL, "输入商品名称有误 未查询到相关的商品名称");
+    return table;
 }
 
 Table *ReviseLossInventory(Table *a)
