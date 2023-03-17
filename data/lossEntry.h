@@ -20,12 +20,13 @@ typedef struct LossEntry LossEntry;
  * Description: 使用给定的信息创建一个新的货损条目
  * Arguments:
  *     inventoryId: 库存条目编号
+ *     number: 货损数目
  *     reason: 货损原因
  *     time: 货损时间
  * Returns: 若成功创建，则返回指向创建的LossEntry对象的指针
  *          否则，返回NULL
  * */
-LossEntry *NewLossEntry(int inventoryId, const char *reason, Time *time);
+LossEntry *NewLossEntry(int inventoryId, int number, const char *reason, Time *time);
 
 /*
  * Name: FreeLossEntry
@@ -61,6 +62,7 @@ LinkedList *GetLossEntriesByInventoryId(int inventoryId);
  * Returns: 对应的值
  * */
 int GetLossEntryInventoryId(const LossEntry *entry);
+int GetLossEntryNumber(const LossEntry *entry);
 char *GetLossEntryReason(const LossEntry *entry);
 Time GetLossEntryTime(const LossEntry *entry);
 
@@ -72,6 +74,7 @@ Time GetLossEntryTime(const LossEntry *entry);
  *     value: 要设置成的值
  * */
 void SetLossEntryInventoryId(LossEntry *entry, int value);
+void SetLossEntryNumber(LossEntry *entry, int value);
 void SetLossEntryReason(LossEntry *entry, char *value);
 void SetLossEntryTime(LossEntry *entry, Time *value);
 
