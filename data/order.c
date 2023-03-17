@@ -5,6 +5,7 @@
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
+#include "time.h"
 #include <malloc.h>
 #include <stdio.h>
 
@@ -14,6 +15,7 @@ static const char *idRow = "id";
 static const char *inventoryIdRow = "inventoryId";
 static const char *numberRow = "number";
 static const char *customerIdRow = "customerId";
+static const char *timeRow = "time";
 static const char *amountRow = "amount";
 static LinkedList *systemList = NULL;
 
@@ -23,10 +25,11 @@ struct Order
     int inventoryId;
     int number;
     int customerId;
+    Time time;
     Amount amount;
 };
 
-Order *NewOrder(int inventoryId, int number, int customerId, Amount *amount)
+Order *NewOrder(int inventoryId, int number, int customerId, Time *time, Amount *amount)
 {
     if (inventoryId < 0 || number < 0 || customerId < 0 || amount->value < 0)
         return NULL;
@@ -36,6 +39,7 @@ Order *NewOrder(int inventoryId, int number, int customerId, Amount *amount)
     order->inventoryId = inventoryId;
     order->number = number;
     order->customerId = customerId;
+    order->time = *time;
     order->amount = *amount;
     return order;
 }
@@ -75,6 +79,7 @@ LinkedList *GetAllOrders()
         sscanf(GetRowItemByColumnName(table, row, inventoryIdRow), "%d", &order->inventoryId);
         sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &order->number);
         sscanf(GetRowItemByColumnName(table, row, customerIdRow), "%d", &order->customerId);
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &order->time.value);
         sscanf(GetRowItemByColumnName(table, row, amountRow), "%lld", &order->amount.value);
 
         list = AppendData(list, order);
@@ -139,6 +144,11 @@ int GetOrderNumber(const Order *order)
     return order->number;
 }
 
+Time GetOrderTime(const Order *order)
+{
+    return order->time;
+}
+
 Amount GetOrderAmount(const Order *order)
 {
     return order->amount;
@@ -152,6 +162,11 @@ void SetOrderCustomerId(Order *order, int value)
 void SetOrderNumber(Order *order, int value)
 {
     order->number = value;
+}
+
+void SetOrderTime(Order *order, const Time *value)
+{
+    order->time = *value;
 }
 
 void SetOrderAmount(Order *order, Amount *value)
@@ -190,6 +205,7 @@ void OrderSave()
     free(AppendTableRow(row, CloneString(inventoryIdRow)));
     free(AppendTableRow(row, CloneString(numberRow)));
     free(AppendTableRow(row, CloneString(customerIdRow)));
+    free(AppendTableRow(row, CloneString(timeRow)));
     free(AppendTableRow(row, CloneString(amountRow)));
 
     char *remark = LongLongToString(idCount);
@@ -206,6 +222,7 @@ void OrderSave()
         free(AppendTableRow(row, LongLongToString(order->inventoryId)));
         free(AppendTableRow(row, LongLongToString(order->number)));
         free(AppendTableRow(row, LongLongToString(order->customerId)));
+        free(AppendTableRow(row, LongLongToString(order->time.value)));
         free(AppendTableRow(row, LongLongToString(order->amount.value)));
 
         AppendTable(table, row);
