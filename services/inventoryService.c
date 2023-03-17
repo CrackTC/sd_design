@@ -881,15 +881,11 @@ Table *ReviseAnItemByItemId(Table *input)
     Item *item = GetItemById(change(GetRowItemByColumnName(input, row, "Id")));
     if (item != NULL)
     {
-        // 获取商品的新名称
-        const char *itemName = GetRowItemByColumnName(input, row, "newItemName");
-
         // 获取商品的价格信息
         int yuan = change(GetRowItemByColumnName(input, row, "yuan"));
         int jiao = change(GetRowItemByColumnName(input, row, "jiao"));
         int cent = change(GetRowItemByColumnName(input, row, "cent"));
-        Amount saleprice = NewAmount(yuan, jiao, cent);
-#warning
+        Amount price = NewAmount(yuan, jiao, cent);
 
         // 获取商品的保质期信息
         char *y = GetRowItemByColumnName(input, row, "y");
@@ -901,8 +897,8 @@ Table *ReviseAnItemByItemId(Table *input)
         Time shelflife = NewDateTime(change(y), change(m), change(d), change(h), change(min), change(s));
 
         // 将要修改的各类信息传入到item中
-        SetItemName(item, itemName);
-        SetItemPrice(item, &saleprice);
+        SetItemName(item, GetRowItemByColumnName(input, row, "newItemName"));
+        SetItemPrice(item, &price);
         SetItemShelfLife(item, &shelflife);
         table = NewTable(NULL, "修改成功");
         ItemsSave();
@@ -912,39 +908,31 @@ Table *ReviseAnItemByItemId(Table *input)
     return table;
 }
 
-Table *ReviseLossInventory(Table *a)
+Table *ReviseLossInventory(Table *input)
 {
-    Table *table1; // 用于存放该商品信息的表格
-    TableRow *row = GetRowByIndex(a, 1);
+    Table *table; // 用于存放该商品信息的表格
+    TableRow *row = GetRowByIndex(input, 1);
     // 获取表格中相应的信息
-    char *id = GetRowItemByColumnName(a, row, "Id");
-    int Id = change(id);
-    LinkedList *tmp = GetLossEntriesByInventoryId(Id);
-    if (tmp != NULL)
+    LossEntry *entry = GetLossEntryById(change(GetRowItemByColumnName(input, row, "Id")));
+    if (entry != NULL)
     {
-        char *reason = GetRowItemByColumnName(a, row, "reason");
-        char *y = GetRowItemByColumnName(a, row, "y");
-        char *m = GetRowItemByColumnName(a, row, "m");
-        char *d = GetRowItemByColumnName(a, row, "d");
-        char *h = GetRowItemByColumnName(a, row, "h");
-        char *min = GetRowItemByColumnName(a, row, "min");
-        char *s = GetRowItemByColumnName(a, row, "s");
-        int y1 = change(y);
-        int m1 = change(m);
-        int d1 = change(d);
-        int h1 = change(h);
-        int min1 = change(min);
-        int s1 = change(s);
+        char *reason = GetRowItemByColumnName(input, row, "reason");
+        int y = change(GetRowItemByColumnName(input, row, "y"));
+        int m = change(GetRowItemByColumnName(input, row, "m"));
+        int d = change(GetRowItemByColumnName(input, row, "d"));
+        int h = change(GetRowItemByColumnName(input, row, "h"));
+        int min = change(GetRowItemByColumnName(input, row, "min"));
+        int s = change(GetRowItemByColumnName(input, row, "s"));
 
-        Time time1 = NewDateTime(change(y), change(m), change(d), change(h), change(min), change(s));
-        SetLossEntryInventoryId(tmp->data, Id);
-        SetLossEntryReason(tmp->data, reason);
-        SetLossEntryTime(tmp->data, &time1);
+        Time time1 = NewDateTime(y, m, d, h, min, s);
+        SetLossEntryInventoryId(entry, change(GetRowItemByColumnName(input, row, "inventoryId")));
+        SetLossEntryReason(entry, GetRowItemByColumnName(input, row, "reason"));
+        SetLossEntryTime(entry, &time1);
         LossEntrySave();
-        table1 = NewTable(NULL, "修改成功");
+        table = NewTable(NULL, "修改成功");
     }
     else
-        table1 = NewTable(NULL, "输入货损编号有误 未查询到相关的货损");
+        table = NewTable(NULL, "输入货损编号有误 未查询到相关的货损");
 
-    return table1;
+    return table;
 }
