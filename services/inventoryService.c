@@ -807,7 +807,7 @@ Table *ShowSingleItemByItemId(Table *input)
     return table;
 }
 
-Table *ShowSingleLossInventoryById(Table *input)
+Table *ShowSingleLossById(Table *input)
 {
 
     Table *table; // 用于存放货损信息的表格
