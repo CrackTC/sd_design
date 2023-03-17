@@ -5,26 +5,26 @@
 #include "../data/staff.h"
 #include "../data/table.h"
 
-/*Ô±¹¤µÇÂ¼*/
-Table *LogIn(Table *); // ²ÎÊı±í¸ñÖĞ°üÀ¨£ºpassword£¬Id£»·µ»ØµÄTableÖĞÊÇSuccess£¨1/0£©
+/*å‘˜å·¥ç™»å½•*/
+Table *LogIn(Table *); // å‚æ•°è¡¨æ ¼ä¸­åŒ…æ‹¬ï¼špasswordï¼ŒIdï¼›è¿”å›çš„Tableä¸­æ˜¯Successï¼ˆ1/0ï¼‰
 
-/* ¼ÓÈëÒ»¸öÔ±¹¤ */
+/* åŠ å…¥ä¸€ä¸ªå‘˜å·¥ */
 Table *AddStaff();
-/* É¾³ıÒ»¸öÔ±¹¤ */
-Table *RemoveStaff(Table *); // ²ÎÊıTable* ÖĞÒªº¬ÓĞ ÒªÉ¾³ıÔ±¹¤µÄÔ±¹¤¹¤ºÅ
-/*²éÑ¯Ò»ÃûÔ±¹¤µÄĞÅÏ¢*/
-Table *GetItemOfOneStaff(Table *); // ²ÎÊıTable* ÖĞÒªº¬ÓĞ Òª²éÑ¯Ô±¹¤µÄÔ±¹¤¹¤ºÅ
-/*²éÑ¯ËùÓĞÔ±¹¤µÄĞÅÏ¢*/
+/* åˆ é™¤ä¸€ä¸ªå‘˜å·¥ */
+Table *RemoveStaff(Table *); // å‚æ•°Table* ä¸­è¦å«æœ‰ è¦åˆ é™¤å‘˜å·¥çš„å‘˜å·¥å·¥å·
+/*æŸ¥è¯¢ä¸€åå‘˜å·¥çš„ä¿¡æ¯*/
+Table *GetItemOfOneStaff(Table *); // å‚æ•°Table* ä¸­è¦å«æœ‰ è¦æŸ¥è¯¢å‘˜å·¥çš„å‘˜å·¥å·¥å·
+/*æŸ¥è¯¢æ‰€æœ‰å‘˜å·¥çš„ä¿¡æ¯*/
 Table *GetItemOfAllStaff();
-/*¸Ä±äÒ»ÃûÔ±¹¤µÄÒÑÓĞĞÅÏ¢*/
-Table *UpdateStaff(Table *); // ²ÎÊıTable* ÖĞÒªº¬ÓĞ Òª¸Ä±äÔ±¹¤µÄÔ±¹¤¹¤ºÅ
+/*æ”¹å˜ä¸€åå‘˜å·¥çš„å·²æœ‰ä¿¡æ¯*/
+Table *UpdateStaff(Table *); // å‚æ•°Table* ä¸­è¦å«æœ‰ è¦æ”¹å˜å‘˜å·¥çš„å‘˜å·¥å·¥å·
 
-/*¹¹ÔìÔ±¹¤ĞÅÏ¢±íÍ·Title*/
+/*æ„é€ å‘˜å·¥ä¿¡æ¯è¡¨å¤´Title*/
 Table *CreateStaffTableTitle(void);
 
-/*½«Êı×Ö×Ö·û´®×ª»¯ÎªintĞÍÕûÊı*/
+/*å°†æ•°å­—å­—ç¬¦ä¸²è½¬åŒ–ä¸ºintå‹æ•´æ•°*/
 int atoi(const char *ch);
-/*½«intÕûÊı×ª»¯Îª×Ö·û´®*/
+/*å°†intæ•´æ•°è½¬åŒ–ä¸ºå­—ç¬¦ä¸²*/
 const char *itoa(int a);
 
 #endif
