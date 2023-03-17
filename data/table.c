@@ -120,7 +120,10 @@ void SetTableRemark(Table *table, const char *value)
     {
         return;
     }
-    free(table->remark);
+    if (table->remark != NULL)
+    {
+        free(table->remark);
+    }
     table->remark = CloneString(value);
 }
 

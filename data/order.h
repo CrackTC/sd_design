@@ -9,6 +9,7 @@
 
 #include "amount.h"
 #include "linkedList.h"
+#include "time.h"
 
 /*
  * Name: Order
@@ -23,11 +24,12 @@ typedef struct Order Order;
  *     inventoryId: 库存编号
  *     number: 数量
  *     customerId: 客户编号
+ *     time: 订单时间
  *     amount: 总售出价
  * Returns: 若成功创建，返回一个指针，指向创建的Order对象
  *          否则，返回NULL
  * */
-Order *NewOrder(int inventoryId, int number, int customerId, Amount *amount);
+Order *NewOrder(int inventoryId, int number, int customerId, Time *time, Amount *amount);
 
 /*
  * Name: FreeOrder
@@ -66,6 +68,16 @@ Order *GetOrderById(int id);
 LinkedList *GetOrdersByCustomerId(int customerId);
 
 /*
+ * Name: GetOrdersByInventoryId
+ * Description: 获取具有指定库存编号的所有订单
+ * Arguments:
+ *     inventoryId: 指定的库存编号
+ * Returns: 一个链表，包含所有具有指定库存编号的订单
+ *          若不存在这样的订单，返回NULL
+ * */
+LinkedList *GetOrdersByInventoryId(int inventoryId);
+
+/*
  * Name: GetOrderXXX
  * Description: 获取订单的特定信息
  * Arguments:
@@ -75,6 +87,7 @@ LinkedList *GetOrdersByCustomerId(int customerId);
 int GetOrderId(const Order *order);
 int GetOrderCustomerId(const Order *order);
 int GetOrderNumber(const Order *order);
+Time GetOrderTime(const Order *order);
 Amount GetOrderAmount(const Order *order);
 
 /*
@@ -86,6 +99,7 @@ Amount GetOrderAmount(const Order *order);
  * */
 void SetOrderCustomerId(Order *order, int value);
 void SetOrderNumber(Order *order, int value);
+void SetOrderTime(Order *order, const Time *value);
 void SetOrderAmount(Order *order, Amount *value);
 
 /*
