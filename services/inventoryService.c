@@ -210,15 +210,33 @@ Table *ShowLackInventory(Table *input)
             remainCount += GetInventoryEntryNumber(inventoryNow->data);
             inventoryNow = inventoryNow->next;
         }
-        if (remainCount < 20)
+        LinkedList *orderNow = GetAllOrders();
+        int saleCount = 0; // 用于统计近七天该商品的销售数量  如开业不满七天 则有多少天的就计算多少天的
+        while (orderNow != NULL)
         {
-            lackCount++;
+            int id = GetOrderInventoryId(orderNow->data);                    // 获取货存编号
+            int orderItemId = GetInventoryEntryItemId(GetInventoryById(id)); // 获取订单的商品编号
+            if (itemId == orderItemId)
+            {
+                Time OrderTime = GetOrderTime(orderNow->data);
+                Time NowTime = GetSystemTime();
+                Time IntervalTime = NewTimeSpan(0, 0, 7, 0, 0, 0);
+                Time time1 = AddTime(&OrderTime, &IntervalTime); //
+                if (CompareTime(&time1, &NowTime) > 0)
+                {
+                    saleCount += GetOrderNumber(orderNow->data);
+                }
+            }
+            orderNow = orderNow->next;
+        }
+        if (remainCount < saleCount * 0.2) // 如果剩余的数量少于近七天的销售额 那么就记入到缺货中
+        {
+            lackCount++; // 缺货条目+1
             row = NewTableRow();
 
-            free(AppendTableRow(row, LongLongToString(itemId)));
-            AppendTableRow(row, GetItemName(itemNow->data));
-            free(AppendTableRow(row, LongLongToString(remainCount)));
-
+            free(AppendTableRow(row, LongLongToString(itemId)));      // 插入商品Id
+            AppendTableRow(row, GetItemName(itemNow->data));          // 插入商品名称
+            free(AppendTableRow(row, LongLongToString(remainCount))); // 插入剩余数量
             AppendTable(tableLack, row);
         }
         itemNow = itemNow->next;
@@ -234,7 +252,7 @@ Table *ShowLackInventory(Table *input)
         strcat(remark, "条信息");
         SetTableRemark(tableLack, remark); // 重新设置备注
 
-        free(lackCountString);
+        free(lackCountString); // 释放占用的空间
         FreeTable(tableOk);
         return tableLack;
     }
@@ -254,7 +272,8 @@ Table *DeleteInventoryById(Table *input)
     TableRow *row = GetRowByIndex(input, 1);
     int id = change(GetRowItemByColumnName(input, row, "Id")); // 将Id由字符转为整数类型
 
-    if (GetOrdersByInventoryId(id) != NULL || GetLossEntriesByInventoryId(id) != NULL)
+    if (GetOrdersByInventoryId(id) != NULL ||
+        GetLossEntriesByInventoryId(id) != NULL) // 如果货存Id已经在货损条目里或订单条目里 那就不允许删除
     {
         table = NewTable(NULL, "删除失败，该库存已存在关联的订单或货损条目");
         return table;
@@ -263,8 +282,8 @@ Table *DeleteInventoryById(Table *input)
     InventoryEntry *entry = GetInventoryById(id);
     if (entry != NULL)
     {
-        RemoveInventoryEntry(entry);
-        FreeInventoryEntry(entry);
+        RemoveInventoryEntry(entry); // 删除该条目货存
+        FreeInventoryEntry(entry);   // 释放其所占用的空间
         table = NewTable(NULL, "删除成功");
         InventorySave();
     }
@@ -283,13 +302,14 @@ Table *DeleteSingleLossById(Table *input)
     LossEntry *entry = GetLossEntryById(id);
     if (entry != NULL)
     {
-        InventoryEntry *inventoryEntry = GetInventoryById(GetLossEntryInventoryId(entry));
-        SetInventoryEntryNumber(inventoryEntry, GetInventoryEntryNumber(inventoryEntry) + GetLossEntryNumber(entry));
-        RemoveLossEntry(entry);
+        InventoryEntry *inventoryEntry = GetInventoryById(GetLossEntryInventoryId(entry)); // 得到该Id下的货存条目
+        SetInventoryEntryNumber(inventoryEntry, GetInventoryEntryNumber(inventoryEntry) +
+                                                    GetLossEntryNumber(entry)); // 将货损中的数目重新添加到货存中
+        RemoveLossEntry(entry);                                                 // 删除该货损条目
         table = NewTable(NULL, "删除成功");
 
-        InventorySave();
-        LossEntrySave();
+        InventorySave(); // 向文件中保存
+        LossEntrySave(); // 像文件中保存
         FreeLossEntry(entry);
     }
     else
@@ -306,8 +326,9 @@ Table *ReviseInventory(Table *input)
     // 获取要修改的货物的编号
     TableRow *row = GetRowByIndex(input, 1);
     int id = change(GetRowItemByColumnName(input, row, "Id")); // 将Id由字符转为整数类型
-                                                               //
-    if (GetOrdersByInventoryId(id) != NULL || GetLossEntriesByInventoryId(id) != NULL)
+
+    if (GetOrdersByInventoryId(id) != NULL ||
+        GetLossEntriesByInventoryId(id) != NULL) // 如果货存条目已经在货损内或在销售条目内 那就不允许删除
     {
         table = NewTable(NULL, "1 修改失败，该库存已存在关联的订单或货损条目");
         return table;
@@ -380,11 +401,11 @@ Table *AddItem(Table *input)
 Table *AddLossInventory(Table *input)
 {
     Table *table;
-    TableRow *row = GetRowByIndex(table, 1);
+    TableRow *row = GetRowByIndex(input, 1);
 
-    int inventoryId = change(GetRowItemByColumnName(table, row, "id"));
-    int number = change(GetRowItemByColumnName(table, row, "number"));
-    const char *reason = GetRowItemByColumnName(table, row, "reason");
+    int inventoryId = change(GetRowItemByColumnName(table, row, "id")); // 获取货存Id
+    int number = change(GetRowItemByColumnName(table, row, "number"));  // 获取货损数量
+    const char *reason = GetRowItemByColumnName(table, row, "reason");  // 获取货损原因
     Time time1 = GetSystemTime();
 
     InventoryEntry *inventoryEntry = GetInventoryById(inventoryId);
@@ -395,7 +416,11 @@ Table *AddLossInventory(Table *input)
 
     int result = AppendLossEntry(NewLossEntry(inventoryId, number, reason, &time1));
     if (result == 0)
+    {
+        SetInventoryEntryNumber(inventoryEntry,
+                                GetInventoryEntryNumber(inventoryEntry) - number); // 重新设置货存中的商品数量
         table = NewTable(NULL, "货损添加成功"), LossEntrySave();
+    }
     else
         table = NewTable(NULL, "货损添加失败");
     return table;
@@ -547,6 +572,8 @@ Table *ShowLossInventory(Table *input)
     Table *table;
     TableRow *row = NewTableRow();
     AppendTableRow(row, "货损编号");
+    AppendTableRow(row, "货存编号");
+    AppendTableRow(row, "货损数量");
     AppendTableRow(row, "货损原因");
     AppendTableRow(row, "进入货损时的时间");
 
@@ -559,8 +586,12 @@ Table *ShowLossInventory(Table *input)
         LossEntry *entry = head->data;
 
         row = NewTableRow();
-        // 字符化Id
+        // 字符化货损Id并插入
+        free(AppendTableRow(row, LongLongToString(GetLossEntryId(entry))));
+        // 字符化库存Id并插入
         free(AppendTableRow(row, LongLongToString(GetLossEntryInventoryId(entry))));
+        // 将货损数量字符化并插入
+        free(AppendTableRow(row, LongLongToString(GetLossEntryNumber(entry))));
         // 获取损坏原因
         free(AppendTableRow(row, CloneString(GetLossEntryReason(entry))));
         // 获取进入货损时的时间
@@ -812,7 +843,9 @@ Table *ShowSingleLossById(Table *input)
 
     Table *table; // 用于存放货损信息的表格
     TableRow *row = NewTableRow();
+    AppendTableRow(row, "货损编号");
     AppendTableRow(row, "库存编号");
+    AppendTableRow(row, "货损数量");
     AppendTableRow(row, "货损原因");
     AppendTableRow(row, "损耗时间");
 
@@ -825,11 +858,12 @@ Table *ShowSingleLossById(Table *input)
     if (head != NULL)
     {
         row = NewTableRow();
-        free(AppendTableRow(row, LongLongToString(GetLossEntryInventoryId(head->data))));
-        AppendTableRow(row, GetLossEntryReason(head->data));
-
+        free(AppendTableRow(row, LongLongToString(GetLossEntryId(head->data))));          // 加入货损Id
+        free(AppendTableRow(row, LongLongToString(GetLossEntryInventoryId(head->data)))); // 加入货存Id
+        free(AppendTableRow(row, LongLongToString(GetLossEntryNumber(head->data))));      // 加入货损数量
+        AppendTableRow(row, GetLossEntryReason(head->data));                              // 加入货损原因
         Time time = GetLossEntryTime(head->data);
-        free(AppendTableRow(row, TimeToString(GetTimeInfo(&time, 1))));
+        free(AppendTableRow(row, TimeToString(GetTimeInfo(&time, 1)))); // 加入货损时间
     }
     else
         table = NewTable(NULL, "输入Id有误 未查找到与相关Id有关的货损信息");
