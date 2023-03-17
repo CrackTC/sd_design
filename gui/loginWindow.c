@@ -14,6 +14,8 @@ struct Data
 
 int SendLoginRequest(const char *id, const char *password)
 {
+#warning
+    return 1;
     int staffId;
     sscanf(id, "%d", &staffId);
     Table *table = judge(staffId, password, OP_LOGIN, NULL);

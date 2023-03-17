@@ -1,10 +1,12 @@
 #include "../utils.h"
+#include "config.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX_VERTEX_BUFFER 16 * 1024 * 1024
 #define MAX_ELEMENT_BUFFER 4 * 1024 * 1024
@@ -39,9 +41,15 @@ void InitWindows()
     windows[0] = NewLoginWindow(1, "login");
 }
 
+const char *executablePath;
+struct nk_font *fontLarge;
+struct nk_font *fontMedium;
+struct nk_font *fontSmall;
+
 int main(int argc, char **argv)
 {
     char *path = GetDirectory(argv[0]);
+    executablePath = path;
     printf("%s\n", path);
     int window_width = 1920;
     int window_height = 1080;
@@ -86,12 +94,30 @@ int main(int argc, char **argv)
         struct nk_font_atlas *atlas;
 
         nk_glfw3_font_stash_begin(&glfw, &atlas);
-        struct nk_font *font =
-            nk_font_atlas_add_from_file(atlas, JoinPath(path, "resources/MiSans-Medium.ttf"), 30.0f, &config);
+        fontMedium = nk_font_atlas_add_from_file(atlas, JoinPath(executablePath, fontRelativePath), 30.0f, &config);
         nk_glfw3_font_stash_end(&glfw);
 
-        if (font)
-            nk_style_set_font(context, &font->handle);
+        config = nk_font_config(35.0f);
+        config.oversample_h = 1;
+        config.oversample_v = 1;
+        config.range = nk_font_chinese_glyph_ranges();
+        config.pixel_snap = 1;
+
+        nk_glfw3_font_stash_begin(&glfw, &atlas);
+        fontLarge = nk_font_atlas_add_from_file(atlas, JoinPath(executablePath, fontRelativePath), 35.0f, &config);
+        nk_glfw3_font_stash_end(&glfw);
+
+        config = nk_font_config(25.0f);
+        config.oversample_h = 1;
+        config.oversample_v = 1;
+        config.range = nk_font_chinese_glyph_ranges();
+        config.pixel_snap = 1;
+
+        nk_glfw3_font_stash_begin(&glfw, &atlas);
+        fontSmall = nk_font_atlas_add_from_file(atlas, JoinPath(executablePath, fontRelativePath), 25.0f, &config);
+        nk_glfw3_font_stash_end(&glfw);
+
+        nk_style_set_font(context, &fontMedium->handle);
     }
 
     InitWindows();

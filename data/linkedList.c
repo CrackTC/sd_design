@@ -45,8 +45,12 @@ LinkedList *AppendData(LinkedList *head, void *data)
 {
     LinkedList *node = malloc(sizeof(LinkedList));
     node->data = data;
-    node->next = head;
-    return node;
+    node->next = NULL;
+    if (head == NULL) {
+        return node;
+    }
+    GetLastNode(head)->next = node;
+    return head;
 }
 
 LinkedList *RemoveNode(LinkedList *head, void *data)

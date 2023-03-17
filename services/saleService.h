@@ -33,9 +33,9 @@ Table *UpdateRefund(Table *a);
 Table *GetAllRefunds(Table *a);
 Table *GetSingleRefund(Table *a);
 
-// 读取订单
-Table *GetAllOrders(Table *a);
-Table *GetSingleOrder(Table *a);
+// 读取订单------
+Table *GetAllOrders(Table *a);   // 不需要输入
+Table *GetSingleOrder(Table *a); // 需要订单id
 
 // 添加折扣
 Table *AddDiscount(Table *a);
@@ -46,15 +46,15 @@ Table *RemoveDiscount(Table *a);
 // 更新折扣
 Table *UpdateDiscount(Table *a);
 
+// 清理过期折扣
+Table *ClearOutdateDiscount(Table *a);
+
 // 查询折扣
 Table *GetAllDiscount(Table *a);
 Table *GetSingleDiscount(Table *a);
 
-// 添加售货
+// 添加售货------
 Table *AddOrder(Table *a);         // 需要商品id,客户id,number//自动选择出货批次
 Table *AddSpecificOrder(Table *a); // 需要商品id,客户id,number,指定库存编号//手动选择出货批次
-
-// 赠送商品
-Table *Happy(Table *a); // 需要商品id,客户id,number
 
 #endif // SALE_H

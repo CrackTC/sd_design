@@ -32,6 +32,10 @@ struct Window
 Window *NewMainWindow(int isVisible, const char *title, const char *id, const char *password);
 Window *NewLoginWindow(int isVisible, const char *title);
 
+void WelcomePageLayout(struct nk_context *context, struct Window *window);
+void InventoryPageLayout(struct nk_context *context, struct Window *window);
+
+
 void PlaceNothing(struct nk_context *context);
 void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);
 

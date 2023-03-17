@@ -14,6 +14,9 @@ char *LongLongToString(long long x)
 
 char *CloneString(const char *str)
 {
+    if (str == NULL) {
+        return NULL;
+    }
     int length = strlen(str);
     char *result = malloc((length + 1) * sizeof(char));
     strcpy(result, str);
