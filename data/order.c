@@ -155,6 +155,11 @@ int GetOrderId(const Order *order)
     return order->id;
 }
 
+int GetOrderInventoryId(const Order *order)
+{
+    return order->inventoryId;
+}
+
 int GetOrderCustomerId(const Order *order)
 {
     return order->customerId;
@@ -173,6 +178,11 @@ Time GetOrderTime(const Order *order)
 Amount GetOrderAmount(const Order *order)
 {
     return order->amount;
+}
+
+void SetOrderInventoryId(Order *order, int value)
+{
+    order->inventoryId = value;
 }
 
 void SetOrderCustomerId(Order *order, int value)

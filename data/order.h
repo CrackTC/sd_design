@@ -85,6 +85,7 @@ LinkedList *GetOrdersByInventoryId(int inventoryId);
  * Returns: 对应的值
  * */
 int GetOrderId(const Order *order);
+int GetOrderInventoryId(const Order *order);
 int GetOrderCustomerId(const Order *order);
 int GetOrderNumber(const Order *order);
 Time GetOrderTime(const Order *order);
@@ -97,6 +98,7 @@ Amount GetOrderAmount(const Order *order);
  *     order: 指向要设置信息的Order对象的指针
  *     value: 要设置成的值
  * */
+void SetOrderInventoryId(Order *order, int value);
 void SetOrderCustomerId(Order *order, int value);
 void SetOrderNumber(Order *order, int value);
 void SetOrderTime(Order *order, const Time *value);
