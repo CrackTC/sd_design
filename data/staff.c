@@ -188,7 +188,7 @@ int AppendStaff(Staff *staff)
 
 void RemoveStaff(Staff *staff)
 {
-    systemList = RemoveNode(systemList, staff);
+    staff->isEnabled = 0;
 }
 
 void StaffSave()
