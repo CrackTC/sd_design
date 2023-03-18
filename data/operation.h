@@ -7,7 +7,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-#define OPERATION_COUNT 23
+#define OPERATION_COUNT 31
 
 /*
  * Name: Operation
@@ -39,11 +39,26 @@ enum Operation
     // 添加库存
     OP_ADD_INVENTORY,
 
+    // 删除库存
+    OP_DELETE_INVENTORY,
+
     // 修改库存
     OP_UPDATE_INVENTORY,
 
     // 查询库存
     OP_READ_INVENTORY,
+
+    // 增加商品
+    OP_ADD_ITEM,
+
+    // 删除商品
+    OP_DELETE_ITEM,
+
+    // 修改商品
+    OP_UPDATE_ITEM,
+
+    // 读取商品
+    OP_READ_ITEM,
 
     // 添加客户
     OP_ADD_CUSTOMER,
@@ -56,6 +71,15 @@ enum Operation
 
     // 读取客户
     OP_READ_CUSTOMER,
+
+    // 增加订单
+    OP_ADD_ORDER,
+
+    // 删除订单
+    OP_DELETE_ORDER,
+
+    // 修改订单
+    OP_UPDATE_ORDER,
 
     // 读取订单
     OP_READ_ORDER,
