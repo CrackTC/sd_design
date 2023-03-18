@@ -11,6 +11,7 @@ struct Data
     int inventorySelectedRadio;
     int inventoryPropertySelected;
     char *inventoryValueBuffer;
+    const char **inventoryProperties;
     struct Table *inventoryTable;
     struct LinkedList *inventoryCheckList;
 };

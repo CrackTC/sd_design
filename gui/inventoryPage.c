@@ -3,6 +3,7 @@
 #include "config.h"
 #include "layout.h"
 #include "mainWindow.h"
+#include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -47,8 +48,6 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
         nk_layout_row_end(context);
     }
 
-    static const char *inventoryProperties[] = {"无", "id"};
-
     nk_layout_row_begin(context, NK_STATIC, 35, 5);
     {
         nk_layout_row_push(context, 100);
@@ -56,11 +55,30 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
             nk_label(context, "通过条件 ", NK_TEXT_LEFT);
         }
 
+        int columnCount;
+        {
+            TableRow *row = data->inventoryTable == NULL ? NULL : GetTableTitle(data->inventoryTable);
+            columnCount = row == NULL ? 0 : row->columnCount;
+            if (data->inventoryProperties == NULL)
+            {
+                data->inventoryProperties = malloc((columnCount + 1) * sizeof(char *));
+                data->inventoryProperties[0] = "无";
+
+                LinkedList *rowNow = row == NULL ? NULL : row->items;
+                for (int i = 1; i < columnCount + 1; i++)
+                {
+                    data->inventoryProperties[i] = rowNow->data;
+                    rowNow = rowNow->next;
+                }
+            }
+        }
+
         nk_layout_row_push(context, 140);
         {
             if (nk_style_push_font(context, &fontSmall->handle))
             {
-                nk_combobox(context, inventoryProperties, 2, &data->inventoryPropertySelected, 35, nk_vec2(200, 100));
+                nk_combobox(context, data->inventoryProperties, columnCount + 1, &data->inventoryPropertySelected, 35,
+                            nk_vec2(200, 400));
                 nk_style_pop_font(context);
             }
         }
@@ -72,9 +90,9 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
 
         nk_layout_row_push(context, 200);
         {
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
-                data->inventoryValueBuffer, sizeof(data->inventoryValueBuffer), nk_filter_default);
+            nk_edit_string_zero_terminated(context,
+                                           (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
+                                           data->inventoryValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
         }
 
         nk_layout_row_push(context, 100);
@@ -175,9 +193,10 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
         {
             if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
             {
-                TableLayout(context, data->inventoryTable, &data->inventoryCheckList,
-                            data->inventoryPropertySelected == 0 ? NULL
-                                                                 : inventoryProperties[data->inventoryPropertySelected],
+                TableLayout(context, data->inventoryTable, data->inventoryCheckList,
+                            data->inventoryPropertySelected == 0
+                                ? NULL
+                                : data->inventoryProperties[data->inventoryPropertySelected],
                             data->inventoryValueBuffer);
                 nk_group_end(context);
             }

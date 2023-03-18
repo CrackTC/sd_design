@@ -1,8 +1,10 @@
 #include "../data/table.h"
 #include "../services/judgeService.h"
+#include "../utils.h"
 #include "layout.h"
 #include <malloc.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 struct Data
@@ -12,21 +14,27 @@ struct Data
     char message[BUFFER_SIZE];
 };
 
-int SendLoginRequest(const char *id, const char *password)
+int SendLoginRequest(const char *id, const char *password, char **name)
 {
 #warning
+    *name = CloneString("Test");
     return 1;
+
     int staffId;
     sscanf(id, "%d", &staffId);
-    Table *table = judge(staffId, password, OP_LOGIN, NULL);
+    int loginSuccess;
+    Table *table = judge(staffId, &loginSuccess, password, OP_LOGIN, NULL);
 
-    int result = 0;
-    if (strcmp(GetRowItemByColumnName(table, GetRowByIndex(table, 1), "success"), "1")) {
-        result = 1;
+    if (loginSuccess)
+    {
+        *name = CloneString(GetRowItemByColumnName(table, GetRowByIndex(table, 1), "name"));
+        FreeTable(table);
+        return 1;
     }
-
-    FreeTable(table);
-    return result;
+    else
+    {
+        return 0;
+    }
 }
 
 void loginWindowLayout(struct nk_context *context, Window *window)
@@ -70,10 +78,12 @@ void loginWindowLayout(struct nk_context *context, Window *window)
     PlaceNothing(context);
     if (nk_button_label(context, "登录"))
     {
-        if (SendLoginRequest(data->id, data->password))
+        char *name;
+        if (SendLoginRequest(data->id, data->password, &name))
         {
-            Window *mainWindow = NewMainWindow(1, "main", data->id, data->password);
+            Window *mainWindow = NewMainWindow(1, "main", data->id, data->password, name);
             window->next = mainWindow;
+            free(name);
         }
         else
         {

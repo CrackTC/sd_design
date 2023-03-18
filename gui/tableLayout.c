@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void TableLayout(struct nk_context *context, const Table *table, LinkedList **checkList, const char *filter,
+void TableLayout(struct nk_context *context, const Table *table, LinkedList *checkList, const char *filter,
                  const char *value)
 {
     if (table != NULL)
@@ -15,7 +15,15 @@ void TableLayout(struct nk_context *context, const Table *table, LinkedList **ch
         {
             nk_layout_row_push(context, 30);
             {
-                nk_label(context, "选中", NK_TEXT_LEFT);
+                if (nk_checkbox_label(context, "", checkList->data))
+                {
+                    LinkedList *now = checkList->next;
+                    while (now != NULL)
+                    {
+                        *(int *)now->data = *(int *)checkList->data;
+                        now = now->next;
+                    }
+                }
             }
 
             LinkedList *itemNow = row->items;
@@ -33,7 +41,7 @@ void TableLayout(struct nk_context *context, const Table *table, LinkedList **ch
         }
 
         LinkedList *rowNow = table->rows->next;
-        LinkedList *checkListNow = *checkList;
+        LinkedList *checkListNow = checkList;
         while (rowNow != NULL)
         {
             row = rowNow->data;
@@ -43,12 +51,18 @@ void TableLayout(struct nk_context *context, const Table *table, LinkedList **ch
                 {
                     int *checked = malloc(sizeof(int));
                     *checked = 0;
-                    *checkList = AppendData(*checkList, checked);
+                    AppendData(checkList, checked);
                 }
 
                 nk_layout_row_push(context, 30);
                 {
-                    nk_checkbox_label(context, "", checkListNow->next->data);
+                    if (nk_checkbox_label(context, "", checkListNow->next->data))
+                    {
+                        if (*(int *)checkListNow->next->data == 0)
+                        {
+                            *(int *)checkList->data = 0;
+                        }
+                    }
                 }
 
                 LinkedList *itemNow = row->items;

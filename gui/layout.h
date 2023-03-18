@@ -9,10 +9,10 @@
 #define NK_INCLUDE_FONT_BAKING
 #define NK_INCLUDE_DEFAULT_FONT
 #define NK_KEYSTATE_BASED_INPUT
+#include "../data/linkedList.h"
+#include "../data/table.h"
 #include "nuklear/nuklear.h"
 #include "nuklear/nuklear_glfw_gl3.h"
-#include "../data/table.h"
-#include "../data/linkedList.h"
 
 #define BUFFER_SIZE 256
 
@@ -31,7 +31,7 @@ struct Window
     struct Window *next;
 };
 
-Window *NewMainWindow(int isVisible, const char *title, const char *id, const char *password);
+Window *NewMainWindow(int isVisible, const char *title, const char *id, const char *password, const char *name);
 Window *NewLoginWindow(int isVisible, const char *title);
 
 void WelcomePageLayout(struct nk_context *context, struct Window *window);
@@ -39,6 +39,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window);
 
 void PlaceNothing(struct nk_context *context);
 void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);
-void TableLayout(struct nk_context *context, const Table *table, LinkedList **checkList, const char *filter, const char *value);
+void TableLayout(struct nk_context *context, const Table *table, LinkedList *checkList, const char *filter,
+                 const char *value);
 
 #endif

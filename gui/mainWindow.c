@@ -1,6 +1,6 @@
 #include "mainWindow.h"
-#include "../utils.h"
 #include "../data/table.h"
+#include "../utils.h"
 #include "layout.h"
 #include <malloc.h>
 #include <stddef.h>
@@ -57,23 +57,29 @@ void MainWindowLayout(struct nk_context *context, Window *window)
     }
 }
 
+static void FreeCheckList(LinkedList *checkList)
+{
+    if (checkList == NULL)
+        return;
+    FreeCheckList(checkList->next);
+    free(checkList->data);
+    free(checkList);
+}
+
 void FreeMainWindow(Window *window)
 {
     struct Data *data = window->data;
     free(data->inventoryValueBuffer);
     free(data->password);
     free(data->message);
+    free(data->inventoryProperties);
+    FreeTable(data->inventoryTable);
+    FreeCheckList(data->inventoryCheckList);
     free(data);
     free(window);
 }
 
-static char *GetStaffName(int id)
-{
-#warning
-    return "Test";
-}
-
-Window *NewMainWindow(int isVisible, const char *title, const char *id, const char *password)
+Window *NewMainWindow(int isVisible, const char *title, const char *id, const char *password, const char *name)
 {
     Window *window = malloc(sizeof(Window));
     window->isVisible = isVisible;
@@ -82,8 +88,9 @@ Window *NewMainWindow(int isVisible, const char *title, const char *id, const ch
     window->title = title;
 
     struct Data *data = malloc(sizeof(struct Data));
+    memset(data, 0, sizeof(struct Data));
     sscanf(id, "%d", &data->id);
-    data->name = GetStaffName(data->id);
+    data->name = CloneString(name);
     data->password = CloneString(password);
     data->message = CloneString("");
     data->sectionSelected = 0;
@@ -93,67 +100,11 @@ Window *NewMainWindow(int isVisible, const char *title, const char *id, const ch
     memset(data->inventoryValueBuffer, 0, BUFFER_SIZE * sizeof(char));
     window->data = data;
 
-#warning
+    int *a = malloc(sizeof(int *));
+    *a = 0;
+    data->inventoryCheckList = AppendData(data->inventoryCheckList, a);
 
-    TableRow *row = NewTableRow();
-    AppendTableRow(row, "id");
-    AppendTableRow(row, "name");
-    AppendTableRow(row, "time");
-    Table *table = NewTable(row, NULL);
-    row = NewTableRow();
-    AppendTableRow(row, "1");
-    AppendTableRow(row, "cocacola");
-    AppendTableRow(row, "03-14");
-    AppendTable(table, row);
-    row = NewTableRow();
-    AppendTableRow(row, "2");
-    AppendTableRow(row, "pepsicola");
-    AppendTableRow(row, "03-13");
-    AppendTable(table, row);
-    row = NewTableRow();
-    AppendTableRow(row, "2");
-    AppendTableRow(row, "pepsicola");
-    AppendTableRow(row, "03-13");
-    AppendTable(table, row);
-    row = NewTableRow();
-    AppendTableRow(row, "2");
-    AppendTableRow(row, "pepsicola");
-    AppendTableRow(row, "03-13");
-    AppendTable(table, row);
-    row = NewTableRow();
-    AppendTableRow(row, "2");
-    AppendTableRow(row, "pepsicola");
-    AppendTableRow(row, "03-13");
-    AppendTable(table, row);
-    row = NewTableRow();
-    AppendTableRow(row, "2");
-    AppendTableRow(row, "pepsicola");
-    AppendTableRow(row, "03-13");
-    AppendTable(table, row);
-    row = NewTableRow();
-    AppendTableRow(row, "2");
-    AppendTableRow(row, "pepsicola");
-    AppendTableRow(row, "03-13");
-    AppendTable(table, row);
-    row = NewTableRow();
-    AppendTableRow(row, "2");
-    AppendTableRow(row, "pepsicola");
-    AppendTableRow(row, "03-13");
-    AppendTable(table, row);
-    row = NewTableRow();
-    AppendTableRow(row, "2");
-    AppendTableRow(row, "pepsicola");
-    AppendTableRow(row, "03-13");
-    AppendTable(table, row);
-    row = NewTableRow();
-    AppendTableRow(row, "2");
-    AppendTableRow(row, "pepsicola");
-    AppendTableRow(row, "03-13");
-    AppendTable(table, row);
-    data->inventoryTable = table;
-
-    data->inventoryCheckList = malloc(sizeof(LinkedList));
-    data->inventoryCheckList->next = NULL;
+    data->inventoryProperties = NULL;
 
     window->next = NULL;
     return window;
