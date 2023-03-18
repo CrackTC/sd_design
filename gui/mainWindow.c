@@ -92,7 +92,7 @@ Window *NewMainWindow(int isVisible, const char *title, const char *id, const ch
     sscanf(id, "%d", &data->id);
     data->name = CloneString(name);
     data->password = CloneString(password);
-    data->message = CloneString("");
+    data->message = NULL;
     data->sectionSelected = 0;
     data->inventorySelectedRadio = 0;
     data->inventoryPropertySelected = 0;

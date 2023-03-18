@@ -1,5 +1,8 @@
 #include "../data/linkedList.h"
+#include "../data/operation.h"
 #include "../data/table.h"
+#include "../services/judgeService.h"
+#include "../utils.h"
 #include "config.h"
 #include "layout.h"
 #include "mainWindow.h"
@@ -7,10 +10,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void SendInventoryRequest(struct Data *data)
+{
+#warning
+    data->message = CloneString("缺少权限：读取库存");
+    return;
+
+    int hasPermission;
+    data->inventoryTable = judge(data->id, &hasPermission, data->password, OP_READ_INVENTORY, NULL);
+    if (!hasPermission)
+    {
+        data->message = CloneString("缺少权限：读取库存");
+    }
+}
+
+int SendItemRequest(struct Data *data)
+{
+#warning
+    data->message = CloneString("缺少权限：读取商品");
+    int hasPermission;
+    data->inventoryTable = judge(data->id, &hasPermission, data->password, OP_READ_ITEM, NULL);
+    if (!hasPermission) {
+        data->message = CloneString("缺少权限：读取商品");
+    }
+}
+
 void InventoryPageLayout(struct nk_context *context, struct Window *window)
 {
     struct Data *data = window->data;
 
+    // title
     nk_layout_row_dynamic(context, 0, 1);
     {
         if (nk_style_push_font(context, &fontLarge->handle))
@@ -20,6 +49,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
         }
     }
 
+    // radio
     nk_layout_row_begin(context, NK_STATIC, 35, 3);
     {
         nk_layout_row_push(context, 50);
@@ -48,6 +78,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
         nk_layout_row_end(context);
     }
 
+    // filter
     nk_layout_row_begin(context, NK_STATIC, 35, 5);
     {
         nk_layout_row_push(context, 100);
@@ -105,6 +136,8 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
 
     nk_layout_row_static(context, 10, 0, 0);
 
+    DrawMessageBox(context, "", &data->message);
+
     nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
     {
         if (nk_style_push_font(context, &fontSmall->handle))
@@ -116,6 +149,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                     switch (data->inventorySelectedRadio)
                     {
                     case 0:
+                        SendInventoryRequest(data);
                         break;
                     case 1:
                         break;
