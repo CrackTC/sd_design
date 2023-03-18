@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #define SECTION_COUNT 6
 
 const char *const sections[SECTION_COUNT] = {"", "库存", "销售", "顾客", "员工", "日志"};
@@ -105,6 +106,33 @@ Window *NewMainWindow(int isVisible, const char *title, const char *id, const ch
     data->inventoryCheckList = AppendData(data->inventoryCheckList, a);
 
     data->inventoryProperties = NULL;
+
+#warning
+    TableRow *row = NewTableRow();
+    AppendTableRow(row, CloneString("id"));
+    AppendTableRow(row, CloneString("name"));
+    AppendTableRow(row, CloneString("number"));
+    Table *table = NewTable(row, NULL);
+
+    row = NewTableRow();
+    AppendTableRow(row, CloneString("0"));
+    AppendTableRow(row, CloneString("cola"));
+    AppendTableRow(row, CloneString("10"));
+    AppendTable(table, row);
+
+    row = NewTableRow();
+    AppendTableRow(row, CloneString("1"));
+    AppendTableRow(row, CloneString("cola"));
+    AppendTableRow(row, CloneString("10"));
+    AppendTable(table, row);
+
+    row = NewTableRow();
+    AppendTableRow(row, CloneString("2"));
+    AppendTableRow(row, CloneString("cola"));
+    AppendTableRow(row, CloneString("20"));
+    AppendTable(table, row);
+
+    data->inventoryTable = table;
 
     window->next = NULL;
     return window;

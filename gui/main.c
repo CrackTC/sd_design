@@ -15,30 +15,35 @@
 
 #include "layout.h"
 
-#define LAYOUT_COUNT 1
-
 static void error_callback(int e, const char *d)
 {
     printf("Error %d: %s\n", e, d);
 }
 
-Window *windows[LAYOUT_COUNT];
-
+LinkedList *windows;
 int ShouldExit(struct nk_context *context)
 {
-    for (int i = 0; i < LAYOUT_COUNT; i++)
+    LinkedList *now = windows;
+    while (now != NULL)
     {
-        if (!nk_window_is_closed(context, windows[i]->title))
+        if (!nk_window_is_closed(context, ((Window *)now->data)->title))
         {
             return 0;
         }
+        now = now->next;
     }
     return 1;
 }
 
+void PushWindow(Window *window)
+{
+    windows = AppendData(windows, window);
+}
+
 void InitWindows()
 {
-    windows[0] = NewLoginWindow(1, "login");
+    windows = malloc(sizeof(LinkedList));
+    windows->data = NewLoginWindow(1, "login");
 }
 
 const char *executablePath;
@@ -129,24 +134,27 @@ int main(int argc, char **argv)
 
         /* glfwGetFramebufferSize(window, &window_width, &window_height); */
 
-        for (int i = 0; i < LAYOUT_COUNT; i++)
+        LinkedList *now = windows;
+        while (now != NULL)
         {
-            while (windows[i]->next != NULL)
+            while (((Window *)now->data)->next != NULL)
             {
-                Window *tmp = windows[i];
+                nk_window_close(context, ((Window *)now->data)->title);
+                Window *tmp = now->data;
                 tmp->freeFunc(tmp);
-                windows[i] = windows[i]->next;
+                now->data = ((Window *)now->data)->next;
             }
-            if (windows[i]->isVisible)
+            if (((Window *)now->data)->isVisible)
             {
-                if (nk_begin(context, windows[i]->title, nk_rect(0, 0, 800, 600),
+                if (nk_begin(context, ((Window *)now->data)->title, nk_rect(0, 0, 800, 600),
                              NK_WINDOW_CLOSABLE | NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE |
                                  NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE))
                 {
-                    windows[i]->layoutFunc(context, windows[i]);
+                    ((Window *)now->data)->layoutFunc(context, now->data);
                 }
                 nk_end(context);
             }
+            now = now->next;
         }
 
         glViewport(0, 0, window_width, window_height);

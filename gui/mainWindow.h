@@ -14,4 +14,8 @@ struct Data
     const char **inventoryProperties;
     struct Table *inventoryTable;
     struct LinkedList *inventoryCheckList;
+
+    struct Table *tableBefore;
+    struct Table *tableResult;
+    void (*callback)(struct Data *data);
 };

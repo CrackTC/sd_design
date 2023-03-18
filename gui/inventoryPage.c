@@ -10,6 +10,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void SendInventoryAddRequest(struct Data *data)
+{
+    printf("here\n");
+}
+
 void SendInventoryRequest(struct Data *data)
 {
 #warning
@@ -24,13 +29,16 @@ void SendInventoryRequest(struct Data *data)
     }
 }
 
-int SendItemRequest(struct Data *data)
+void SendItemRequest(struct Data *data)
 {
 #warning
     data->message = CloneString("缺少权限：读取商品");
+    return;
+
     int hasPermission;
     data->inventoryTable = judge(data->id, &hasPermission, data->password, OP_READ_ITEM, NULL);
-    if (!hasPermission) {
+    if (!hasPermission)
+    {
         data->message = CloneString("缺少权限：读取商品");
     }
 }
@@ -142,6 +150,15 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
     {
         if (nk_style_push_font(context, &fontSmall->handle))
         {
+            if (data->tableBefore != NULL)
+            {
+                DrawUpdateBox(context, "", &data->tableBefore, &data->tableResult, BUFFER_SIZE);
+            }
+            else if (data->callback != NULL)
+            {
+                data->callback(data);
+                data->callback = NULL;
+            }
             nk_layout_row_push(context, 0.15);
             {
                 if (nk_button_label(context, "查询"))
@@ -152,6 +169,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                         SendInventoryRequest(data);
                         break;
                     case 1:
+                        SendItemRequest(data);
                         break;
                     default:
                         break;
@@ -180,6 +198,48 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
             {
                 if (nk_button_label(context, "+"))
                 {
+                    TableRow *row = NewTableRow();
+                    AppendTableRow(row, "id");
+                    AppendTableRow(row, "商品编号");
+                    AppendTableRow(row, "数量");
+                    AppendTableRow(row, "y1");
+                    AppendTableRow(row, "m1");
+                    AppendTableRow(row, "d1");
+                    AppendTableRow(row, "h1");
+                    AppendTableRow(row, "min1");
+                    AppendTableRow(row, "s1");
+                    AppendTableRow(row, "y2");
+                    AppendTableRow(row, "m2");
+                    AppendTableRow(row, "d2");
+                    AppendTableRow(row, "h2");
+                    AppendTableRow(row, "min2");
+                    AppendTableRow(row, "s2");
+                    AppendTableRow(row, "yuan");
+                    AppendTableRow(row, "jiao");
+                    AppendTableRow(row, "cent");
+                    data->tableBefore = NewTable(row, NULL);
+                    row = NewTableRow();
+                    AppendTableRow(row, "自动生成");
+                    AppendTableRow(row, "1");
+                    AppendTableRow(row, "100");
+                    AppendTableRow(row, "2023");
+                    AppendTableRow(row, "01");
+                    AppendTableRow(row, "01");
+                    AppendTableRow(row, "00");
+                    AppendTableRow(row, "00");
+                    AppendTableRow(row, "00");
+                    AppendTableRow(row, "0000");
+                    AppendTableRow(row, "5");
+                    AppendTableRow(row, "00");
+                    AppendTableRow(row, "00");
+                    AppendTableRow(row, "00");
+                    AppendTableRow(row, "00");
+                    AppendTableRow(row, "30");
+                    AppendTableRow(row, "0");
+                    AppendTableRow(row, "0");
+                    AppendTable(data->tableBefore, row);
+
+                    data->callback = SendInventoryAddRequest;
                 }
             }
 

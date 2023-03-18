@@ -5,6 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+int RowFiltered(const Table *table, const TableRow *row, const char *filter, const char *value)
+{
+    return filter != NULL && strcmp(GetRowItemByColumnName(table, row, filter), value) != 0;
+}
+
 void TableLayout(struct nk_context *context, const Table *table, LinkedList *checkList, const char *filter,
                  const char *value)
 {
@@ -18,10 +23,12 @@ void TableLayout(struct nk_context *context, const Table *table, LinkedList *che
                 if (nk_checkbox_label(context, "", checkList->data))
                 {
                     LinkedList *now = checkList->next;
-                    while (now != NULL)
+                    LinkedList *rowNow = table->rows->next;
+                    while (now != NULL && !RowFiltered(table, rowNow->data, filter, value))
                     {
                         *(int *)now->data = *(int *)checkList->data;
                         now = now->next;
+                        rowNow = rowNow->next;
                     }
                 }
             }
@@ -45,15 +52,14 @@ void TableLayout(struct nk_context *context, const Table *table, LinkedList *che
         while (rowNow != NULL)
         {
             row = rowNow->data;
-            if (filter == NULL || strcmp(GetRowItemByColumnName(table, row, filter), value) == 0)
+            if (checkListNow->next == NULL)
             {
-                if (checkListNow->next == NULL)
-                {
-                    int *checked = malloc(sizeof(int));
-                    *checked = 0;
-                    AppendData(checkList, checked);
-                }
-
+                int *checked = malloc(sizeof(int));
+                *checked = 0;
+                AppendData(checkList, checked);
+            }
+            if (!RowFiltered(table, row, filter, value))
+            {
                 nk_layout_row_push(context, 30);
                 {
                     if (nk_checkbox_label(context, "", checkListNow->next->data))

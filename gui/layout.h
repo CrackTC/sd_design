@@ -40,6 +40,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window);
 void PlaceNothing(struct nk_context *context);
 void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);
 void DrawMessageBox(struct nk_context *context, const char *title, char **message);
+void DrawUpdateBox(struct nk_context *context, const char *title, Table **before, Table **result, size_t bufferSize);
 void TableLayout(struct nk_context *context, const Table *table, LinkedList *checkList, const char *filter,
                  const char *value);
 
