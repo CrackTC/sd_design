@@ -90,6 +90,7 @@ Window *NewMainWindow(int isVisible, const char *title, const char *id, const ch
     data->inventorySelectedRadio = 0;
     data->inventoryPropertySelected = 0;
     data->inventoryValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
+    memset(data->inventoryValueBuffer, 0, BUFFER_SIZE * sizeof(char));
     window->data = data;
 
 #warning
@@ -151,6 +152,8 @@ Window *NewMainWindow(int isVisible, const char *title, const char *id, const ch
     AppendTable(table, row);
     data->inventoryTable = table;
 
+    data->inventoryCheckList = malloc(sizeof(LinkedList));
+    data->inventoryCheckList->next = NULL;
 
     window->next = NULL;
     return window;

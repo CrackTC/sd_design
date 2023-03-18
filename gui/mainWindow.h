@@ -12,4 +12,5 @@ struct Data
     int inventoryPropertySelected;
     char *inventoryValueBuffer;
     struct Table *inventoryTable;
+    struct LinkedList *inventoryCheckList;
 };

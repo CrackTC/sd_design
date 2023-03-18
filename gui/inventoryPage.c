@@ -1,8 +1,10 @@
+#include "../data/linkedList.h"
 #include "../data/table.h"
 #include "config.h"
 #include "layout.h"
 #include "mainWindow.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 void InventoryPageLayout(struct nk_context *context, struct Window *window)
 {
@@ -45,7 +47,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
         nk_layout_row_end(context);
     }
 
-    static const char *inventoryProperties[] = {"无", "商品名称"};
+    static const char *inventoryProperties[] = {"无", "id"};
 
     nk_layout_row_begin(context, NK_STATIC, 35, 5);
     {
@@ -92,6 +94,27 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
             nk_layout_row_push(context, 0.15);
             {
                 if (nk_button_label(context, "查询"))
+                {
+                    switch (data->inventorySelectedRadio)
+                    {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            }
+
+            nk_layout_row_push(context, 0.01);
+            {
+                PlaceNothing(context);
+            }
+
+            nk_layout_row_push(context, 0.15);
+            {
+                if (nk_button_label(context, "查看"))
                 {
                 }
             }
@@ -152,38 +175,10 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
         {
             if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
             {
-                if (data->inventoryTable != NULL)
-                {
-                    TableRow *row = GetTableTitle(data->inventoryTable);
-                    nk_layout_row_begin(context, NK_STATIC, 30, row->columnCount);
-                    {
-                        LinkedList *itemNow = row->items;
-                        while (itemNow != NULL)
-                        {
-                            nk_layout_row_push(context, 100);
-                            {
-                                nk_label(context, itemNow->data, NK_TEXT_CENTERED);
-                            }
-                            itemNow = itemNow->next;
-                        }
-                        nk_layout_row_end(context);
-                    }
-                    LinkedList *rowNow = data->inventoryTable->rows->next;
-                    while (rowNow != NULL)
-                    {
-                        row = rowNow->data;
-                        LinkedList *itemNow = row->items;
-                        while (itemNow != NULL)
-                        {
-                            nk_layout_row_push(context, 100);
-                            {
-                                nk_label(context, itemNow->data, NK_TEXT_CENTERED);
-                            }
-                            itemNow = itemNow->next;
-                        }
-                        rowNow = rowNow->next;
-                    }
-                }
+                TableLayout(context, data->inventoryTable, &data->inventoryCheckList,
+                            data->inventoryPropertySelected == 0 ? NULL
+                                                                 : inventoryProperties[data->inventoryPropertySelected],
+                            data->inventoryValueBuffer);
                 nk_group_end(context);
             }
 
