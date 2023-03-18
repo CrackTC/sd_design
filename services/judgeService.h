@@ -3,6 +3,6 @@
 #include "../data/table.h"
 #include "../data/operation.h"
 
-Table *judge(int staffId, const char *password, Operation operation, Table *a);
+Table *judge(int staffId, int *hasPermission, const char *password, Operation operation, Table *a);
 
 #endif
