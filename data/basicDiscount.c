@@ -5,8 +5,11 @@
 #include "table.h"
 #include <malloc.h>
 #include <stdio.h>
+#include <stdlib.h>
 
+static int idCount = 0;
 static const char *path = "data/basicDiscount.txt";
+static const char *idRow = "id";
 static const char *itemIdRow = "itemId";
 static const char *ratioRow = "ratio";
 static const char *customerLevelRow = "customerLevel";
@@ -15,6 +18,7 @@ static LinkedList *systemList = NULL;
 
 struct BasicDiscount
 {
+    int id;
     int itemId;
     int ratio;
     int customerLevel;
@@ -27,6 +31,7 @@ BasicDiscount *NewBasicDiscount(int itemId, int ratio, int customerLevel, Time *
         return NULL;
 
     BasicDiscount *discount = malloc(sizeof(BasicDiscount));
+    discount->id = GenerateId(systemList, GetAllBasicDiscounts, &idCount);
     discount->itemId = itemId;
     discount->ratio = ratio;
     discount->customerLevel = customerLevel;
@@ -63,6 +68,7 @@ LinkedList *GetAllBasicDiscounts()
 
         BasicDiscount *discount = malloc(sizeof(BasicDiscount));
 
+        sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &discount->id);
         sscanf(GetRowItemByColumnName(table, row, itemIdRow), "%d", &discount->itemId);
         sscanf(GetRowItemByColumnName(table, row, ratioRow), "%d", &discount->ratio);
         sscanf(GetRowItemByColumnName(table, row, customerLevelRow), "%d", &discount->customerLevel);
@@ -75,6 +81,25 @@ LinkedList *GetAllBasicDiscounts()
 
     systemList = list;
     return list;
+}
+
+BasicDiscount *GetBasicDiscountById(int id)
+{
+    if (systemList == NULL)
+    {
+        GetAllBasicDiscounts();
+    }
+
+    LinkedList *now = systemList;
+    while (now != NULL)
+    {
+        BasicDiscount *discount = now->data;
+        if (discount->id == id)
+        {
+            return discount;
+        }
+    }
+    return NULL;
 }
 
 LinkedList *GetBasicDiscountsByItemId(int itemId)
@@ -115,6 +140,11 @@ LinkedList *GetBasicDiscountsByCustomerLevel(int level)
     }
 
     return list;
+}
+
+int GetBasicDiscountId(const BasicDiscount *discount)
+{
+    return discount->id;
 }
 
 int GetBasicDiscountItemId(const BasicDiscount *discount)
@@ -180,6 +210,7 @@ void RemoveBasicDiscount(BasicDiscount *discount)
 void BasicDiscountSave()
 {
     TableRow *row = NewTableRow();
+    free(AppendTableRow(row, CloneString(idRow)));
     free(AppendTableRow(row, CloneString(itemIdRow)));
     free(AppendTableRow(row, CloneString(ratioRow)));
     free(AppendTableRow(row, CloneString(customerLevelRow)));
@@ -193,6 +224,7 @@ void BasicDiscountSave()
         BasicDiscount *discount = now->data;
         row = NewTableRow();
 
+        free(AppendTableRow(row, LongLongToString(discount->id)));
         free(AppendTableRow(row, LongLongToString(discount->itemId)));
         free(AppendTableRow(row, LongLongToString(discount->ratio)));
         free(AppendTableRow(row, LongLongToString(discount->customerLevel)));

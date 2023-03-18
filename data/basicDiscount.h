@@ -46,6 +46,15 @@ void FreeBasicDiscount(BasicDiscount *discount);
 LinkedList *GetAllBasicDiscounts();
 
 /*
+ * Name: GetBasicDiscountById
+ * Description: 获取具有指定编号的基本折扣
+ * Arguments:
+ *     id: 指定的折扣编号
+ * Returns: 编号对应的折扣，若不存在，返回NULL
+ * */
+BasicDiscount *GetBasicDiscountById(int id);
+
+/*
  * Name: GetBasicDiscountsByItemId
  * Description: 获取具有指定商品编号的基本折扣
  * Arguments:
@@ -72,6 +81,7 @@ LinkedList *GetBasicDiscountsByCustomerLevel(int level);
  *     discount: 指向BasicDiscount的指针
  * Returns: 对应的值
  * */
+int GetBasicDiscountId(const BasicDiscount *discount);
 int GetBasicDiscountItemId(const BasicDiscount *discount);
 int GetBasicDiscountRatio(const BasicDiscount *discount);
 int GetBasicDiscountCustomerLevel(const BasicDiscount *discount);
