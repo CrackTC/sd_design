@@ -114,6 +114,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "商品名称");
         AppendTableRow(row, "数量");
         AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "生产日期");
         AppendTableRow(row, "购入单价");
         Table *table = NewTable(row, NULL);
 
@@ -123,6 +124,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "商品名称");
         AppendTableRow(row, "数量");
         AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "生产日期");
         AppendTableRow(row, "购入单价");
         AppendTable(table, row);
 
@@ -132,6 +134,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "商品名称");
         AppendTableRow(row, "数量");
         AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "生产日期");
         AppendTableRow(row, "购入单价");
         AppendTable(table, row);
 
@@ -141,6 +144,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "商品名称");
         AppendTableRow(row, "数量");
         AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "生产日期");
         AppendTableRow(row, "购入单价");
         AppendTable(table, row);
 

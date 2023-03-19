@@ -45,6 +45,11 @@ void InventoryDetailLayout(struct nk_context *context, Window *window)
                                        GetRowItemByColumnName(data->inventory, dataRow, "入库时间"), 512,
                                        nk_filter_default);
 
+        nk_label(context, "生产日期", NK_TEXT_CENTERED);
+        nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
+                                       GetRowItemByColumnName(data->inventory, dataRow, "生产日期"), 512,
+                                       nk_filter_default);
+
         nk_label(context, "购入单价", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
                                        GetRowItemByColumnName(data->inventory, dataRow, "购入单价"), 512,

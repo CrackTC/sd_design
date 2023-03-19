@@ -24,23 +24,26 @@ void EnsureWindowSize(struct nk_context *context, Window *window, float width, f
     nk_window_set_size(context, window->title, nk_vec2(newWidth, newHeight));
 }
 
-void DrawMessageBox(struct nk_context *context, const char *title, char **message)
+void DrawMessageBox(struct nk_context *context, const char *title, int draw, const char *message,
+                    void (*callback)(void *), void *parameter)
 {
-    if (*message != NULL)
+    if (draw)
     {
         if (nk_popup_begin(context, NK_POPUP_DYNAMIC, title, 0, nk_rect(0, 100, 400, 400)))
         {
             nk_layout_row_dynamic(context, 0, 1);
             {
-                nk_label(context, *message, NK_TEXT_CENTERED);
+                nk_label(context, message, NK_TEXT_CENTERED);
             }
 
             nk_layout_row_dynamic(context, 0, 1);
             {
                 if (nk_button_label(context, "确定"))
                 {
-                    free(*message);
-                    *message = NULL;
+                    if (callback != NULL)
+                    {
+                        callback(parameter);
+                    }
                     nk_popup_close(context);
                 }
             }

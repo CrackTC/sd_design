@@ -24,9 +24,16 @@ void SendItemRequest(struct Data *data)
     }
 }
 
+static void MessageBoxCallBack(void *parameter)
+{
+    struct Data *data = parameter;
+    data->message = NULL;
+}
+
 void ItemPageLayout(struct nk_context *context, struct Window *window)
 {
     struct Data *data = window->data;
+    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
 
     // title
     nk_layout_row_dynamic(context, 0, 1);
@@ -95,8 +102,6 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
     }
 
     nk_layout_row_static(context, 10, 0, 0);
-
-    DrawMessageBox(context, "", &data->message);
 
     nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
     {

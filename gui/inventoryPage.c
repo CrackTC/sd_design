@@ -53,19 +53,46 @@ int InventoryAdd(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
+#warning
             TableRow *row = NewTableRow();
             AppendTableRow(row, "商品编号");
             AppendTableRow(row, "商品名称");
             AppendTableRow(row, "数量");
-            AppendTableRow(row, "入库时间");
-            AppendTableRow(row, "购入单价");
+            AppendTableRow(row, "年1");
+            AppendTableRow(row, "月1");
+            AppendTableRow(row, "日1");
+            AppendTableRow(row, "时1");
+            AppendTableRow(row, "分1");
+            AppendTableRow(row, "秒1");
+            AppendTableRow(row, "年2");
+            AppendTableRow(row, "月2");
+            AppendTableRow(row, "日2");
+            AppendTableRow(row, "时2");
+            AppendTableRow(row, "分2");
+            AppendTableRow(row, "秒2");
+            AppendTableRow(row, "元");
+            AppendTableRow(row, "角");
+            AppendTableRow(row, "分");
             Table *table = NewTable(row, "");
             row = NewTableRow();
             AppendTableRow(row, "");
             AppendTableRow(row, "");
             AppendTableRow(row, "");
-            AppendTableRow(row, "");
-            AppendTableRow(row, "");
+            AppendTableRow(row, "1");
+            AppendTableRow(row, "1");
+            AppendTableRow(row, "1");
+            AppendTableRow(row, "1");
+            AppendTableRow(row, "1");
+            AppendTableRow(row, "1");
+            AppendTableRow(row, "2");
+            AppendTableRow(row, "2");
+            AppendTableRow(row, "2");
+            AppendTableRow(row, "2");
+            AppendTableRow(row, "2");
+            AppendTableRow(row, "2");
+            AppendTableRow(row, "100");
+            AppendTableRow(row, "3");
+            AppendTableRow(row, "2");
             AppendTable(table, row);
             PushWindow(context, NewInventoryEdit("库存编辑", data->id, data->password, table));
             FreeTable(table);
@@ -77,9 +104,16 @@ int InventoryAdd(struct nk_context *context, struct Data *data)
     return 0;
 }
 
+static void MessageBoxCallBack(void *parameter)
+{
+    struct Data *data = parameter;
+    data->message = NULL;
+}
+
 void InventoryPageLayout(struct nk_context *context, struct Window *window)
 {
     struct Data *data = window->data;
+    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
 
     // title
     nk_layout_row_dynamic(context, 0, 1);
@@ -148,8 +182,6 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
     }
 
     nk_layout_row_static(context, 10, 0, 0);
-
-    DrawMessageBox(context, "", &data->message);
 
     nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
     {
