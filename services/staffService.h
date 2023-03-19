@@ -11,7 +11,7 @@ Table *LogIn(Table *); // 参数表格中包括：password，Id；返回的Table
 /* 加入一个员工 */
 Table *AddStaff();
 /* 删除一个员工 */
-Table *RemoveStaff(Table *); // 参数Table* 中要含有 要删除员工的员工工号
+Table *DeleteStaff(Table *); // 参数Table* 中要含有 要删除员工的员工工号
 /*查询一名员工的信息*/
 Table *GetItemOfOneStaff(Table *); // 参数Table* 中要含有 要查询员工的员工工号
 /*查询所有员工的信息*/
