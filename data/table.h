@@ -8,6 +8,7 @@
 #define TABLE_H
 
 #include "linkedList.h"
+#include <stddef.h>
 
 /*
  * Name: TableRow
@@ -60,6 +61,15 @@ void FreeTableRow(TableRow *row);
  * Remark: item以逐字符复制形式加入行
  * */
 char *AppendTableRow(TableRow *row, char *item);
+
+/*
+ * Name: CloneRow
+ * Description: 克隆行
+ * Arguments:
+ *     source: 要克隆的行
+ * Returns: 克隆结果
+ * */
+TableRow *CloneRow(const TableRow *source);
 
 /*
  * Name: NewTable
@@ -137,5 +147,22 @@ void SetTableRemark(Table *table, const char *value);
  *          否则，返回NULL
  * */
 char *GetRowItemByColumnName(const Table *table, const TableRow *row, const char *columnName);
+
+/*
+ * Name: CloneTable
+ * Description: 克隆一个表格
+ * Arguments:
+ *     source: 原始表格
+ * Returns: 克隆的表格
+ * */
+Table *CloneTable(const Table *source);
+
+/*
+ * Name: CloneTableBuffered
+ * Description: 使用指定缓冲区大小克隆一个表格
+ * Arguments:
+ *     source: 原始表格
+ * Returns: 克隆的表格*/
+Table *CloneTableBuffered(const Table *source, size_t bufferSize);
 
 #endif

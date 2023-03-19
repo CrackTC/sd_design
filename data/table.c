@@ -2,6 +2,9 @@
 #include "../utils.h"
 #include "linkedList.h"
 #include <malloc.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 TableRow *NewTableRow()
@@ -39,6 +42,24 @@ char *AppendTableRow(TableRow *row, char *item)
     return item;
 }
 
+TableRow *CloneRow(const TableRow *source)
+{
+    if (source == NULL)
+    {
+        return NULL;
+    }
+
+    TableRow *result = NewTableRow();
+    LinkedList *itemNow = source->items;
+    while (itemNow != NULL)
+    {
+        printf("%s\n", itemNow->data);
+        AppendTableRow(result, itemNow->data);
+        itemNow = itemNow->next;
+    }
+    return result;
+}
+
 Table *NewTable(TableRow *title, const char *remark)
 {
     if (title == NULL || title->columnCount == 0)
@@ -59,7 +80,10 @@ void FreeTable(Table *table)
     {
         return;
     }
-    free(table->remark);
+    if (table->remark != NULL)
+    {
+        free(table->remark);
+    }
     LinkedList *now = table->rows;
     while (now != NULL)
     {
@@ -148,4 +172,62 @@ char *GetRowItemByColumnName(const Table *table, const TableRow *row, const char
         now = now->next;
     }
     return NULL;
+}
+
+Table *CloneTable(const Table *source)
+{
+    if (source == NULL)
+    {
+        return NULL;
+    }
+
+    TableRow *newTitleRow = CloneRow(GetTableTitle(source));
+    Table *result = NewTable(newTitleRow, GetTableRemark(source));
+    LinkedList *dataRowNow = source->rows->next;
+    while (dataRowNow != NULL)
+    {
+        TableRow *newRow = CloneRow(dataRowNow->data);
+        AppendTable(result, newRow);
+        dataRowNow = dataRowNow->next;
+    }
+    return result;
+}
+
+Table *CloneTableBuffered(const Table *source, size_t bufferSize)
+{
+    if (source == NULL)
+    {
+        return NULL;
+    }
+
+    TableRow *newTitleRow = NewTableRow();
+    TableRow *titleRow = GetTableTitle(source);
+    LinkedList *titleNow = titleRow->items;
+    while (titleNow != NULL)
+    {
+        char *buffer = malloc(bufferSize);
+        strcpy(buffer, titleNow->data);
+        newTitleRow->items = AppendData(newTitleRow->items, buffer);
+        newTitleRow->columnCount++;
+        titleNow = titleNow->next;
+    }
+    Table *result = NewTable(newTitleRow, GetTableRemark(source));
+    LinkedList *dataRowNow = source->rows->next;
+    while (dataRowNow != NULL)
+    {
+        TableRow *newRow = NewTableRow();
+        LinkedList *dataNow = ((TableRow *)(dataRowNow->data))->items;
+        while (dataNow != NULL)
+        {
+            char *buffer = malloc(bufferSize);
+            strcpy(buffer, dataNow->data);
+            newRow->items = AppendData(newRow->items, buffer);
+            newRow->columnCount++;
+            dataNow = dataNow->next;
+        }
+        AppendTable(result, newRow);
+
+        dataRowNow = dataRowNow->next;
+    }
+    return result;
 }
