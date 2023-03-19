@@ -53,7 +53,6 @@ TableRow *CloneRow(const TableRow *source)
     LinkedList *itemNow = source->items;
     while (itemNow != NULL)
     {
-        printf("%s\n", itemNow->data);
         AppendTableRow(result, itemNow->data);
         itemNow = itemNow->next;
     }
