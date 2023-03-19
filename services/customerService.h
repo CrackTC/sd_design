@@ -10,7 +10,6 @@
  *  联系方式      contact
  *
  *  返回值：
- *      成功：备注返回“Success”
  *      失败：备注返回“客户已存在”或“创建新客户失败”
  * * * * * */
 Table *AddCustomer(Table *a);
@@ -20,7 +19,6 @@ Table *AddCustomer(Table *a);
 /*  客户id        id
  *
  *  返回值：
- *      成功：备注返回“Success”
  *      失败：备注返回“不存在符合条件的客户”
  * * * * * */
 Table *DeleteCustomer(Table *a);
@@ -43,7 +41,7 @@ Table *UpdateCustomer(Table *a);
  *
  *  返回值：
  *      有客户记录：   id   level   name   contact
- *      无客户记录：备注返回“不存在符合条件的客户”
+ *      无客户记录：备注返回“无客户记录”
  * * * * * */
 Table *GetAllCustomer(Table *a);
 /*  客户id        id

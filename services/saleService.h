@@ -5,7 +5,7 @@
 
 // 添加退货
 
-/*  订单id    orderid
+/*  订单id    id
  *  原因      reason
  *  元        yuan
  *  角        jiao
@@ -20,16 +20,16 @@ Table *AddRefund(Table *a);
 
 // 删除退货
 
-/*  订单id    orderid
+/*  订单id    id
  *
  *  返回值：
- *      失败：备注返回“不存在符合条件的退款条目”
+ *      失败：备注返回“不存在符合条件的退款条目” 或 “删除退货失败”
  * * * * * */
 Table *RemoveRefund(Table *a);
 
 // 修改退货
 
-/*  订单id    orderid
+/*  订单id    id
  *  原因      reason
  *  元        yuan
  *  角        jiao
@@ -38,7 +38,7 @@ Table *RemoveRefund(Table *a);
  *  备注      remark
  *
  *  返回值：
- *      失败：备注返回“不存在符合条件的退款条目”
+ *      失败：备注返回“不存在符合条件的退款条目” 或 “修改退货失败”
  * * * * * */
 Table *UpdateRefund(Table *a);
 
@@ -47,14 +47,14 @@ Table *UpdateRefund(Table *a);
 /*  无输入
  *
  *  返回值：
- *      有退款条目：   orderid   reason   time   yuan   jiao   cent   number   remark
+ *      有退款条目：   id   reason   time   yuan   jiao   cent   number   remark
  *      无退款条目：备注返回“无退款条目”
  * * * * * */
 Table *GetAllRefund(Table *a);
-/*  订单id    orderid
+/*  订单id    id
  *
  *  返回值:
- *      有退款条目：   orderid   reason   time   yuan   jiao   cent   number   remark
+ *      有退款条目：   id   reason   time   yuan   jiao   cent   number   remark
  *      无退款条目：备注返回“不存在符合条件的退款条目”
  * * * * * */
 Table *GetSingleRefund(Table *a);
@@ -68,7 +68,7 @@ Table *GetSingleRefund(Table *a);
  *      无订单条目：备注返回“无订单条目”
  * * * * * */
 Table *GetAllOrder(Table *a);
-/*  订单id    orderid
+/*  订单id    id
  *
  *  返回值：
  *      有订单条目：   orderid   itemname   customerid   number   yuan   jiao   cent   time   inventoryid
@@ -78,7 +78,7 @@ Table *GetSingleOrder(Table *a);
 
 // 添加折扣
 
-/*  商品id    itemid
+/*  商品id    id
  *  折扣比率  ratio
  *  客户等级  level
  *  折扣截止
@@ -95,7 +95,7 @@ Table *AddDiscount(Table *a);
 
 // 删除折扣
 
-/*  折扣id    discountid
+/*  折扣id    id
  *
  *  返回值：
  *      失败：备注返回“不存在满足条件的折扣”
@@ -116,9 +116,9 @@ Table *RemoveDiscount(Table *a);
  *      分钟  minute
  *
  *  返回值：
- *      失败：备注返回“时间信息有误”
+ *      失败：备注返回“时间信息有误” 或 “不存在符合条件的折扣”
  * * * * * */
-Table *UpdateDiscount(Table *a); // 需要折扣id，商品id，折扣比率，客户等级，折扣截止时间
+Table *UpdateDiscount(Table *a);
 
 // 清理过期折扣
 
@@ -133,17 +133,17 @@ Table *ClearOutdateDiscount(Table *a);
 /*  无输入
  *
  *  返回值：
- *      有折扣：   discountid   itemname  ratio   customerlevel   deadline
+ *      有折扣：   id   itemname  ratio   customerlevel   deadline
  *      无折扣：备注返回“无折扣”
  */
 Table *GetAllDiscount(Table *a);
-/*  折扣id    discountid
+/*  折扣id    id
  *
  *  返回值：
- *      有折扣：   discountid   itemname  ratio   customerlevel   deadline
+ *      有折扣：   id   itemname  ratio   customerlevel   deadline
  *      无折扣：备注返回“不存在满足条件的折扣”
  */
-Table *GetSingleDiscount(Table *a); // 需要折扣id
+Table *GetSingleDiscount(Table *a);
 
 // 添加售货
 
@@ -166,5 +166,23 @@ Table *AddOrder(Table *a);
  *      失败：备注返回“不存在该客户” 或 “不存在该商品” 或 “不存在该库存条目” 或 “库存不足”
  */
 Table *AddSpecificOrder(Table *a);
+
+// 修改订单
+
+/*  订单id    orderid
+ *  库存id    inventoryid
+ *  数量      number
+ *  客户id    customerid
+ *
+ *  返回值：
+ *      失败：备注返回“不存在符合条件的订单条目” 或 “不存在符合条件的库存条目” 或 “不存在符合条件的客户”
+ * * * * * */
+Table *UpdateOrder(Table *a);
+/*  订单id    id
+ *
+ *  返回值：
+ *      失败：备注返回“不存在符合条件的订单条目” 或 “删除订单失败”
+ * * * * * */
+Table *RemoveAnOrder(Table *a);
 
 #endif // SALE_H
