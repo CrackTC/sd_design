@@ -20,7 +20,7 @@ Table *ShowSingleLossById(Table *input);       // 展示一个货损的信息 �
 
 // 删除某一个系统中的一个结构体信息的函数
 Table *DeleteInventoryById(Table *input); // 删除货存系统中的某一批货物的全部信息 以货存编号为索引
-Table *DeleteSingleLossInventoryById(Table *input); // 删除某一个货损信息
+Table *DeleteSingleLossById(Table *input); // 删除某一个货损信息
 Table *DeleteItemById(Table *input);                // 删除一个商品种类 以商品编号为索引
 
 // 修改某一个系统中一个结构体的信息的函数
