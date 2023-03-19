@@ -165,26 +165,22 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
 #warning
         TableRow *row = NewTableRow();
         AppendTableRow(row, "id");
-        AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
         Table *table = NewTable(row, NULL);
 
         row = NewTableRow();
-        AppendTableRow(row, "id");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "农夫山泉");
         AppendTable(table, row);
 
         row = NewTableRow();
-        AppendTableRow(row, "id");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "二锅头");
         AppendTable(table, row);
 
         row = NewTableRow();
-        AppendTableRow(row, "id");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "威士忌");
         AppendTable(table, row);
 
         data->itemTable = table;

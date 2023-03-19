@@ -75,8 +75,8 @@ int InventoryAdd(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "分");
             Table *table = NewTable(row, "");
             row = NewTableRow();
-            AppendTableRow(row, "");
-            AppendTableRow(row, "");
+            AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "id"));
+            AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品名称"));
             AppendTableRow(row, "");
             AppendTableRow(row, "1");
             AppendTableRow(row, "1");
