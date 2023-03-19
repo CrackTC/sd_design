@@ -23,7 +23,7 @@ typedef void (*FreeFunc)(Window *window);
 
 struct Window
 {
-    int isVisible;
+    int isClosed;
     LayoutFunc layoutFunc;
     FreeFunc freeFunc;
     const char *title;
@@ -31,17 +31,20 @@ struct Window
     struct Window *next;
 };
 
-Window *NewMainWindow(int isVisible, const char *title, const char *id, const char *password, const char *name);
-Window *NewLoginWindow(int isVisible, const char *title);
+Window *NewMainWindow(const char *title, const char *id, const char *password, const char *name);
+Window *NewLoginWindow(const char *title);
+Window *NewInventoryDetail(const char *title, const Table *inventory);
+Window *NewInventoryEdit(const char *title, int id, const char *password, Table *inventory);
 
 void WelcomePageLayout(struct nk_context *context, struct Window *window);
 void InventoryPageLayout(struct nk_context *context, struct Window *window);
+void ItemPageLayout(struct nk_context *context, struct Window *window);
 
 void PlaceNothing(struct nk_context *context);
 void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);
 void DrawMessageBox(struct nk_context *context, const char *title, char **message);
-void DrawUpdateBox(struct nk_context *context, const char *title, Table **before, Table **result, size_t bufferSize);
 void TableLayout(struct nk_context *context, const Table *table, LinkedList *checkList, const char *filter,
                  const char *value);
+void PushWindow(struct nk_context *context, Window *window);
 
 #endif

@@ -8,11 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#define SECTION_COUNT 6
+#define SECTION_COUNT 7
 
-const char *const sections[SECTION_COUNT] = {"", "库存", "销售", "顾客", "员工", "日志"};
-const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, InventoryPageLayout, WelcomePageLayout,
-                                         WelcomePageLayout, WelcomePageLayout,   WelcomePageLayout};
+const char *const sections[SECTION_COUNT] = {"", "商品", "库存", "销售", "顾客", "员工", "日志"};
+const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,    InventoryPageLayout, WelcomePageLayout,
+                                         WelcomePageLayout, WelcomePageLayout, WelcomePageLayout};
 
 void MainWindowLayout(struct nk_context *context, Window *window)
 {
@@ -80,10 +80,10 @@ void FreeMainWindow(Window *window)
     free(window);
 }
 
-Window *NewMainWindow(int isVisible, const char *title, const char *id, const char *password, const char *name)
+Window *NewMainWindow(const char *title, const char *id, const char *password, const char *name)
 {
     Window *window = malloc(sizeof(Window));
-    window->isVisible = isVisible;
+    window->isClosed = 0;
     window->layoutFunc = MainWindowLayout;
     window->freeFunc = FreeMainWindow;
     window->title = title;
@@ -95,11 +95,10 @@ Window *NewMainWindow(int isVisible, const char *title, const char *id, const ch
     data->password = CloneString(password);
     data->message = NULL;
     data->sectionSelected = 0;
-    data->inventorySelectedRadio = 0;
+
     data->inventoryPropertySelected = 0;
     data->inventoryValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->inventoryValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-    window->data = data;
 
     int *a = malloc(sizeof(int *));
     *a = 0;
@@ -107,33 +106,87 @@ Window *NewMainWindow(int isVisible, const char *title, const char *id, const ch
 
     data->inventoryProperties = NULL;
 
+    {
 #warning
-    TableRow *row = NewTableRow();
-    AppendTableRow(row, CloneString("id"));
-    AppendTableRow(row, CloneString("name"));
-    AppendTableRow(row, CloneString("number"));
-    Table *table = NewTable(row, NULL);
+        TableRow *row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "数量");
+        AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "购入单价");
+        Table *table = NewTable(row, NULL);
 
-    row = NewTableRow();
-    AppendTableRow(row, CloneString("0"));
-    AppendTableRow(row, CloneString("cola"));
-    AppendTableRow(row, CloneString("10"));
-    AppendTable(table, row);
+        row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "数量");
+        AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "购入单价");
+        AppendTable(table, row);
 
-    row = NewTableRow();
-    AppendTableRow(row, CloneString("1"));
-    AppendTableRow(row, CloneString("cola"));
-    AppendTableRow(row, CloneString("10"));
-    AppendTable(table, row);
+        row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "数量");
+        AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "购入单价");
+        AppendTable(table, row);
 
-    row = NewTableRow();
-    AppendTableRow(row, CloneString("2"));
-    AppendTableRow(row, CloneString("cola"));
-    AppendTableRow(row, CloneString("20"));
-    AppendTable(table, row);
+        row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "数量");
+        AppendTableRow(row, "入库时间");
+        AppendTableRow(row, "购入单价");
+        AppendTable(table, row);
 
-    data->inventoryTable = table;
+        data->inventoryTable = table;
+    }
 
+    data->itemPropertySelected = 0;
+    data->itemValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
+    memset(data->itemValueBuffer, 0, BUFFER_SIZE * sizeof(char));
+
+    a = malloc(sizeof(int *));
+    *a = 0;
+    data->itemCheckList = AppendData(data->itemCheckList, a);
+
+    data->itemProperties = NULL;
+
+    {
+#warning
+        TableRow *row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        Table *table = NewTable(row, NULL);
+
+        row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTable(table, row);
+
+        data->itemTable = table;
+    }
+
+    window->data = data;
     window->next = NULL;
     return window;
 }

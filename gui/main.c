@@ -35,15 +35,25 @@ int ShouldExit(struct nk_context *context)
     return 1;
 }
 
-void PushWindow(Window *window)
+void PushWindow(struct nk_context *context, Window *window)
 {
+    LinkedList *now = windows;
+    while (now != NULL)
+    {
+        if (strcmp(((Window *)now->data)->title, window->title) == 0)
+        {
+            window->freeFunc(window);
+            return;
+        }
+        now = now->next;
+    }
     windows = AppendData(windows, window);
 }
 
 void InitWindows()
 {
     windows = malloc(sizeof(LinkedList));
-    windows->data = NewLoginWindow(1, "login");
+    windows->data = NewLoginWindow("login");
 }
 
 const char *executablePath;
@@ -132,8 +142,6 @@ int main(int argc, char **argv)
         glfwPollEvents();
         nk_glfw3_new_frame(&glfw);
 
-        /* glfwGetFramebufferSize(window, &window_width, &window_height); */
-
         LinkedList *now = windows;
         while (now != NULL)
         {
@@ -144,17 +152,31 @@ int main(int argc, char **argv)
                 tmp->freeFunc(tmp);
                 now->data = ((Window *)now->data)->next;
             }
-            if (((Window *)now->data)->isVisible)
+            if (((Window *)now->data)->isClosed == 1)
+            {
+                if (!nk_window_is_closed(context, ((Window *)now->data)->title))
+                {
+                    nk_window_close(context, ((Window *)now->data)->title);
+                }
+                ((Window *)now->data)->freeFunc(now->data);
+                RemoveNode(windows, now->data);
+
+                LinkedList *next = now->next;
+                free(now);
+                now = next;
+            }
+            else
             {
                 if (nk_begin(context, ((Window *)now->data)->title, nk_rect(0, 0, 800, 600),
-                             NK_WINDOW_CLOSABLE | NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE |
-                                 NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE))
+                             NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | NK_WINDOW_MOVABLE |
+                                 NK_WINDOW_SCALABLE))
                 {
                     ((Window *)now->data)->layoutFunc(context, now->data);
                 }
                 nk_end(context);
+
+                now = now->next;
             }
-            now = now->next;
         }
 
         glViewport(0, 0, window_width, window_height);

@@ -31,10 +31,7 @@ int SendLoginRequest(const char *id, const char *password, char **name)
         FreeTable(table);
         return 1;
     }
-    else
-    {
-        return 0;
-    }
+    return 0;
 }
 
 void loginWindowLayout(struct nk_context *context, Window *window)
@@ -81,7 +78,7 @@ void loginWindowLayout(struct nk_context *context, Window *window)
         char *name;
         if (SendLoginRequest(data->id, data->password, &name))
         {
-            Window *mainWindow = NewMainWindow(1, "main", data->id, data->password, name);
+            Window *mainWindow = NewMainWindow("main", data->id, data->password, name);
             window->next = mainWindow;
             free(name);
         }
@@ -98,10 +95,10 @@ void FreeLoginWindow(Window *window)
     free(window);
 }
 
-Window *NewLoginWindow(int isVisible, const char *title)
+Window *NewLoginWindow(const char *title)
 {
     Window *window = malloc(sizeof(Window));
-    window->isVisible = isVisible;
+    window->isClosed = 0;
     window->layoutFunc = loginWindowLayout;
     window->freeFunc = FreeLoginWindow;
     window->title = title;
