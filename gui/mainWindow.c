@@ -123,9 +123,9 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
         AppendTableRow(row, "数量");
-        AppendTableRow(row, "入库时间");
-        AppendTableRow(row, "生产日期");
-        AppendTableRow(row, "购入单价");
+        AppendTableRow(row, "2004-07-07 00:00:00");
+        AppendTableRow(row, "2000-01-01 10:30:00");
+        AppendTableRow(row, "20.30元");
         AppendTable(table, row);
 
         row = NewTableRow();
@@ -133,9 +133,9 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
         AppendTableRow(row, "数量");
-        AppendTableRow(row, "入库时间");
-        AppendTableRow(row, "生产日期");
-        AppendTableRow(row, "购入单价");
+        AppendTableRow(row, "2004-07-07 00:00:00");
+        AppendTableRow(row, "2000-01-01 10:30:00");
+        AppendTableRow(row, "10.12元");
         AppendTable(table, row);
 
         row = NewTableRow();
@@ -143,9 +143,9 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
         AppendTableRow(row, "数量");
-        AppendTableRow(row, "入库时间");
-        AppendTableRow(row, "生产日期");
-        AppendTableRow(row, "购入单价");
+        AppendTableRow(row, "2004-07-07 00:00:00");
+        AppendTableRow(row, "2000-01-01 10:30:00");
+        AppendTableRow(row, "8.99元");
         AppendTable(table, row);
 
         data->inventoryTable = table;
@@ -164,23 +164,31 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     {
 #warning
         TableRow *row = NewTableRow();
-        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "售价");
+        AppendTableRow(row, "保质期");
         Table *table = NewTable(row, NULL);
 
         row = NewTableRow();
         AppendTableRow(row, "0");
         AppendTableRow(row, "农夫山泉");
+        AppendTableRow(row, "20.00");
+        AppendTableRow(row, "0000-08-00 00:00:00");
         AppendTable(table, row);
 
         row = NewTableRow();
         AppendTableRow(row, "1");
         AppendTableRow(row, "二锅头");
+        AppendTableRow(row, "21.00");
+        AppendTableRow(row, "0000-08-00 00:00:00");
         AppendTable(table, row);
 
         row = NewTableRow();
         AppendTableRow(row, "2");
         AppendTableRow(row, "威士忌");
+        AppendTableRow(row, "30.00");
+        AppendTableRow(row, "0000-08-00 00:00:00");
         AppendTable(table, row);
 
         data->itemTable = table;

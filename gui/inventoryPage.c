@@ -1,6 +1,8 @@
+#include "../data/amount.h"
 #include "../data/linkedList.h"
 #include "../data/operation.h"
 #include "../data/table.h"
+#include "../data/time.h"
 #include "../services/judgeService.h"
 #include "../utils.h"
 #include "config.h"
@@ -75,7 +77,7 @@ int InventoryAdd(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "分");
             Table *table = NewTable(row, "");
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "id"));
+            AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品名称"));
             AppendTableRow(row, "");
             AppendTableRow(row, "1");
@@ -93,6 +95,74 @@ int InventoryAdd(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "100");
             AppendTableRow(row, "3");
             AppendTableRow(row, "2");
+            AppendTable(table, row);
+            PushWindow(context, NewInventoryEdit("库存编辑", data->id, data->password, table));
+            FreeTable(table);
+            return 1;
+        }
+        now = now->next;
+        rowNow = rowNow->next;
+    }
+    return 0;
+}
+
+int InventoryModify(struct nk_context *context, struct Data *data)
+{
+    LinkedList *now = data->inventoryCheckList->next;
+    LinkedList *rowNow = data->inventoryTable->rows->next;
+    while (now != NULL)
+    {
+        if (*(int *)now->data == 1)
+        {
+#warning
+            TableRow *row = NewTableRow();
+            AppendTableRow(row, "商品编号");
+            AppendTableRow(row, "商品名称");
+            AppendTableRow(row, "数量");
+            AppendTableRow(row, "年1");
+            AppendTableRow(row, "月1");
+            AppendTableRow(row, "日1");
+            AppendTableRow(row, "时1");
+            AppendTableRow(row, "分1");
+            AppendTableRow(row, "秒1");
+            AppendTableRow(row, "年2");
+            AppendTableRow(row, "月2");
+            AppendTableRow(row, "日2");
+            AppendTableRow(row, "时2");
+            AppendTableRow(row, "分2");
+            AppendTableRow(row, "秒2");
+            AppendTableRow(row, "元");
+            AppendTableRow(row, "角");
+            AppendTableRow(row, "分");
+            Table *table = NewTable(row, "");
+            row = NewTableRow();
+            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "商品编号"));
+            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "商品名称"));
+            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "数量"));
+
+            const char *time = GetRowItemByColumnName(data->inventoryTable, rowNow->data, "入库时间");
+            TimeInfo info = ParseTime(time, 0);
+            free(AppendTableRow(row, LongLongToString(info.year)));
+            free(AppendTableRow(row, LongLongToString(info.month)));
+            free(AppendTableRow(row, LongLongToString(info.day)));
+            free(AppendTableRow(row, LongLongToString(info.hour)));
+            free(AppendTableRow(row, LongLongToString(info.minute)));
+            free(AppendTableRow(row, LongLongToString(info.second)));
+
+            time = GetRowItemByColumnName(data->inventoryTable, rowNow->data, "生产日期");
+            info = ParseTime(time, 0);
+            free(AppendTableRow(row, LongLongToString(info.year)));
+            free(AppendTableRow(row, LongLongToString(info.month)));
+            free(AppendTableRow(row, LongLongToString(info.day)));
+            free(AppendTableRow(row, LongLongToString(info.hour)));
+            free(AppendTableRow(row, LongLongToString(info.minute)));
+            free(AppendTableRow(row, LongLongToString(info.second)));
+
+            Amount amount = ParseAmount(GetRowItemByColumnName(data->inventoryTable, rowNow->data, "购入单价"));
+            free(AppendTableRow(row, LongLongToString(GetAmountYuan(&amount))));
+            free(AppendTableRow(row, LongLongToString(GetAmountJiao(&amount))));
+            free(AppendTableRow(row, LongLongToString(GetAmountCent(&amount))));
+
             AppendTable(table, row);
             PushWindow(context, NewInventoryEdit("库存编辑", data->id, data->password, table));
             FreeTable(table);
@@ -248,6 +318,10 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
             {
                 if (nk_button_label(context, "~"))
                 {
+                    if (!InventoryModify(context, data))
+                    {
+                        data->message = CloneString("请选择一个库存条目");
+                    }
                 }
             }
 

@@ -133,7 +133,7 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
                             TableRow *titleRow = CloneRow(GetTableTitle(data->itemTable));
                             Table *table = NewTable(titleRow, "");
                             AppendTable(table, CloneRow(rowNow->data));
-                            PushWindow(context, NewInventoryDetail("商品详情", table));
+                            PushWindow(context, NewItemDetail("商品详情", table));
                             FreeTable(table);
                             break;
                         }
