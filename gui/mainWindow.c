@@ -13,7 +13,7 @@
 const char *const sections[SECTION_COUNT] = {"", "商品", "库存", "订单", "折扣", "顾客", "员工", "日志"};
 const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,     InventoryPageLayout,
                                          OrderPageLayout,   DiscountPageLayout, CustomerPageLayout,
-                                         WelcomePageLayout, WelcomePageLayout};
+                                         WelcomePageLayout, JournalPageLayout};
 
 void MainWindowLayout(struct nk_context *context, Window *window)
 {
@@ -348,6 +348,57 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTable(table, row);
 
         data->customerTable = table;
+    }
+
+    data->journalPropertySelected = 0;
+    data->journalValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
+    memset(data->journalValueBuffer, 0, BUFFER_SIZE * sizeof(char));
+
+    a = malloc(sizeof(int *));
+    *a = 0;
+    data->journalCheckList = AppendData(data->journalCheckList, a);
+
+    data->journalProperties = NULL;
+
+    {
+#warning
+        TableRow *row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "员工编号");
+        AppendTableRow(row, "员工姓名");
+        AppendTableRow(row, "时间");
+        AppendTableRow(row, "操作");
+        AppendTableRow(row, "参数");
+        Table *table = NewTable(row, NULL);
+
+        row = NewTableRow();
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "DHC");
+        AppendTableRow(row, "8008208820");
+        AppendTableRow(row, "查看库存");
+        AppendTableRow(row, "8008208820");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "李四");
+        AppendTableRow(row, "12315");
+        AppendTableRow(row, "删库跑路");
+        AppendTableRow(row, "12315");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "黄金眼");
+        AppendTableRow(row, "88001818");
+        AppendTableRow(row, "挪用公款");
+        AppendTableRow(row, "88001818");
+        AppendTable(table, row);
+
+        data->journalTable = table;
     }
 
     window->data = data;

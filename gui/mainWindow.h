@@ -41,4 +41,10 @@ struct Data
     const char **customerProperties;
     struct Table *customerTable;
     struct LinkedList *customerCheckList;
+
+    int journalPropertySelected;
+    char *journalValueBuffer;
+    const char **journalProperties;
+    struct Table *journalTable;
+    struct LinkedList *journalCheckList;
 };
