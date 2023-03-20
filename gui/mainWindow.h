@@ -53,4 +53,10 @@ struct Data
     const char **lossProperties;
     struct Table *lossTable;
     struct LinkedList *lossCheckList;
+
+    int profitPropertySelected;
+    char *profitValueBuffer;
+    const char **profitProperties;
+    struct Table *profitTable;
+    struct LinkedList *profitCheckList;
 };

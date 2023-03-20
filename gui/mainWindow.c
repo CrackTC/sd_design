@@ -8,12 +8,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#define SECTION_COUNT 9
+#define SECTION_COUNT 11
 
-const char *const sections[SECTION_COUNT] = {"", "商品", "库存", "货损", "订单", "折扣", "顾客", "员工", "日志"};
-const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout,  ItemPageLayout,    InventoryPageLayout,
-                                         LossPageLayout,     OrderPageLayout,   DiscountPageLayout,
-                                         CustomerPageLayout, WelcomePageLayout, JournalPageLayout};
+const char *const sections[SECTION_COUNT] = {"",     "商品", "库存", "货损", "订单", "折扣",
+                                             "顾客", "员工", "日志", "统计", "退货"};
+const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,     ProfitPageLayout, LossPageLayout,
+                                         OrderPageLayout,   DiscountPageLayout, CustomerPageLayout,  WelcomePageLayout,
+                                         JournalPageLayout, ProfitPageLayout,  WelcomePageLayout};
 
 void MainWindowLayout(struct nk_context *context, Window *window)
 {
@@ -446,6 +447,53 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTable(table, row);
 
         data->lossTable = table;
+    }
+
+    data->profitPropertySelected = 0;
+    data->profitValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
+    memset(data->profitValueBuffer, 0, BUFFER_SIZE * sizeof(char));
+
+    a = malloc(sizeof(int *));
+    *a = 0;
+    data->profitCheckList = AppendData(data->profitCheckList, a);
+
+    data->profitProperties = NULL;
+
+    {
+#error
+        TableRow *row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "库存编号");
+        AppendTableRow(row, "损耗时间");
+        AppendTableRow(row, "货损数量");
+        AppendTableRow(row, "货损原因");
+        Table *table = NewTable(row, NULL);
+
+        row = NewTableRow();
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "1919-08-10");
+        AppendTableRow(row, "8008208820");
+        AppendTableRow(row, "8008208820");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "1919-08-10");
+        AppendTableRow(row, "12315");
+        AppendTableRow(row, "12315");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "1919-08-10");
+        AppendTableRow(row, "88001818");
+        AppendTableRow(row, "88001818");
+        AppendTable(table, row);
+
+        data->profitTable = table;
     }
 
     window->data = data;
