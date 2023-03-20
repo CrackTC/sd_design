@@ -23,7 +23,7 @@ int SendLoginRequest(const char *id, const char *password, char **name)
     int staffId;
     sscanf(id, "%d", &staffId);
     int loginSuccess;
-    Table *table = judge(staffId, &loginSuccess, password, OP_LOGIN, NULL);
+    Table *table = judge(staffId, &loginSuccess, password, OP_LOGIN);
 
     if (loginSuccess)
     {

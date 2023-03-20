@@ -8,8 +8,9 @@ struct Data
     char *message;
     int sectionSelected;
 
-    void (*messageOK)(void *);
-    void (*messageCancel)(void *);
+    struct nk_context *context;
+
+    void (*messageCallback)(int, void *);
 
     int inventoryPropertySelected;
     char *inventoryValueBuffer;

@@ -8,34 +8,80 @@
 #include "config.h"
 #include "layout.h"
 #include "mainWindow.h"
+#include "stddef.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-static void MessageBoxCallBack(void *parameter)
+static void MessageBoxCallBack(int ok, void *parameter)
 {
     struct Data *data = parameter;
+    free(data->message);
     data->message = NULL;
 }
 
-void InventoryDelete(void *parameter)
+void InventoryDelete(int ok, void *parameter)
 {
+    if (ok == 0)
+    {
+        MessageBoxCallBack(ok, parameter);
+        return;
+    }
+#warning
+    struct Data *data = parameter;
+    data->messageCallback = MessageBoxCallBack;
+    data->message = CloneString("Succuessfully deleted!");
+    return;
+
+    int hasPermission;
+    judge(data->id, &hasPermission, data->password, OP_DELETE_INVENTORY);
+    if (!hasPermission)
+    {
+        data->messageCallback = MessageBoxCallBack;
+        data->message = CloneString("缺少权限：删除库存");
+        return;
+    }
+
+    LinkedList *now = data->inventoryCheckList->next;
+    LinkedList *rowNow = data->inventoryTable->rows->next;
+    while (now != NULL)
+    {
+        if (*(int *)now->data == 1)
+        {
+            char *id = GetRowItemByColumnName(data->inventoryTable, rowNow->data, "id");
+
+            TableRow *row = NewTableRow();
+            AppendTableRow(row, "id");
+            Table *table = NewTable(row, NULL);
+            row = NewTableRow();
+            AppendTableRow(row, id);
+            AppendTable(table, row);
+#warning finish deletion call
+
+            FreeTable(table);
+        }
+        now = now->next;
+        rowNow = rowNow->next;
+    }
+
+    MessageBoxCallBack(ok, parameter);
 }
 
 void SendInventoryRequest(struct Data *data)
 {
 #warning
-    data->messageCancel = data->messageOK = MessageBoxCallBack;
+    data->messageCallback = MessageBoxCallBack;
     data->message = CloneString("缺少权限：读取库存");
     return;
 
     int hasPermission;
-    data->inventoryTable = judge(data->id, &hasPermission, data->password, OP_READ_INVENTORY, NULL);
+    judge(data->id, &hasPermission, data->password, OP_READ_INVENTORY);
     if (!hasPermission)
     {
-        data->messageCancel = data->messageOK = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：读取库存");
     }
+#warning finish read call
 }
 
 int InventoryLookup(struct nk_context *context, struct Data *data)
@@ -108,7 +154,7 @@ int InventoryAdd(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "3");
             AppendTableRow(row, "2");
             AppendTable(table, row);
-            PushWindow(context, NewInventoryEdit("库存编辑", data->id, data->password, table));
+            PushWindow(context, NewInventoryEdit("库存编辑", data->id, data->password, table, 0));
             FreeTable(table);
             return 1;
         }
@@ -176,7 +222,7 @@ int InventoryModify(struct nk_context *context, struct Data *data)
             free(AppendTableRow(row, LongLongToString(GetAmountCent(&amount))));
 
             AppendTable(table, row);
-            PushWindow(context, NewInventoryEdit("库存编辑", data->id, data->password, table));
+            PushWindow(context, NewInventoryEdit("库存编辑", data->id, data->password, table, 1));
             FreeTable(table);
             return 1;
         }
@@ -189,7 +235,7 @@ int InventoryModify(struct nk_context *context, struct Data *data)
 void InventoryPageLayout(struct nk_context *context, struct Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageOK, data->messageCancel, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
 
     // title
     nk_layout_row_dynamic(context, 0, 1);
@@ -282,7 +328,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!InventoryLookup(context, data))
                     {
-                        data->messageCancel = data->messageOK = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个库存条目");
                     }
                 }
@@ -299,7 +345,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!InventoryAdd(context, data))
                     {
-                        data->messageCancel = data->messageOK = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请在商品页面选择一个商品条目");
                     }
                 }
@@ -314,7 +360,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
             {
                 if (nk_button_label(context, "-"))
                 {
-                    data->messageCancel = MessageBoxCallBack;
+                    data->messageCallback = InventoryDelete;
                     data->message = CloneString("是否确认要删除选中的库存条目");
                 }
             }
@@ -330,6 +376,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!InventoryModify(context, data))
                     {
+                        data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个库存条目");
                     }
                 }

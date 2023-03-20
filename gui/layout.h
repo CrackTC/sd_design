@@ -32,10 +32,15 @@ struct Window
 };
 
 Window *NewMainWindow(const char *title, const char *id, const char *password, const char *name);
+
 Window *NewLoginWindow(const char *title);
+
 Window *NewInventoryDetail(const char *title, const Table *inventory);
-Window *NewInventoryEdit(const char *title, int id, const char *password, Table *inventory);
+Window *NewInventoryEdit(const char *title, int id, const char *password, Table *inventory, int modify);
+
 Window *NewItemDetail(const char *title, const Table *item);
+Window *NewItemEdit(const char *title, int id, const char *password, Table *item, int modify);
+
 Window *NewStaffDetail(const char *title, const Table *staff);
 Window *NewCustomerDetail(const char *title, const Table *customer);
 Window *NewJournalDetail(const char *title, const Table *journal);
@@ -52,7 +57,7 @@ void ItemPageLayout(struct nk_context *context, struct Window *window);
 void PlaceNothing(struct nk_context *context);
 void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);
 void DrawMessageBox(struct nk_context *context, const char *title, int draw, const char *message,
-                    void (*callbackOk)(void *), void (*callbackCancel)(void *), void *parameter);
+                    void (*callback)(int, void *), void *parameter);
 void TableLayout(struct nk_context *context, const Table *table, LinkedList *checkList, const char *filter,
                  const char *value);
 void PushWindow(struct nk_context *context, Window *window);

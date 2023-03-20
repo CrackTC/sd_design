@@ -19,6 +19,10 @@ void MainWindowLayout(struct nk_context *context, Window *window)
     EnsureWindowSize(context, window, 400, 400);
     struct Data *data = window->data;
 
+    if (data->context == NULL) {
+        data->context = context;
+    }
+
     nk_layout_row_begin(context, NK_DYNAMIC, nk_window_get_height(context) - 68, 2);
     {
         nk_layout_row_push(context, 0.2f);

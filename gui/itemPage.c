@@ -1,6 +1,8 @@
+#include "../data/amount.h"
 #include "../data/linkedList.h"
 #include "../data/operation.h"
 #include "../data/table.h"
+#include "../data/time.h"
 #include "../services/judgeService.h"
 #include "../utils.h"
 #include "config.h"
@@ -10,30 +12,175 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static void MessageBoxCallBack(int ok, void *parameter)
+{
+    struct Data *data = parameter;
+    free(data->message);
+    data->message = NULL;
+}
+
 void SendItemRequest(struct Data *data)
 {
 #warning
+    data->messageCallback = MessageBoxCallBack;
     data->message = CloneString("缺少权限：读取商品");
     return;
 
     int hasPermission;
-    data->itemTable = judge(data->id, &hasPermission, data->password, OP_READ_ITEM, NULL);
+    data->itemTable = judge(data->id, &hasPermission, data->password, OP_READ_ITEM);
     if (!hasPermission)
     {
+        data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：读取商品");
+        return;
     }
+
+#warning finish read call
 }
 
-static void MessageBoxCallBack(void *parameter)
+void ItemAdd(struct nk_context *context, struct Data *data)
 {
+    TableRow *row = NewTableRow();
+    AppendTableRow(row, "商品名称");
+    AppendTableRow(row, "数量");
+    AppendTableRow(row, "年");
+    AppendTableRow(row, "月");
+    AppendTableRow(row, "日");
+    AppendTableRow(row, "时");
+    AppendTableRow(row, "分");
+    AppendTableRow(row, "秒");
+    AppendTableRow(row, "元");
+    AppendTableRow(row, "角");
+    AppendTableRow(row, "分");
+    Table *table = NewTable(row, "");
+
+    row = NewTableRow();
+    AppendTableRow(row, "");
+    AppendTableRow(row, "");
+    AppendTableRow(row, "2023");
+    AppendTableRow(row, "1");
+    AppendTableRow(row, "1");
+    AppendTableRow(row, "1");
+    AppendTableRow(row, "1");
+    AppendTableRow(row, "2");
+    AppendTableRow(row, "2");
+    AppendTableRow(row, "2");
+    AppendTableRow(row, "2");
+    AppendTable(table, row);
+
+    PushWindow(context, NewItemEdit("商品编辑", data->id, data->password, table, 0));
+    FreeTable(table);
+}
+
+int ItemModify(struct nk_context *context, struct Data *data)
+{
+    LinkedList *now = data->itemCheckList->next;
+    LinkedList *rowNow = data->itemTable->rows->next;
+    while (now != NULL)
+    {
+        if (*(int *)now->data == 1)
+        {
+#warning
+            TableRow *row = NewTableRow();
+
+            {
+                AppendTableRow(row, "商品名称");
+                AppendTableRow(row, "数量");
+                AppendTableRow(row, "年");
+                AppendTableRow(row, "月");
+                AppendTableRow(row, "日");
+                AppendTableRow(row, "时");
+                AppendTableRow(row, "分");
+                AppendTableRow(row, "秒");
+                AppendTableRow(row, "元");
+                AppendTableRow(row, "角");
+                AppendTableRow(row, "分");
+            }
+
+            Table *table = NewTable(row, "");
+
+            {
+                row = NewTableRow();
+                AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品名称"));
+                AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "数量"));
+
+                const char *time = GetRowItemByColumnName(data->itemTable, rowNow->data, "保质期");
+                TimeInfo info = ParseTime(time, 1);
+                free(AppendTableRow(row, LongLongToString(info.year)));
+                free(AppendTableRow(row, LongLongToString(info.month)));
+                free(AppendTableRow(row, LongLongToString(info.day)));
+                free(AppendTableRow(row, LongLongToString(info.hour)));
+                free(AppendTableRow(row, LongLongToString(info.minute)));
+                free(AppendTableRow(row, LongLongToString(info.second)));
+
+                Amount amount = ParseAmount(GetRowItemByColumnName(data->itemTable, rowNow->data, "售价"));
+                free(AppendTableRow(row, LongLongToString(GetAmountYuan(&amount))));
+                free(AppendTableRow(row, LongLongToString(GetAmountJiao(&amount))));
+                free(AppendTableRow(row, LongLongToString(GetAmountCent(&amount))));
+
+                AppendTable(table, row);
+            }
+
+            PushWindow(context, NewInventoryEdit("商品编辑", data->id, data->password, table, 1));
+            FreeTable(table);
+            return 1;
+        }
+        now = now->next;
+        rowNow = rowNow->next;
+    }
+    return 0;
+}
+
+void ItemDelete(int ok, void *parameter)
+{
+    if (ok == 0)
+    {
+        MessageBoxCallBack(ok, parameter);
+        return;
+    }
+#warning
     struct Data *data = parameter;
-    data->message = NULL;
+    data->messageCallback = MessageBoxCallBack;
+    data->message = CloneString("Successfully deleted!");
+    return;
+
+    int hasPermission;
+    judge(data->id, &hasPermission, data->password, OP_DELETE_ITEM);
+    if (!hasPermission)
+    {
+        data->messageCallback = MessageBoxCallBack;
+        data->message = CloneString("缺少权限：删除商品");
+    }
+
+    LinkedList *now = data->itemCheckList->next;
+    LinkedList *rowNow = data->itemTable->rows->next;
+    while (now != NULL)
+    {
+        if (*(int *)now->data == 1)
+        {
+            char *id = GetRowItemByColumnName(data->itemTable, rowNow->data, "id");
+
+            TableRow *row = NewTableRow();
+            AppendTableRow(row, "id");
+            Table *table = NewTable(row, NULL);
+            row = NewTableRow();
+            AppendTableRow(row, id);
+            AppendTable(table, row);
+#warning finish deletion call
+
+            FreeTable(table);
+        }
+        now = now->next;
+        rowNow = rowNow->next;
+    }
+
+    MessageBoxCallBack(ok, parameter);
 }
 
 void ItemPageLayout(struct nk_context *context, struct Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, MessageBoxCallBack, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
 
     // title
     nk_layout_row_dynamic(context, 0, 1);
@@ -152,6 +299,7 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
             {
                 if (nk_button_label(context, "+"))
                 {
+                    ItemAdd(context, data);
                 }
             }
 
@@ -164,6 +312,8 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
             {
                 if (nk_button_label(context, "-"))
                 {
+                    data->messageCallback = ItemDelete;
+                    data->message = CloneString("是否确认要删除选中的商品条目");
                 }
             }
 
@@ -176,6 +326,11 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
             {
                 if (nk_button_label(context, "~"))
                 {
+                    if (!ItemModify(context, data))
+                    {
+                        data->messageCallback = MessageBoxCallBack;
+                        data->message = CloneString("请选择一个商品条目");
+                    }
                 }
             }
 

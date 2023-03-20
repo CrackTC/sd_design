@@ -10,7 +10,7 @@
 
 struct Data
 {
-    struct Table *inventory;
+    struct Table *item;
     int id;
     const char *password;
     char *message;
@@ -24,7 +24,7 @@ static int SendRequest(struct Data *data)
 
 #warning
     int hasPermission;
-    Operation operation = data->modify ? OP_UPDATE_INVENTORY : OP_ADD_INVENTORY;
+    Operation operation = data->modify ? OP_UPDATE_ITEM : OP_ADD_ITEM;
     judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
@@ -41,16 +41,16 @@ static void MessageBoxCallBack(int ok, void *parameter)
     data->message = NULL;
 }
 
-void InventoryEditLayout(struct nk_context *context, Window *window)
+void ItemEditLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
     DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
-    TableRow *dataRow = GetRowByIndex(data->inventory, 1);
+    TableRow *dataRow = GetRowByIndex(data->item, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
     {
         nk_layout_row_dynamic(context, 0, 1);
-        nk_label(context, "库存编辑", NK_TEXT_CENTERED);
+        nk_label(context, "商品编辑", NK_TEXT_CENTERED);
 
         nk_style_pop_font(context);
     }
@@ -62,29 +62,13 @@ void InventoryEditLayout(struct nk_context *context, Window *window)
             nk_style_push_font(context, &fontMedium->handle);
             {
                 nk_layout_row_push(context, 100);
-                nk_label(context, "商品编号", NK_TEXT_CENTERED);
-                nk_style_pop_font(context);
-            }
-            nk_layout_row_push(context, 100);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "商品编号"), 512, nk_filter_decimal);
-
-            nk_layout_row_end(context);
-        }
-
-        nk_layout_row_begin(context, NK_STATIC, 0, 2);
-        {
-            nk_style_push_font(context, &fontMedium->handle);
-            {
-                nk_layout_row_push(context, 100);
                 nk_label(context, "商品名称", NK_TEXT_CENTERED);
                 nk_style_pop_font(context);
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "商品名称"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->item, dataRow, "商品名称"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -97,10 +81,10 @@ void InventoryEditLayout(struct nk_context *context, Window *window)
                 nk_label(context, "数量", NK_TEXT_CENTERED);
                 nk_style_pop_font(context);
             }
-            nk_layout_row_push(context, 100);
+            nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "数量"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->item, dataRow, "数量"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -110,103 +94,49 @@ void InventoryEditLayout(struct nk_context *context, Window *window)
             nk_style_push_font(context, &fontMedium->handle);
             {
                 nk_layout_row_push(context, 100);
-                nk_label(context, "入库时间", NK_TEXT_CENTERED);
+                nk_label(context, "保质期", NK_TEXT_CENTERED);
                 nk_style_pop_font(context);
             }
 
             nk_layout_row_push(context, 70);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "年1"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->item, dataRow, "年"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "年", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "月1"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->item, dataRow, "月"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "月", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "日1"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->item, dataRow, "日"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "日", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "时1"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->item, dataRow, "时"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "时", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "分1"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->item, dataRow, "分"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "分", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "秒1"), 512, nk_filter_decimal);
-            nk_layout_row_push(context, 30);
-            nk_label(context, "秒", NK_TEXT_CENTERED);
-
-            nk_layout_row_end(context);
-        }
-
-        nk_layout_row_begin(context, NK_STATIC, 0, 13);
-        {
-            nk_style_push_font(context, &fontMedium->handle);
-            {
-                nk_layout_row_push(context, 100);
-                nk_label(context, "生产日期", NK_TEXT_CENTERED);
-                nk_style_pop_font(context);
-            }
-
-            nk_layout_row_push(context, 70);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "年2"), 512, nk_filter_decimal);
-            nk_layout_row_push(context, 30);
-            nk_label(context, "年", NK_TEXT_CENTERED);
-
-            nk_layout_row_push(context, 40);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "月2"), 512, nk_filter_decimal);
-            nk_layout_row_push(context, 30);
-            nk_label(context, "月", NK_TEXT_CENTERED);
-
-            nk_layout_row_push(context, 40);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "日2"), 512, nk_filter_decimal);
-            nk_layout_row_push(context, 30);
-            nk_label(context, "日", NK_TEXT_CENTERED);
-
-            nk_layout_row_push(context, 40);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "时2"), 512, nk_filter_decimal);
-            nk_layout_row_push(context, 30);
-            nk_label(context, "时", NK_TEXT_CENTERED);
-
-            nk_layout_row_push(context, 40);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "分2"), 512, nk_filter_decimal);
-            nk_layout_row_push(context, 30);
-            nk_label(context, "分", NK_TEXT_CENTERED);
-
-            nk_layout_row_push(context, 40);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "秒2"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->item, dataRow, "秒"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "秒", NK_TEXT_CENTERED);
 
@@ -218,28 +148,28 @@ void InventoryEditLayout(struct nk_context *context, Window *window)
             nk_style_push_font(context, &fontMedium->handle);
             {
                 nk_layout_row_push(context, 100);
-                nk_label(context, "购入单价", NK_TEXT_CENTERED);
+                nk_label(context, "售价", NK_TEXT_CENTERED);
                 nk_style_pop_font(context);
             }
 
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "元"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->item, dataRow, "元"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "元", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "角"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->item, dataRow, "角"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "角", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->inventory, dataRow, "分"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->item, dataRow, "分"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "分", NK_TEXT_CENTERED);
 
@@ -268,24 +198,24 @@ void InventoryEditLayout(struct nk_context *context, Window *window)
     }
 }
 
-void FreeInventoryEdit(Window *window)
+void FreeItemEdit(Window *window)
 {
     struct Data *data = window->data;
-    FreeTable(data->inventory);
+    FreeTable(data->item);
     free(window);
 }
 
-Window *NewInventoryEdit(const char *title, int id, const char *password, Table *inventory, int modify)
+Window *NewItemEdit(const char *title, int id, const char *password, Table *item, int modify)
 {
     Window *window = malloc(sizeof(Window));
     window->isClosed = 0;
-    window->layoutFunc = InventoryEditLayout;
-    window->freeFunc = FreeInventoryEdit;
+    window->layoutFunc = ItemEditLayout;
+    window->freeFunc = FreeItemEdit;
     window->title = title;
 
     struct Data *data = malloc(sizeof(struct Data));
     memset(data, 0, sizeof(struct Data));
-    data->inventory = CloneTableBuffered(inventory, 512);
+    data->item = CloneTableBuffered(item, 512);
     data->id = id;
     data->password = password;
     data->modify = modify;
