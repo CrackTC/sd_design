@@ -417,22 +417,33 @@ Table *ReviseInventory(Table *input)
         GetInventoryInformationFromTable(input, &itemId, &number, &y1, &m1, &d1, &h1, &min1, &s1, &y2, &m2, &d2, &h2,
                                          &min2, &s2, &yuan, &jiao, &cent);
 
-        Time inboundTime = NewDateTime(y1, m1, d1, h1, min1, s1);    // 将入库时间信息转化
-        Time productionTime = NewDateTime(y2, m2, d2, h2, min2, s2); // 将生产日期信息转化
-        Amount unitPrice = NewAmount(yuan, jiao, cent);              // 将进价信息转化
+        // 将入库时间信息转化
+        Time inboundTime = NewDateTime(y1, m1, d1, h1, min1, s1);
+        // 将生产日期信息转化
+        Time productionTime = NewDateTime(y2, m2, d2, h2, min2, s2);
+        // 将进价信息转化
+        Amount unitPrice = NewAmount(yuan, jiao, cent);
 
-        if (GetItemById(itemId) != NULL) // 判断是否存在相关的商品信息
+        // 判断是否存在相关的商品信息
+        if (GetItemById(itemId) != NULL)
         {
             Time NowTime = GetSystemTime();
-            if (CompareTime(&NowTime, &inboundTime)) // 判断输入的入库时间是否有误
+            // 判断输入的入库时间是否有误
+            if (CompareTime(&NowTime, &inboundTime))
             {
+                // 判断输入的生产日期是否有误
                 if (CompareTime(&NowTime, &productionTime))
-                {                                                            // 判断输入的生产日期是否有误
-                    SetInventoryEntryItemId(entry, itemId);                  // 改变商品id
-                    SetInventoryEntryNumber(entry, number);                  // 改变货存数量
-                    SetInventoryEntryInboundTime(entry, &inboundTime);       // 改变该批货的入库时间
-                    SetInventoryEntryProductionTime(entry, &productionTime); // 改变该批货的生产日期
-                    SetInventoryEntryInboundUnitPrice(entry, &unitPrice);    // 改变该批货物的购入单价
+                {
+                    // 改变商品id
+                    SetInventoryEntryItemId(entry, itemId);
+                    // 改变货存数量
+                    SetInventoryEntryNumber(entry, number);
+                    // 改变该批货的入库时间
+                    SetInventoryEntryInboundTime(entry, &inboundTime);
+                    // 改变该批货的生产日期
+                    SetInventoryEntryProductionTime(entry, &productionTime);
+                    // 改变该批货物的购入单价
+                    SetInventoryEntryInboundUnitPrice(entry, &unitPrice);
                     InventorySave();
                     table = NewTable(NULL, " 0 修改完成");
                 }
@@ -458,9 +469,10 @@ Table *AddItem(Table *input)
 
     // 获取要加入的商品的信息
     TableRow *row = GetRowByIndex(input, 1);
-    int id = change(GetRowItemByColumnName(input, row, "Id")); // 将Id由字符转为整数类型
-
-    const char *itemName = GetRowItemByColumnName(input, row, "name"); // 获取该商品的名称
+    // 将Id由字符转为整数类型
+    int id = change(GetRowItemByColumnName(input, row, "Id"));
+    // 获取该商品的名称
+    const char *itemName = GetRowItemByColumnName(input, row, "name");
 
     // 将字符转化为数字
     int yuan = change(GetRowItemByColumnName(input, row, "yuan"));
@@ -1037,7 +1049,7 @@ Table *ReviseLossInventory(Table *input)
                 table = NewTable(NULL, "输入货损数量有误 未查询到相关的货损");
         }
         else
-            table = NewTable(NULL, "要修改的货存编号有误 未查询到相关的货存编号");
+            table = NewTable(NULL, "输入的修改后的货存编号有误 未查询到相关的货存编号");
     }
     else
         table = NewTable(NULL, "输入货损编号有误 未查询到相关的货损");
