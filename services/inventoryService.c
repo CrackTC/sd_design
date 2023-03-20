@@ -889,11 +889,12 @@ Table *ReviseLossInventory(Table *input)
         int s = change(GetRowItemByColumnName(input, row, "s"));
         Time time1 = NewDateTime(y, m, d, h, min, s);
         int oldNumber = GetLossEntryNumber(
-            GetInventoryById(GetLossEntryById(change(GetRowItemByColumnName(input, row, "Id"))))); // 获取原有的货损数量
+            GetLossEntryById(change(GetRowItemByColumnName(input, row, "Id")))); // 获取原有的货损数量
         int oldInventoryId = GetLossEntryInventoryId(
             GetLossEntryById(change(GetRowItemByColumnName(input, row, "Id")))); // 获取原有的货损库存编号
         int NewNumber = change(GetRowItemByColumnName(input, row, "number"));    // 获取修改后的数量
-        if (NewNumber <= GetInventoryEntryNumber(change(GetRowItemByColumnName(input, row, "inventoryId"))))
+        if (NewNumber <=
+            GetInventoryEntryNumber(GetInventoryById(change(GetRowItemByColumnName(input, row, "inventoryId")))))
         {
 
             // 修改信息的函数
@@ -906,8 +907,9 @@ Table *ReviseLossInventory(Table *input)
                                     GetInventoryEntryNumber(GetInventoryById(oldInventoryId)) +
                                         oldNumber); // 将原有的货损数量加回到货存系统中
             SetInventoryEntryNumber(
-                GetInventoryById(GetInventoryById(change(GetRowItemByColumnName(input, row, "inventoryId")))),
-                GetInventoryEntryNumber(change(GetRowItemByColumnName(input, row, "inventoryId"))) - NewNumber); //
+                GetInventoryById(change(GetRowItemByColumnName(input, row, "inventoryId"))),
+                GetInventoryEntryNumber(GetInventoryById(change(GetRowItemByColumnName(input, row, "inventoryId")))) -
+                    NewNumber);
             LossEntrySave();
             InventorySave();
             table = NewTable(NULL, "修改成功");
