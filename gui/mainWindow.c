@@ -11,8 +11,9 @@
 #define SECTION_COUNT 8
 
 const char *const sections[SECTION_COUNT] = {"", "商品", "库存", "订单", "折扣", "顾客", "员工", "日志"};
-const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout,  ItemPageLayout,    InventoryPageLayout, OrderPageLayout,
-                                         DiscountPageLayout, WelcomePageLayout, WelcomePageLayout,   WelcomePageLayout};
+const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,     InventoryPageLayout,
+                                         OrderPageLayout,   DiscountPageLayout, CustomerPageLayout,
+                                         WelcomePageLayout, WelcomePageLayout};
 
 void MainWindowLayout(struct nk_context *context, Window *window)
 {
@@ -304,6 +305,49 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTable(table, row);
 
         data->orderTable = table;
+    }
+
+    data->customerPropertySelected = 0;
+    data->customerValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
+    memset(data->customerValueBuffer, 0, BUFFER_SIZE * sizeof(char));
+
+    a = malloc(sizeof(int *));
+    *a = 0;
+    data->customerCheckList = AppendData(data->customerCheckList, a);
+
+    data->customerProperties = NULL;
+
+    {
+#warning
+        TableRow *row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "客户等级");
+        AppendTableRow(row, "客户姓名");
+        AppendTableRow(row, "客户联系方式");
+        Table *table = NewTable(row, NULL);
+
+        row = NewTableRow();
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "DHC");
+        AppendTableRow(row, "8008208820");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "李四");
+        AppendTableRow(row, "12315");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "黄金眼");
+        AppendTableRow(row, "88001818");
+        AppendTable(table, row);
+
+        data->customerTable = table;
     }
 
     window->data = data;
