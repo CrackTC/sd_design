@@ -35,6 +35,7 @@ char *AppendTableRow(TableRow *row, char *item)
 {
     if (row == NULL || item == NULL)
     {
+        printf("appending: arg null\n");
         return NULL;
     }
     printf("appending: %s\n", item);
@@ -157,6 +158,7 @@ char *GetRowItemByColumnName(const Table *table, const TableRow *row, const char
 {
     if (table == NULL || row == NULL || columnName == NULL)
     {
+        printf("getrowitem failed: arg null\n");
         return NULL;
     }
 
@@ -173,6 +175,7 @@ char *GetRowItemByColumnName(const Table *table, const TableRow *row, const char
         nameIndex++;
         now = now->next;
     }
+    printf("getrowitem failed: columnName: %s\n", columnName);
     return NULL;
 }
 
