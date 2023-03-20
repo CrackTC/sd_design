@@ -7,7 +7,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-#define OPERATION_COUNT 31
+#define OPERATION_COUNT 35
 
 /*
  * Name: Operation
@@ -107,6 +107,18 @@ enum Operation
 
     // 查询退货条目
     OP_READ_REFUND,
+
+    // 增加货损条目
+    OP_ADD_LOSS,
+
+    // 删除货损条目
+    OP_DELETE_LOSS,
+
+    // 修改货损条目
+    OP_UPDATE_LOSS,
+
+    // 查询货损条目
+    OP_READ_LOSS,
 };
 
 typedef enum Operation Operation;
