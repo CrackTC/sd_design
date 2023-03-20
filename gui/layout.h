@@ -35,6 +35,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
 Window *NewLoginWindow(const char *title);
 Window *NewInventoryDetail(const char *title, const Table *inventory);
 Window *NewInventoryEdit(const char *title, int id, const char *password, Table *inventory);
+Window *NewItemDetail(const char *title, const Table *item);
 Window *NewStaffDetail(const char *title, const Table *staff);
 Window *NewCustomerDetail(const char *title, const Table *customer);
 Window *NewJournalDetail(const char *title, const Table *journal);
