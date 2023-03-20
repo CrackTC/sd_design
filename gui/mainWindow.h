@@ -47,4 +47,10 @@ struct Data
     const char **journalProperties;
     struct Table *journalTable;
     struct LinkedList *journalCheckList;
+
+    int lossPropertySelected;
+    char *lossValueBuffer;
+    const char **lossProperties;
+    struct Table *lossTable;
+    struct LinkedList *lossCheckList;
 };

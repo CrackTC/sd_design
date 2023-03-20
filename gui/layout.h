@@ -51,8 +51,10 @@ Window *NewCustomerEdit(const char *title, int id, const char *password, Table *
 
 Window *NewJournalDetail(const char *title, const Table *journal);
 
+Window *NewLossDetail(const char *title, const Table *loss);
+Window *NewLossEdit(const char *title, int id, const char *password, Table *loss, int modify);
+
 Window *NewStaffDetail(const char *title, const Table *staff);
-Window *NewLossEntryDetail(const char *title, const Table *lossEntry);
 Window *NewProfitDetail(const char *title, const Table *profit);
 Window *NewRefundEntryDetail(const char *title, const Table *refund);
 
@@ -63,6 +65,7 @@ void OrderPageLayout(struct nk_context *context, struct Window *window);
 void DiscountPageLayout(struct nk_context *context, struct Window *window);
 void CustomerPageLayout(struct nk_context *context, struct Window *window);
 void JournalPageLayout(struct nk_context *context, struct Window *window);
+void LossPageLayout(struct nk_context *context, struct Window *window);
 
 void PlaceNothing(struct nk_context *context);
 void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);
