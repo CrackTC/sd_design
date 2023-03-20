@@ -27,6 +27,7 @@ typedef struct TimeInfo
     int hour;
     int minute;
     int second;
+    int isSpan;
 } TimeInfo;
 
 /*
@@ -89,7 +90,7 @@ Time NewDateTime(int year, int month, int day, int hour, int minute, int second)
  * Returns: 若时间间隔信息超出范围，返回value为-1的Time
  *          否则，返回所创建的Time
  * */
-Time NewTimeSpan(int year, int month, int day, int hour, int minute, int second);
+Time NewTimeSpan(int day, int hour);
 
 /*
  * Name: GetTimeInfo

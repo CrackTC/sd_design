@@ -25,8 +25,15 @@ int CompareTime(const Time *timeA, const Time *timeB)
 char *TimeToString(const TimeInfo info)
 {
     char *result = malloc(20 * sizeof(char));
-    sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d", info.year, info.month, info.day, info.hour, info.minute,
-            info.second);
+    if (info.isSpan)
+    {
+        sprintf(result, "%02d天%02d小时", info.day, info.hour);
+    }
+    else
+    {
+        sprintf(result, "%04d-%02d-%02d %02d:%02d:%02d", info.year, info.month, info.day, info.hour, info.minute,
+                info.second);
+    }
     return result;
 }
 
@@ -45,33 +52,28 @@ Time NewDateTime(int year, int month, int day, int hour, int minute, int second)
     return result;
 }
 
-Time NewTimeSpan(int year, int month, int day, int hour, int minute, int second)
+Time NewTimeSpan(int day, int hour)
 {
-    struct tm info;
-    info.tm_year = year;
-    info.tm_mon = month;
-    info.tm_mday = day + 1;
-    info.tm_hour = hour;
-    info.tm_min = minute;
-    info.tm_sec = second;
-    info.tm_isdst = -1;
+    time_t result = 0;
+    result += day * 24 * 3600;
+    result += hour * 3600;
 
-    Time result = {mktime(&info)};
-    return result;
+    Time time = {result};
+    return time;
 }
 
 TimeInfo GetTimeInfo(const Time *time, int isDateTime)
 {
-    struct tm *info = localtime(&time->value);
     if (isDateTime)
     {
-        TimeInfo result = {info->tm_year + 1900, info->tm_mon + 1, info->tm_mday,
-                           info->tm_hour,        info->tm_min,     info->tm_sec};
+        struct tm *info = localtime(&time->value);
+        TimeInfo result = {
+            info->tm_year + 1900, info->tm_mon + 1, info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec, 0};
         return result;
     }
     else
     {
-        TimeInfo result = {info->tm_year, info->tm_mon, info->tm_mday - 1, info->tm_hour, info->tm_min, info->tm_sec};
+        TimeInfo result = {0, 0, time->value / 3600 / 24, (time->value % (24 * 3600)) / 3600, 0, 0, 1};
         return result;
     }
 }
