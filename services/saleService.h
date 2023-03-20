@@ -3,7 +3,7 @@
 
 #include "../data/table.h"
 
-// 添加退货
+//添加退货
 
 /*  订单id    id
  *  原因      reason
@@ -18,7 +18,7 @@
  * * * * * */
 Table *AddRefund(Table *a);
 
-// 删除退货
+//删除退货
 
 /*  订单id    id
  *
@@ -27,7 +27,7 @@ Table *AddRefund(Table *a);
  * * * * * */
 Table *RemoveRefund(Table *a);
 
-// 修改退货
+//修改退货
 
 /*  订单id    id
  *  原因      reason
@@ -42,7 +42,7 @@ Table *RemoveRefund(Table *a);
  * * * * * */
 Table *UpdateRefund(Table *a);
 
-// 查询退货
+//查询退货
 
 /*  无输入
  *
@@ -59,7 +59,7 @@ Table *GetAllRefund(Table *a);
  * * * * * */
 Table *GetSingleRefund(Table *a);
 
-// 读取订单
+//读取订单
 
 /*  无输入
  *
@@ -76,7 +76,7 @@ Table *GetAllOrder(Table *a);
  * * * * * */
 Table *GetSingleOrder(Table *a);
 
-// 添加折扣
+//添加折扣
 
 /*  商品id    id
  *  折扣比率  ratio
@@ -93,7 +93,7 @@ Table *GetSingleOrder(Table *a);
  * * * * * */
 Table *AddDiscount(Table *a);
 
-// 删除折扣
+//删除折扣
 
 /*  折扣id    id
  *
@@ -102,7 +102,7 @@ Table *AddDiscount(Table *a);
  * * * * * */
 Table *RemoveDiscount(Table *a);
 
-// 修改折扣
+//修改折扣
 
 /*  折扣id    discountid
  *  商品id    itemid
@@ -120,7 +120,7 @@ Table *RemoveDiscount(Table *a);
  * * * * * */
 Table *UpdateDiscount(Table *a);
 
-// 清理过期折扣
+//清理过期折扣
 
 /*  无输入
  *
@@ -128,7 +128,7 @@ Table *UpdateDiscount(Table *a);
  * * * * * */
 Table *ClearOutdateDiscount(Table *a);
 
-// 查询折扣
+//查询折扣
 
 /*  无输入
  *
@@ -145,7 +145,7 @@ Table *GetAllDiscount(Table *a);
  */
 Table *GetSingleDiscount(Table *a);
 
-// 添加售货
+//添加售货
 
 /*  商品id    itemid
  *  客户id    customerid
@@ -167,7 +167,7 @@ Table *AddOrder(Table *a);
  */
 Table *AddSpecificOrder(Table *a);
 
-// 修改订单
+//修改订单
 
 /*  订单id    orderid
  *  库存id    inventoryid
@@ -178,10 +178,13 @@ Table *AddSpecificOrder(Table *a);
  *      失败：备注返回“不存在符合条件的订单条目” 或 “不存在符合条件的库存条目” 或 “不存在符合条件的客户”
  * * * * * */
 Table *UpdateOrder(Table *a);
+
+//删除订单
+
 /*  订单id    id
  *
  *  返回值：
- *      失败：备注返回“不存在符合条件的订单条目” 或 “删除订单失败”
+ *      失败：备注返回“不存在符合条件的订单条目” 或 “删除订单失败” 或 “该订单不可删除”
  * * * * * */
 Table *RemoveAnOrder(Table *a);
 

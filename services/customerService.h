@@ -19,7 +19,7 @@ Table *AddCustomer(Table *a);
 /*  客户id        id
  *
  *  返回值：
- *      失败：备注返回“不存在符合条件的客户”
+ *      失败：备注返回“不存在符合条件的客户” 或 “该客户不可删除”
  * * * * * */
 Table *DeleteCustomer(Table *a);
 

@@ -3,6 +3,7 @@
 
 #include "../data/customer.h"
 #include "../data/linkedList.h"
+#include "../data/order.h"
 #include "../data/table.h"
 #include "../utils.h"
 #include "customerService.h"
@@ -12,7 +13,7 @@ Table *AddCustomer(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int level = GetRowItemByColumnName(a, information, "level");
+    int level = atoi(GetRowItemByColumnName(a, information, "level"));
     const char *name = GetRowItemByColumnName(a, information, "name");
     const char *contact = GetRowItemByColumnName(a, information, "contact");
     // 判断客户是否存在
@@ -23,11 +24,12 @@ Table *AddCustomer(Table *a)
         while (customernode != NULL)
         {
             Customer *thiscustomer = customernode->data;
-            char *comparecontact = GetCustomerContact(thiscustomer);
+            const char *comparecontact = GetCustomerContact(thiscustomer);
             if (strcmp(comparecontact, contact) == 0)
             {
                 TableRow *row = NewTableRow();
-                Table *goback = NewTable(row, "客户已存在") return goback;
+                Table *goback = NewTable(row, "客户已存在");
+                return goback;
             }
 
             customernode = customernode->next;
@@ -39,6 +41,9 @@ Table *AddCustomer(Table *a)
     Customer *append = NewCustomer(level, newname, newcontact);
     if (append == NULL)
     {
+        free(newname);
+        free(newcontact);
+
         TableRow *row = NewTableRow();
         Table *goback = NewTable(row, "创建新客户失败");
         return goback;
@@ -46,6 +51,9 @@ Table *AddCustomer(Table *a)
     int judge = AppendCustomer(append);
     if (judge)
     {
+        free(newname);
+        free(newcontact);
+
         TableRow *row = NewTableRow();
         Table *goback = NewTable(row, "创建新客户失败");
         return goback;
@@ -53,6 +61,9 @@ Table *AddCustomer(Table *a)
 
     CustomerSave();
     // 返回值
+    free(newname);
+    free(newcontact);
+
     TableRow *row = NewTableRow();
     Table *goback = NewTable(row, NULL);
     return goback;
@@ -63,8 +74,8 @@ Table *DeleteCustomer(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int id = GetRowItemByColumnName(a, information, "id");
-    // 查找客户判断并删除
+    int id = atoi(GetRowItemByColumnName(a, information, "id"));
+    // 查找客户判断是否存在
     Customer *del = GetCustomerById(id);
     if (del == NULL)
     {
@@ -72,6 +83,28 @@ Table *DeleteCustomer(Table *a)
         Table *goback = NewTable(row, "不存在符合条件的客户");
         return goback;
     }
+    // 判断客户是否创建过订单
+    LinkedList *ordernode = GetAllOrders();
+    LinkedList *singleordernode = ordernode;
+    int judge = 0;
+    while (singleordernode != NULL)
+    {
+        Order *thisorder = singleordernode->data;
+        int thiscustomerid = GetOrderCustomerId(thisorder);
+        if (thiscustomerid == id)
+        {
+            judge = 1;
+            break;
+        }
+        singleordernode = singleordernode->next;
+    }
+    if (judge)
+    {
+        TableRow *row = NewTableRow();
+        Table *goback = NewTable(row, "该客户不可删除");
+        return goback;
+    }
+
     RemoveCustomer(del);
     FreeCustomer(del);
     CustomerSave();
@@ -87,8 +120,8 @@ Table *UpdateCustomer(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int id = GetRowItemByColumnName(a, information, "id");
-    int level = GetRowItemByColumnName(a, information, "level");
+    int id = atoi(GetRowItemByColumnName(a, information, "id"));
+    int level = atoi(GetRowItemByColumnName(a, information, "level"));
     const char *name = GetRowItemByColumnName(a, information, "name");
     const char *contact = GetRowItemByColumnName(a, information, "contact");
     // 修改数据
@@ -114,7 +147,7 @@ Table *GetSingleCustomer(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int id = GetRowItemByColumnName(a, information, "id");
+    int id = atoi(GetRowItemByColumnName(a, information, "id"));
 
     // 获取信息
     Customer *info = GetCustomerById(id);
@@ -159,7 +192,7 @@ Table *GetSingleCustomer(Table *a)
 }
 
 // 获取所有客户信息
-Table *GetAllCustomer()
+Table *GetAllCustomer(Table *a)
 {
     LinkedList *head = GetAllCustomers();
 
