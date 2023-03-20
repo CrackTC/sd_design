@@ -30,6 +30,12 @@ struct Data
     struct Table *orderTable;
     struct LinkedList *orderCheckList;
 
+    int discountPropertySelected;
+    char *discountValueBuffer;
+    const char **discountProperties;
+    struct Table *discountTable;
+    struct LinkedList *discountCheckList;
+
     int customerPropertySelected;
     char *customerValueBuffer;
     const char **customerProperties;

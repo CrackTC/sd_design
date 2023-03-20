@@ -11,8 +11,8 @@
 #define SECTION_COUNT 8
 
 const char *const sections[SECTION_COUNT] = {"", "商品", "库存", "订单", "折扣", "顾客", "员工", "日志"};
-const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,    InventoryPageLayout, OrderPageLayout,
-                                         WelcomePageLayout, WelcomePageLayout, WelcomePageLayout,   WelcomePageLayout};
+const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout,  ItemPageLayout,    InventoryPageLayout, OrderPageLayout,
+                                         DiscountPageLayout, WelcomePageLayout, WelcomePageLayout,   WelcomePageLayout};
 
 void MainWindowLayout(struct nk_context *context, Window *window)
 {
@@ -200,6 +200,47 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTable(table, row);
 
         data->itemTable = table;
+    }
+
+    data->discountPropertySelected = 0;
+    data->discountValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
+    memset(data->discountValueBuffer, 0, BUFFER_SIZE * sizeof(char));
+
+    a = malloc(sizeof(int *));
+    *a = 0;
+    data->discountCheckList = AppendData(data->discountCheckList, a);
+
+    data->discountProperties = NULL;
+
+    {
+        TableRow *row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "折扣比率");
+        AppendTableRow(row, "客户等级");
+        AppendTableRow(row, "截止日期");
+        Table *table = NewTable(row, NULL);
+
+        row = NewTableRow();
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "农夫山泉");
+        AppendTableRow(row, "30");
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "2004-07-07 00:00:00");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "二锅头");
+        AppendTableRow(row, "70");
+        AppendTableRow(row, "3");
+        AppendTableRow(row, "2004-07-07 00:00:00");
+        AppendTable(table, row);
+
+        data->discountTable = table;
     }
 
     data->orderPropertySelected = 0;

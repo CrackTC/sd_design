@@ -43,6 +43,9 @@ Window *NewItemEdit(const char *title, int id, const char *password, Table *item
 Window *NewOrderDetail(const char *title, const Table *order);
 Window *NewOrderEdit(const char *title, int id, const char *password, Table *order, int modify);
 
+Window *NewDiscountDetail(const char *title, const Table *discount);
+Window *NewDiscountEdit(const char *title, int id, const char *password, Table *discount, int modify);
+
 Window *NewStaffDetail(const char *title, const Table *staff);
 Window *NewCustomerDetail(const char *title, const Table *customer);
 Window *NewJournalDetail(const char *title, const Table *journal);
@@ -55,6 +58,7 @@ void WelcomePageLayout(struct nk_context *context, struct Window *window);
 void InventoryPageLayout(struct nk_context *context, struct Window *window);
 void ItemPageLayout(struct nk_context *context, struct Window *window);
 void OrderPageLayout(struct nk_context *context, struct Window *window);
+void DiscountPageLayout(struct nk_context *context, struct Window *window);
 
 void PlaceNothing(struct nk_context *context);
 void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);
