@@ -23,4 +23,16 @@ struct Data
     const char **itemProperties;
     struct Table *itemTable;
     struct LinkedList *itemCheckList;
+
+    int orderPropertySelected;
+    char *orderValueBuffer;
+    const char **orderProperties;
+    struct Table *orderTable;
+    struct LinkedList *orderCheckList;
+
+    int customerPropertySelected;
+    char *customerValueBuffer;
+    const char **customerProperties;
+    struct Table *customerTable;
+    struct LinkedList *customerCheckList;
 };

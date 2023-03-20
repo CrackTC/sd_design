@@ -32,7 +32,6 @@ struct Window
 };
 
 Window *NewMainWindow(const char *title, const char *id, const char *password, const char *name);
-
 Window *NewLoginWindow(const char *title);
 
 Window *NewInventoryDetail(const char *title, const Table *inventory);
@@ -41,18 +40,21 @@ Window *NewInventoryEdit(const char *title, int id, const char *password, Table 
 Window *NewItemDetail(const char *title, const Table *item);
 Window *NewItemEdit(const char *title, int id, const char *password, Table *item, int modify);
 
+Window *NewOrderDetail(const char *title, const Table *order);
+Window *NewOrderEdit(const char *title, int id, const char *password, Table *order, int modify);
+
 Window *NewStaffDetail(const char *title, const Table *staff);
 Window *NewCustomerDetail(const char *title, const Table *customer);
 Window *NewJournalDetail(const char *title, const Table *journal);
 Window *NewBasicDiscountDetail(const char *title, const Table *basicDiscount);
 Window *NewLossEntryDetail(const char *title, const Table *lossEntry);
-Window *NewOrderDetail(const char *title, const Table *order);
 Window *NewProfitDetail(const char *title, const Table *profit);
 Window *NewRefundEntryDetail(const char *title, const Table *refund);
 
 void WelcomePageLayout(struct nk_context *context, struct Window *window);
 void InventoryPageLayout(struct nk_context *context, struct Window *window);
 void ItemPageLayout(struct nk_context *context, struct Window *window);
+void OrderPageLayout(struct nk_context *context, struct Window *window);
 
 void PlaceNothing(struct nk_context *context);
 void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);

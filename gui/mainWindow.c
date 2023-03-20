@@ -8,18 +8,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#define SECTION_COUNT 7
+#define SECTION_COUNT 8
 
-const char *const sections[SECTION_COUNT] = {"", "商品", "库存", "销售", "顾客", "员工", "日志"};
-const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,    InventoryPageLayout, WelcomePageLayout,
-                                         WelcomePageLayout, WelcomePageLayout, WelcomePageLayout};
+const char *const sections[SECTION_COUNT] = {"", "商品", "库存", "订单", "折扣", "顾客", "员工", "日志"};
+const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,    InventoryPageLayout, OrderPageLayout,
+                                         WelcomePageLayout, WelcomePageLayout, WelcomePageLayout,   WelcomePageLayout};
 
 void MainWindowLayout(struct nk_context *context, Window *window)
 {
     EnsureWindowSize(context, window, 400, 400);
     struct Data *data = window->data;
 
-    if (data->context == NULL) {
+    if (data->context == NULL)
+    {
         data->context = context;
     }
 
@@ -107,7 +108,6 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     int *a = malloc(sizeof(int *));
     *a = 0;
     data->inventoryCheckList = AppendData(data->inventoryCheckList, a);
-
     data->inventoryProperties = NULL;
 
     {
@@ -170,32 +170,99 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         TableRow *row = NewTableRow();
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "售价");
+        AppendTableRow(row, "数量");
         AppendTableRow(row, "保质期");
+        AppendTableRow(row, "售价");
         Table *table = NewTable(row, NULL);
 
         row = NewTableRow();
         AppendTableRow(row, "0");
         AppendTableRow(row, "农夫山泉");
-        AppendTableRow(row, "20.00");
+        AppendTableRow(row, "20");
         AppendTableRow(row, "0000-08-00 00:00:00");
+        AppendTableRow(row, "20.00");
         AppendTable(table, row);
 
         row = NewTableRow();
         AppendTableRow(row, "1");
         AppendTableRow(row, "二锅头");
-        AppendTableRow(row, "21.00");
+        AppendTableRow(row, "30");
         AppendTableRow(row, "0000-08-00 00:00:00");
+        AppendTableRow(row, "21.00");
         AppendTable(table, row);
 
         row = NewTableRow();
         AppendTableRow(row, "2");
         AppendTableRow(row, "威士忌");
-        AppendTableRow(row, "30.00");
+        AppendTableRow(row, "40");
         AppendTableRow(row, "0000-08-00 00:00:00");
+        AppendTableRow(row, "30.00");
         AppendTable(table, row);
 
         data->itemTable = table;
+    }
+
+    data->orderPropertySelected = 0;
+    data->orderValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
+    memset(data->orderValueBuffer, 0, BUFFER_SIZE * sizeof(char));
+
+    a = malloc(sizeof(int *));
+    *a = 0;
+    data->orderCheckList = AppendData(data->orderCheckList, a);
+
+    data->orderProperties = NULL;
+
+    {
+#warning
+        TableRow *row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "库存编号");
+        AppendTableRow(row, "商品编号");
+        AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "客户编号");
+        AppendTableRow(row, "客户姓名");
+        AppendTableRow(row, "购买数量");
+        AppendTableRow(row, "购买时间");
+        AppendTableRow(row, "总价");
+        Table *table = NewTable(row, NULL);
+
+        row = NewTableRow();
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "农夫山泉");
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "张三");
+        AppendTableRow(row, "20");
+        AppendTableRow(row, "2004-07-07 00:00:00");
+        AppendTableRow(row, "20.00");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "二锅头");
+        AppendTableRow(row, "3");
+        AppendTableRow(row, "李四");
+        AppendTableRow(row, "3");
+        AppendTableRow(row, "2004-07-07 00:00:00");
+        AppendTableRow(row, "20.00");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "威士忌");
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "王五");
+        AppendTableRow(row, "7");
+        AppendTableRow(row, "2004-07-07 00:00:00");
+        AppendTableRow(row, "20.00");
+        AppendTable(table, row);
+
+        data->orderTable = table;
     }
 
     window->data = data;

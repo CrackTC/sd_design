@@ -167,7 +167,7 @@ int main(int argc, char **argv)
             }
             else
             {
-                if (nk_begin(context, ((Window *)now->data)->title, nk_rect(0, 0, 800, 600),
+                if (nk_begin(context, ((Window *)now->data)->title, nk_rect(0, 0, 1000, 800),
                              NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | NK_WINDOW_MOVABLE |
                                  NK_WINDOW_SCALABLE))
                 {
