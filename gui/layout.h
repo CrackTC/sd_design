@@ -35,7 +35,14 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
 Window *NewLoginWindow(const char *title);
 Window *NewInventoryDetail(const char *title, const Table *inventory);
 Window *NewInventoryEdit(const char *title, int id, const char *password, Table *inventory);
-Window *NewItemDetail(const char *title, const Table *item);
+Window *NewStaffDetail(const char *title, const Table *staff);
+Window *NewCustomerDetail(const char *title, const Table *customer);
+Window *NewJournalDetail(const char *title, const Table *journal);
+Window *NewBasicDiscountDetail(const char *title, const Table *basicDiscount);
+Window *NewLossEntryDetail(const char *title, const Table *lossEntry);
+Window *NewOrderDetail(const char *title, const Table *order);
+Window *NewProfitDetail(const char *title, const Table *profit);
+Window *NewRefundEntryDetail(const char *title, const Table *refund);
 
 void WelcomePageLayout(struct nk_context *context, struct Window *window);
 void InventoryPageLayout(struct nk_context *context, struct Window *window);
