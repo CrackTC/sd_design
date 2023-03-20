@@ -63,6 +63,16 @@ int CompareTime(const Time *timeA, const Time *timeB);
 char *TimeToString(const TimeInfo info);
 
 /*
+ * Name: ParseTime
+ * Description: 将时间的字符串表示转换为TimeInfo
+ * Arguments:
+ *     time: 字符串表示
+ *     isSpan: 指示传递的时间是否为时间间隔
+ * Returns: 一个TimeInfo, 表示对应的时间
+ * Return*/
+TimeInfo ParseTime(const char *time, int isSpan);
+
+/*
  * Name: NewDateTime
  * Description: 使用指定日期时间信息创建新的Time
  * Arguments:

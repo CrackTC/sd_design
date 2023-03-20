@@ -7,6 +7,7 @@
 #include "amount.h"
 #include <limits.h>
 #include <malloc.h>
+#include <stdio.h>
 
 static const Amount zero = {0};
 
@@ -23,6 +24,15 @@ int GetAmountJiao(const Amount *amount)
 int GetAmountCent(const Amount *amount)
 {
     return amount->value % 10;
+}
+
+Amount ParseAmount(const char *amount)
+{
+    int yuan, jiao, cent;
+    printf("amountParse: %s\n", amount);
+    sscanf(amount, "%d.%1d%1d元", &yuan, &jiao, &cent);
+    Amount result = NewAmount(yuan, jiao, cent);
+    return result;
 }
 
 // 判断value是否可无溢出地被int表示
@@ -83,7 +93,7 @@ Amount NewAmount(int yuan, int jiao, int cent)
             return zero;
         if (cent < -9 || cent > 9)
             return zero;
-        Amount result = {yuan * 100 + jiao + cent};
+        Amount result = {yuan * 100 + jiao * 10 + cent};
         return result;
     }
     return zero;

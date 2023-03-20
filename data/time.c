@@ -37,6 +37,21 @@ char *TimeToString(const TimeInfo info)
     return result;
 }
 
+TimeInfo ParseTime(const char *time, int isSpan)
+{
+    TimeInfo info = {0};
+    if (isSpan)
+    {
+        sscanf(time, "%02d天%02d小时", &info.day, &info.hour);
+    }
+    else
+    {
+        sscanf(time, "%04d-%02d-%02d %02d:%02d:%02d", &info.year, &info.month, &info.day, &info.hour, &info.minute,
+               &info.second);
+    }
+    return info;
+}
+
 Time NewDateTime(int year, int month, int day, int hour, int minute, int second)
 {
     struct tm info;

@@ -46,6 +46,15 @@ int GetAmountJiao(const Amount *amount);
 int GetAmountCent(const Amount *amount);
 
 /*
+ * Name: ParseAmount
+ * Description: 获取金额的字符串表示所对应的Amount值
+ * Arguments:
+ *     amount: 金额的字符串表示
+ * Returns: 对应的Amount
+ * */
+Amount ParseAmount(const char *amount);
+
+/*
  * Name: AmountAdd
  * Description: 获取两个Amount相加结果
  * Arguments:

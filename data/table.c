@@ -37,6 +37,7 @@ char *AppendTableRow(TableRow *row, char *item)
     {
         return NULL;
     }
+    printf("appending: %s\n", item);
     row->columnCount++;
     row->items = AppendData(row->items, CloneString(item));
     return item;
@@ -97,12 +98,14 @@ int AppendTable(Table *table, TableRow *row)
 {
     if (table == NULL || row == NULL)
     {
+        printf("table: append failed, arg null\n");
         return 1;
     }
 
     TableRow *title = table->rows->data;
     if (title->columnCount != row->columnCount)
     {
+        printf("table: append failed, count mismatch\n");
         return 1;
     }
 
