@@ -12,9 +12,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static void MessageBoxCallBack(void *parameter)
+{
+    struct Data *data = parameter;
+    data->message = NULL;
+}
+
+void InventoryDelete(void *parameter)
+{
+}
+
 void SendInventoryRequest(struct Data *data)
 {
 #warning
+    data->messageCancel = data->messageOK = MessageBoxCallBack;
     data->message = CloneString("缺少权限：读取库存");
     return;
 
@@ -22,6 +33,7 @@ void SendInventoryRequest(struct Data *data)
     data->inventoryTable = judge(data->id, &hasPermission, data->password, OP_READ_INVENTORY, NULL);
     if (!hasPermission)
     {
+        data->messageCancel = data->messageOK = MessageBoxCallBack;
         data->message = CloneString("缺少权限：读取库存");
     }
 }
@@ -174,16 +186,10 @@ int InventoryModify(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-static void MessageBoxCallBack(void *parameter)
-{
-    struct Data *data = parameter;
-    data->message = NULL;
-}
-
 void InventoryPageLayout(struct nk_context *context, struct Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageOK, data->messageCancel, data);
 
     // title
     nk_layout_row_dynamic(context, 0, 1);
@@ -276,6 +282,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!InventoryLookup(context, data))
                     {
+                        data->messageCancel = data->messageOK = MessageBoxCallBack;
                         data->message = CloneString("请选择一个库存条目");
                     }
                 }
@@ -292,6 +299,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!InventoryAdd(context, data))
                     {
+                        data->messageCancel = data->messageOK = MessageBoxCallBack;
                         data->message = CloneString("请在商品页面选择一个商品条目");
                     }
                 }
@@ -306,6 +314,8 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
             {
                 if (nk_button_label(context, "-"))
                 {
+                    data->messageCancel = MessageBoxCallBack;
+                    data->message = CloneString("是否确认要删除选中的库存条目");
                 }
             }
 

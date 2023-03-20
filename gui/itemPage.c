@@ -33,7 +33,7 @@ static void MessageBoxCallBack(void *parameter)
 void ItemPageLayout(struct nk_context *context, struct Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, MessageBoxCallBack, data);
 
     // title
     nk_layout_row_dynamic(context, 0, 1);

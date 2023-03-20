@@ -25,7 +25,7 @@ void EnsureWindowSize(struct nk_context *context, Window *window, float width, f
 }
 
 void DrawMessageBox(struct nk_context *context, const char *title, int draw, const char *message,
-                    void (*callback)(void *), void *parameter)
+                    void (*callbackOK)(void *), void (*callbackCancel)(void *), void *parameter)
 {
     if (draw)
     {
@@ -36,17 +36,26 @@ void DrawMessageBox(struct nk_context *context, const char *title, int draw, con
                 nk_label(context, message, NK_TEXT_CENTERED);
             }
 
-            nk_layout_row_dynamic(context, 0, 1);
+            nk_layout_row_dynamic(context, 0, 2);
             {
                 if (nk_button_label(context, "确定"))
                 {
-                    if (callback != NULL)
+                    if (callbackOK != NULL)
                     {
-                        callback(parameter);
+                        callbackOK(parameter);
+                    }
+                    nk_popup_close(context);
+                }
+                if (nk_button_label(context, "取消"))
+                {
+                    if (callbackCancel != NULL)
+                    {
+                        callbackCancel(parameter);
                     }
                     nk_popup_close(context);
                 }
             }
+
             nk_popup_end(context);
         }
     }

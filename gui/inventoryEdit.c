@@ -40,7 +40,7 @@ static void MessageBoxCallBack(void *parameter)
 void InventoryEditLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, MessageBoxCallBack, data);
     TableRow *dataRow = GetRowByIndex(data->inventory, 1);
 
     nk_style_push_font(context, &fontLarge->handle);

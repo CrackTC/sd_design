@@ -8,6 +8,9 @@ struct Data
     char *message;
     int sectionSelected;
 
+    void (*messageOK)(void *);
+    void (*messageCancel)(void *);
+
     int inventoryPropertySelected;
     char *inventoryValueBuffer;
     const char **inventoryProperties;
