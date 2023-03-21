@@ -207,9 +207,9 @@ Table *GetAllCustomer(Table *a)
     // 数据准备和录入
     TableRow *row = NewTableRow();
     AppendTableRow(row, "id");
-    AppendTableRow(row, "level");
-    AppendTableRow(row, "name");
-    AppendTableRow(row, "contact");
+    AppendTableRow(row, "客户等级");
+    AppendTableRow(row, "客户姓名");
+    AppendTableRow(row, "客户联系方式");
     Table *goback = NewTable(row, NULL);
 
     LinkedList *customer = head;
