@@ -30,7 +30,7 @@ Amount ParseAmount(const char *amount)
 {
     int yuan, jiao, cent;
     printf("amountParse: %s\n", amount);
-    sscanf(amount, "%d.%1d%1d元", &yuan, &jiao, &cent);
+    sscanf(amount, "%d.%1d%1d", &yuan, &jiao, &cent);
     Amount result = NewAmount(yuan, jiao, cent);
     return result;
 }
