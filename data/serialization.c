@@ -126,7 +126,9 @@ int Unserialize(Table **destination, const char *path)
             item = malloc((itemLength + 1) * sizeof(char));
 
             Skip(filePointer, strlen("\n        val: "));
-            fgets(item, itemLength + 1, filePointer);
+            fread(item, sizeof(char), itemLength, filePointer);
+            item[itemLength] = '\0';
+//            fgets(item, itemLength + 1, filePointer);
 
             AppendTableRow(row, item);
             free(item);
