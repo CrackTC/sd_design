@@ -1,4 +1,6 @@
 #include "../data/operation.h"
+#include "../services/inventoryService.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../utils.h"
 #include "config.h"
@@ -19,10 +21,6 @@ struct Data
 
 static int SendRequest(struct Data *data)
 {
-    data->message = CloneString("没有权限");
-    return 0;
-
-#warning
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_LOSS : OP_ADD_LOSS;
     judge(data->id, &hasPermission, data->password, operation);
@@ -31,7 +29,67 @@ static int SendRequest(struct Data *data)
         data->message = CloneString("没有权限");
         return 0;
     }
-#warning finish edit call
+
+    TableRow *row = NewTableRow();
+    if (data->modify)
+    {
+        AppendTableRow(row, "id");
+    }
+    AppendTableRow(row, "inventoryId");
+    AppendTableRow(row, "y");
+    AppendTableRow(row, "m");
+    AppendTableRow(row, "d");
+    AppendTableRow(row, "h");
+    AppendTableRow(row, "min");
+    AppendTableRow(row, "s");
+    AppendTableRow(row, "number");
+    AppendTableRow(row, "reason");
+    Table *request = NewTable(row, NULL);
+
+    row = NewTableRow();
+    TableRow *sourceRow = GetRowByIndex(data->loss, 1);
+    if (data->modify)
+    {
+        AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "id"));
+    }
+    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "库存编号"));
+    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "年"));
+    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "月"));
+    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "日"));
+    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "时"));
+    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "分"));
+    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "秒"));
+    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "货损数量"));
+    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "货损原因"));
+    AppendTable(request, row);
+
+    Table *response;
+    if (data->modify)
+    {
+        AddJournal(request, data->id, OP_UPDATE_LOSS);
+        response = ReviseLossInventory(request);
+    }
+    else
+    {
+        AddJournal(request, data->id, OP_ADD_LOSS);
+        response = AddLossInventory(request);
+    }
+    FreeTable(request);
+
+    if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
+    {
+        data->message = CloneString(response->remark);
+    }
+    else
+    {
+        data->message = CloneString("操作成功完成");
+    }
+
+    if (response != NULL)
+    {
+        FreeTable(response);
+    }
+
     return 1;
 }
 

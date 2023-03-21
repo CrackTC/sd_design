@@ -148,11 +148,23 @@ int LossAdd(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "库存编号");
             AppendTableRow(row, "货损数量");
             AppendTableRow(row, "货损原因");
+            AppendTableRow(row, "年");
+            AppendTableRow(row, "月");
+            AppendTableRow(row, "日");
+            AppendTableRow(row, "时");
+            AppendTableRow(row, "分");
+            AppendTableRow(row, "秒");
             Table *table = NewTable(row, "");
 
             row = NewTableRow();
             AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "id"));
             AppendTableRow(row, "0");
+            AppendTableRow(row, "");
+            AppendTableRow(row, "");
+            AppendTableRow(row, "");
+            AppendTableRow(row, "");
+            AppendTableRow(row, "");
+            AppendTableRow(row, "");
             AppendTableRow(row, "");
             AppendTable(table, row);
 
@@ -179,6 +191,12 @@ int LossModify(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "库存编号");
             AppendTableRow(row, "货损数量");
             AppendTableRow(row, "货损原因");
+            AppendTableRow(row, "年");
+            AppendTableRow(row, "月");
+            AppendTableRow(row, "日");
+            AppendTableRow(row, "时");
+            AppendTableRow(row, "分");
+            AppendTableRow(row, "秒");
             Table *table = NewTable(row, "");
 
             row = NewTableRow();
@@ -186,6 +204,16 @@ int LossModify(struct nk_context *context, struct Data *data)
             AppendTableRow(row, GetRowItemByColumnName(data->lossTable, rowNow->data, "库存编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->lossTable, rowNow->data, "货损数量"));
             AppendTableRow(row, GetRowItemByColumnName(data->lossTable, rowNow->data, "货损原因"));
+
+            const char *time = GetRowItemByColumnName(data->lossTable, rowNow->data, "损耗时间");
+            TimeInfo info = ParseTime(time, 0);
+            free(AppendTableRow(row, LongLongToString(info.year)));
+            free(AppendTableRow(row, LongLongToString(info.month)));
+            free(AppendTableRow(row, LongLongToString(info.day)));
+            free(AppendTableRow(row, LongLongToString(info.hour)));
+            free(AppendTableRow(row, LongLongToString(info.minute)));
+            free(AppendTableRow(row, LongLongToString(info.second)));
+
             AppendTable(table, row);
 
             PushWindow(context, NewLossEdit("货损编辑", data->id, data->password, table, 1));
