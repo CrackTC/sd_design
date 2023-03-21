@@ -2,9 +2,7 @@
 #include "../utils.h"
 #include "linkedList.h"
 #include <malloc.h>
-#include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 TableRow *NewTableRow()

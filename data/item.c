@@ -4,14 +4,12 @@
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
-#include <limits.h>
 #include <malloc.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 static int idCount = 0;
-static const char *path = "data/inventory.txt";
+static const char *path = "data/item.txt";
 static const char *idRow = "id";
 static const char *nameRow = "name";
 static const char *priceRow = "price";
@@ -111,7 +109,7 @@ Item *GetItemByName(const char *name)
     while (now != NULL)
     {
         Item *item = now->data;
-        if (strcmp(name, item->name))
+        if (strcmp(name, item->name) != 0 == 0)
         {
             return item;
         }
@@ -138,7 +136,6 @@ Amount GetItemPrice(const Item *item)
 Time GetItemShelfLife(const Item *item)
 {
     return item->shelfLife;
-    ;
 }
 
 void SetItemName(Item *item, const char *value)

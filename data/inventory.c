@@ -1,6 +1,5 @@
 #include "inventory.h"
 #include "../utils.h"
-#include "customer.h"
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"

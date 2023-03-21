@@ -5,7 +5,6 @@
 #include "table.h"
 #include <malloc.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 static int idCount = 0;
 static const char *path = "data/basicDiscount.txt";

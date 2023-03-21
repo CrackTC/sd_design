@@ -6,7 +6,6 @@
 
 #include "amount.h"
 #include <limits.h>
-#include <malloc.h>
 #include <stdio.h>
 
 static const Amount zero = {0};
@@ -57,8 +56,8 @@ Amount AmountMultiply(const Amount *amount, int multiple)
     long long resultValue = amount->value * multiple;
     if (IsValueValid(resultValue / 100))
     {
-        Amount amount = {resultValue};
-        return amount;
+        Amount result = {resultValue};
+        return result;
     }
     return zero;
 }

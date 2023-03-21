@@ -1,14 +1,12 @@
 #include "order.h"
 #include "../utils.h"
 #include "amount.h"
-#include "customer.h"
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
 #include "time.h"
 #include <malloc.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 static int idCount = 0;
 static const char *path = "data/order.txt";

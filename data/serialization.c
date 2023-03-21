@@ -136,5 +136,6 @@ int Unserialize(Table **destination, const char *path)
     }
 
     *destination = table;
+    fclose(filePointer);
     return 0;
 }

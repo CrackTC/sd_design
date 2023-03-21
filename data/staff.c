@@ -1,4 +1,5 @@
 #include "staff.h"
+#include "permission.h"
 #include "../utils.h"
 #include "linkedList.h"
 #include "serialization.h"
@@ -8,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int idCount = 0;
+static int idCount = 1;
 static const char *path = "data/staff.txt";
 static const char *idRow = "id";
 static const char *enableRow = "enable";
@@ -17,8 +18,7 @@ static const char *passwordRow = "password";
 static const char *contactRow = "contact";
 static LinkedList *systemList = NULL;
 
-struct Staff
-{
+struct Staff {
     int id;
     int isEnabled;
     char *name;
@@ -26,10 +26,8 @@ struct Staff
     char *contact;
 };
 
-Staff *NewStaff(int isEnabled, const char *name, const char *password, const char *contact)
-{
-    if (name == NULL || password == NULL || contact == NULL)
-    {
+Staff *NewStaff(int isEnabled, const char *name, const char *password, const char *contact) {
+    if (name == NULL || password == NULL || contact == NULL) {
         return NULL;
     }
 
@@ -43,39 +41,49 @@ Staff *NewStaff(int isEnabled, const char *name, const char *password, const cha
     return staff;
 }
 
-void FreeStaff(Staff *staff)
-{
+void FreeStaff(Staff *staff) {
     free(staff->name);
     free(staff->password);
     free(staff->contact);
     free(staff);
 }
 
-LinkedList *GetAllStaff()
-{
+LinkedList *GetAllStaff() {
     if (systemList != NULL)
         return systemList;
 
     Table *table;
     int result = Unserialize(&table, path);
-    if (result == 1)
-    {
+    if (result == 1) {
         // 添加一个默认管理员账户
-        Staff *staff = NewStaff(1, "admin", "admin123", "");
+        Staff *staff = malloc(sizeof(Staff));
+        staff->id = 0;
+        staff->isEnabled = 1;
+        staff->name = CloneString("admin");
+        staff->password = CloneString("admin123");
+        staff->contact = CloneString("");
+
+        int *hasPermission = malloc(OPERATION_COUNT * sizeof(int));
+        for (int i = 0; i < OPERATION_COUNT; i++) {
+            hasPermission[i] = 1;
+        }
+        PermissionEntry *entry = NewPermissionEntry(staff->id, hasPermission);
+        AppendPermissionEntry(entry);
+        PermissionSave();
+        free(hasPermission);
+
         systemList = AppendData(systemList, staff);
 
         StaffSave();
         return NULL;
-    }
-    else if (result != 0)
+    } else if (result != 0)
         return NULL;
 
     sscanf(GetTableRemark(table), "%d", &idCount);
 
     LinkedList *list = NULL;
     LinkedList *rowNode = table->rows;
-    while (rowNode->next != NULL)
-    {
+    while (rowNode->next != NULL) {
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
@@ -96,17 +104,14 @@ LinkedList *GetAllStaff()
     return list;
 }
 
-Staff *GetStaffById(int id)
-{
+Staff *GetStaffById(int id) {
     if (systemList == NULL)
         GetAllStaff();
 
     LinkedList *now = systemList;
-    while (now != NULL)
-    {
+    while (now != NULL) {
         Staff *staff = now->data;
-        if (staff->id == id)
-        {
+        if (staff->id == id) {
             return staff;
         }
         now = now->next;
@@ -114,70 +119,56 @@ Staff *GetStaffById(int id)
     return NULL;
 }
 
-int GetStaffId(const Staff *staff)
-{
+int GetStaffId(const Staff *staff) {
     return staff->id;
 }
 
-int GetStaffAvailability(const Staff *staff)
-{
+int GetStaffAvailability(const Staff *staff) {
     return staff->isEnabled;
 }
 
-const char *GetStaffName(const Staff *staff)
-{
+const char *GetStaffName(const Staff *staff) {
     return staff->name;
 }
 
-const char *GetStaffContact(const Staff *staff)
-{
+const char *GetStaffContact(const Staff *staff) {
     return staff->contact;
 }
 
-int VerifyStaffPassword(const Staff *staff, const char *givenPassword)
-{
-    if (staff == NULL || givenPassword == NULL)
-    {
+int VerifyStaffPassword(const Staff *staff, const char *givenPassword) {
+    if (staff == NULL || givenPassword == NULL) {
         return 0;
     }
     return strcmp(staff->password, givenPassword) == 0;
 }
 
-void SetStaffAvailability(Staff *staff, int value)
-{
+void SetStaffAvailability(Staff *staff, int value) {
     staff->isEnabled = value;
 }
 
-void SetStaffName(Staff *staff, const char *value)
-{
+void SetStaffName(Staff *staff, const char *value) {
     free(staff->name);
     staff->name = CloneString(value);
 }
 
-void SetStaffPassword(Staff *staff, const char *value)
-{
+void SetStaffPassword(Staff *staff, const char *value) {
     free(staff->password);
     staff->password = CloneString(value);
 }
 
-void SetStaffContact(Staff *staff, const char *value)
-{
+void SetStaffContact(Staff *staff, const char *value) {
     free(staff->contact);
     staff->contact = CloneString(value);
 }
 
-int AppendStaff(Staff *staff)
-{
-    if (systemList == NULL)
-    {
+int AppendStaff(Staff *staff) {
+    if (systemList == NULL) {
         GetAllStaff();
     }
-    if (staff == NULL)
-    {
+    if (staff == NULL) {
         return 1;
     }
-    if (ExistsNode(systemList, staff))
-    {
+    if (ExistsNode(systemList, staff)) {
         return 1;
     }
 
@@ -186,13 +177,11 @@ int AppendStaff(Staff *staff)
     return 0;
 }
 
-void RemoveStaff(Staff *staff)
-{
+void RemoveStaff(Staff *staff) {
     staff->isEnabled = 0;
 }
 
-void StaffSave()
-{
+void StaffSave() {
     TableRow *row = NewTableRow();
     free(AppendTableRow(row, CloneString(idRow)));
     free(AppendTableRow(row, CloneString(enableRow)));
@@ -205,8 +194,7 @@ void StaffSave()
     free(remark);
 
     LinkedList *now = systemList;
-    while (now != NULL)
-    {
+    while (now != NULL) {
         Staff *staff = now->data;
         row = NewTableRow();
 

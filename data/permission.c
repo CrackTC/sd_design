@@ -7,7 +7,6 @@
 #include <malloc.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 static const char *path = "data/permission.txt";

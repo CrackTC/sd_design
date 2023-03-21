@@ -5,7 +5,6 @@
 #include "table.h"
 #include <malloc.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 static const char *path = "data/journal.txt";
@@ -239,7 +238,7 @@ void JournalSave()
     LinkedList *now = systemList;
     while (now != NULL)
     {
-        JournalEntry *entry = malloc(sizeof(JournalEntry));
+        JournalEntry *entry = now->data;
         row = NewTableRow();
 
         free(AppendTableRow(row, LongLongToString(entry->staffId)));
