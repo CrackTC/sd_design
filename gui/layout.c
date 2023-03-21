@@ -1,5 +1,7 @@
 #include "layout.h"
 #include "../utils.h"
+#include "../data/linkedList.h"
+#include <malloc.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,4 +61,12 @@ void DrawMessageBox(struct nk_context *context, const char *title, int draw, con
             nk_popup_end(context);
         }
     }
+}
+
+LinkedList *NewCheckList()
+{
+    LinkedList *result = malloc(sizeof(LinkedList));
+    result->data = malloc(sizeof(int));
+    *(int *)result->data = 0;
+    return result;
 }

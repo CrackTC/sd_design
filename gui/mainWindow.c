@@ -65,15 +65,6 @@ void MainWindowLayout(struct nk_context *context, Window *window)
     }
 }
 
-static void FreeCheckList(LinkedList *checkList)
-{
-    if (checkList == NULL)
-        return;
-    FreeCheckList(checkList->next);
-    free(checkList->data);
-    free(checkList);
-}
-
 void FreeMainWindow(Window *window)
 {
     struct Data *data = window->data;
@@ -82,7 +73,7 @@ void FreeMainWindow(Window *window)
     free(data->message);
     free(data->inventoryProperties);
     FreeTable(data->inventoryTable);
-    FreeCheckList(data->inventoryCheckList);
+    FreeList(data->inventoryCheckList);
     free(data);
     free(window);
 }
@@ -107,9 +98,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->inventoryValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->inventoryValueBuffer, 0, BUFFER_SIZE * sizeof(char));
 
-    int *a = malloc(sizeof(int *));
-    *a = 0;
-    data->inventoryCheckList = AppendData(data->inventoryCheckList, a);
+    data->inventoryCheckList = NewCheckList();
     data->inventoryProperties = NULL;
 
     {
@@ -161,9 +150,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->itemValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->itemValueBuffer, 0, BUFFER_SIZE * sizeof(char));
 
-    a = malloc(sizeof(int *));
-    *a = 0;
-    data->itemCheckList = AppendData(data->itemCheckList, a);
+    data->itemCheckList = NewCheckList();
 
     data->itemProperties = NULL;
 
@@ -208,9 +195,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->discountValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->discountValueBuffer, 0, BUFFER_SIZE * sizeof(char));
 
-    a = malloc(sizeof(int *));
-    *a = 0;
-    data->discountCheckList = AppendData(data->discountCheckList, a);
+    data->discountCheckList = NewCheckList();
 
     data->discountProperties = NULL;
 
@@ -249,9 +234,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->orderValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->orderValueBuffer, 0, BUFFER_SIZE * sizeof(char));
 
-    a = malloc(sizeof(int *));
-    *a = 0;
-    data->orderCheckList = AppendData(data->orderCheckList, a);
+    data->orderCheckList = NewCheckList();
 
     data->orderProperties = NULL;
 
@@ -312,9 +295,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->customerValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->customerValueBuffer, 0, BUFFER_SIZE * sizeof(char));
 
-    a = malloc(sizeof(int *));
-    *a = 0;
-    data->customerCheckList = AppendData(data->customerCheckList, a);
+    data->customerCheckList = NewCheckList();
 
     data->customerProperties = NULL;
 
@@ -355,9 +336,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->journalValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->journalValueBuffer, 0, BUFFER_SIZE * sizeof(char));
 
-    a = malloc(sizeof(int *));
-    *a = 0;
-    data->journalCheckList = AppendData(data->journalCheckList, a);
+    data->journalCheckList = NewCheckList();
 
     data->journalProperties = NULL;
 
@@ -406,9 +385,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->lossValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->lossValueBuffer, 0, BUFFER_SIZE * sizeof(char));
 
-    a = malloc(sizeof(int *));
-    *a = 0;
-    data->lossCheckList = AppendData(data->lossCheckList, a);
+    data->lossCheckList = NewCheckList();
 
     data->lossProperties = NULL;
 
@@ -453,9 +430,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->profitValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->profitValueBuffer, 0, BUFFER_SIZE * sizeof(char));
 
-    a = malloc(sizeof(int *));
-    *a = 0;
-    data->profitCheckList = AppendData(data->profitCheckList, a);
+    data->profitCheckList = NewCheckList();
 
     data->profitProperties = NULL;
 
@@ -486,9 +461,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->refundValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->refundValueBuffer, 0, BUFFER_SIZE * sizeof(char));
 
-    a = malloc(sizeof(int *));
-    *a = 0;
-    data->refundCheckList = AppendData(data->refundCheckList, a);
+    data->refundCheckList = NewCheckList();
 
     data->refundProperties = NULL;
 
@@ -528,9 +501,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->staffValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
     memset(data->staffValueBuffer, 0, BUFFER_SIZE * sizeof(char));
 
-    a = malloc(sizeof(int *));
-    *a = 0;
-    data->staffCheckList = AppendData(data->staffCheckList, a);
+    data->staffCheckList = NewCheckList();
 
     data->staffProperties = NULL;
 
