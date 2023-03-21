@@ -337,7 +337,7 @@ Table *DeleteInventoryById(Table *input)
 
     TableRow *row = GetRowByIndex(input, 1);
     // 将Id由字符转为整数类型
-    int id = change(GetRowItemByColumnName(input, row, "Id"));
+    int id = change(GetRowItemByColumnName(input, row, "id"));
     // 如果货存Id已经在货损条目里或订单条目里 那就不允许删除
     if (GetOrdersByInventoryId(id) != NULL || GetLossEntriesByInventoryId(id) != NULL)
     {
@@ -352,7 +352,7 @@ Table *DeleteInventoryById(Table *input)
         RemoveInventoryEntry(entry);
         // 释放其所占用的空间
         FreeInventoryEntry(entry);
-        table = NewTable(NULL, "删除成功");
+        table = NULL;
         InventorySave(); // 向文件中保存
     }
     else
@@ -377,7 +377,7 @@ Table *DeleteSingleLossById(Table *input)
         SetInventoryEntryNumber(inventoryEntry, GetInventoryEntryNumber(inventoryEntry) + GetLossEntryNumber(entry));
         // 删除该货损条目
         RemoveLossEntry(entry);
-        table = NewTable(NULL, "删除成功");
+        table = NULL;
 
         // 向文件中保存
         InventorySave();
@@ -470,7 +470,7 @@ Table *AddItem(Table *input)
     // 获取要加入的商品的信息
     TableRow *row = GetRowByIndex(input, 1);
     // 将Id由字符转为整数类型
-    int id = change(GetRowItemByColumnName(input, row, "Id"));
+    int id = change(GetRowItemByColumnName(input, row, "id"));
     // 获取该商品的名称
     const char *itemName = GetRowItemByColumnName(input, row, "name");
 
@@ -563,7 +563,7 @@ Table *DeleteItemById(Table *input)
         FreeItem(item);
         // 向文件中保存
         ItemsSave();
-        return NewTable(NULL, "删除成功");
+        return NULL;
     }
     else
         return NewTable(NULL, "商品编号有误 未查找到相关商品");
