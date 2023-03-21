@@ -27,9 +27,9 @@ void RefundDetailLayout(struct nk_context *context, Window *window)
                                        GetRowItemByColumnName(data->refund, dataRow, "订单编号"), 512,
                                        nk_filter_default);
 
-        nk_label(context, "原因", NK_TEXT_CENTERED);
+        nk_label(context, "退款原因", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->refund, dataRow, "原因"), 512, nk_filter_default);
+                                       GetRowItemByColumnName(data->refund, dataRow, "退款原因"), 512, nk_filter_default);
 
         nk_label(context, "时间", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
@@ -63,7 +63,7 @@ void FreeRefundDetail(Window *window)
     free(window);
 }
 
-Window *NewRefundEntryDetail(const char *title, const Table *refund)
+Window *NewRefundDetail(const char *title, const Table *refund)
 {
     Window *window = malloc(sizeof(Window));
     window->isClosed = 0;

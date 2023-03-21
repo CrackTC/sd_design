@@ -59,4 +59,10 @@ struct Data
     const char **profitProperties;
     struct Table *profitTable;
     struct LinkedList *profitCheckList;
+
+    int refundPropertySelected;
+    char *refundValueBuffer;
+    const char **refundProperties;
+    struct Table *refundTable;
+    struct LinkedList *refundCheckList;
 };

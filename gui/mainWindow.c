@@ -14,7 +14,7 @@ const char *const sections[SECTION_COUNT] = {"",     "商品", "库存", "货损
                                              "顾客", "员工", "日志", "统计", "退货"};
 const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,     ProfitPageLayout,   LossPageLayout,
                                          OrderPageLayout,   DiscountPageLayout, CustomerPageLayout, WelcomePageLayout,
-                                         JournalPageLayout, ProfitPageLayout,   WelcomePageLayout};
+                                         JournalPageLayout, ProfitPageLayout,   RefundPageLayout};
 
 void MainWindowLayout(struct nk_context *context, Window *window)
 {
@@ -480,6 +480,48 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTable(table, row);
 
         data->profitTable = table;
+    }
+
+    data->refundPropertySelected = 0;
+    data->refundValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
+    memset(data->refundValueBuffer, 0, BUFFER_SIZE * sizeof(char));
+
+    a = malloc(sizeof(int *));
+    *a = 0;
+    data->refundCheckList = AppendData(data->refundCheckList, a);
+
+    data->refundProperties = NULL;
+
+    {
+#warning
+        TableRow *row = NewTableRow();
+        AppendTableRow(row, "订单编号");
+        AppendTableRow(row, "退款原因");
+        AppendTableRow(row, "时间");
+        AppendTableRow(row, "退款");
+        AppendTableRow(row, "退回数目");
+        AppendTableRow(row, "备注");
+        Table *table = NewTable(row, NULL);
+
+        row = NewTableRow();
+        AppendTableRow(row, "12345");
+        AppendTableRow(row, "不想要了");
+        AppendTableRow(row, "1919-08-10");
+        AppendTableRow(row, "100.00");
+        AppendTableRow(row, "2");
+        AppendTableRow(row, "");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "114514");
+        AppendTableRow(row, "无理由退换货");
+        AppendTableRow(row, "1919-08-10");
+        AppendTableRow(row, "10.00");
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "");
+        AppendTable(table, row);
+
+        data->refundTable = table;
     }
 
     window->data = data;
