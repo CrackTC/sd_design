@@ -12,10 +12,8 @@
 #include "mainWindow.h"
 #include "stddef.h"
 #include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -116,7 +114,7 @@ void SendInventoryRequest(struct Data *data)
     }
 }
 
-int InventoryLookup(struct nk_context *context, struct Data *data)
+int InventoryLookup(struct Data *data)
 {
     LinkedList *now = data->inventoryCheckList->next;
     LinkedList *rowNow = data->inventoryTable->rows->next;
@@ -127,7 +125,7 @@ int InventoryLookup(struct nk_context *context, struct Data *data)
             TableRow *titleRow = CloneRow(GetTableTitle(data->inventoryTable));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
-            PushWindow(context, NewInventoryDetail("库存详情", table));
+            PushWindow(NewInventoryDetail("库存详情", table));
             FreeTable(table);
             return 1;
         }
@@ -137,7 +135,7 @@ int InventoryLookup(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-int InventoryAdd(struct nk_context *context, struct Data *data)
+int InventoryAdd(struct Data *data)
 {
     LinkedList *now = data->itemCheckList->next;
     LinkedList *rowNow = data->itemTable->rows->next;
@@ -185,7 +183,7 @@ int InventoryAdd(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "3");
             AppendTableRow(row, "2");
             AppendTable(table, row);
-            PushWindow(context, NewInventoryEdit("库存编辑", data->id, data->password, table, 0));
+            PushWindow(NewInventoryEdit("库存编辑", data->id, data->password, table, 0));
             FreeTable(table);
             return 1;
         }
@@ -195,7 +193,7 @@ int InventoryAdd(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-int InventoryModify(struct nk_context *context, struct Data *data)
+int InventoryModify(struct Data *data)
 {
     LinkedList *now = data->inventoryCheckList->next;
     LinkedList *rowNow = data->inventoryTable->rows->next;
@@ -254,7 +252,7 @@ int InventoryModify(struct nk_context *context, struct Data *data)
             free(AppendTableRow(row, LongLongToString(GetAmountCent(&amount))));
 
             AppendTable(table, row);
-            PushWindow(context, NewInventoryEdit("库存编辑", data->id, data->password, table, 1));
+            PushWindow(NewInventoryEdit("库存编辑", data->id, data->password, table, 1));
             FreeTable(table);
             return 1;
         }
@@ -341,7 +339,7 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
     {
         if (nk_style_push_font(context, &fontSmall->handle))
         {
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查询"))
                 {
@@ -349,16 +347,16 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查看"))
                 {
-                    if (!InventoryLookup(context, data))
+                    if (!InventoryLookup(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个库存条目");
@@ -366,16 +364,16 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "+"))
                 {
-                    if (!InventoryAdd(context, data))
+                    if (!InventoryAdd(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请在商品页面选择一个商品条目");
@@ -383,12 +381,12 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "-"))
                 {
@@ -397,16 +395,16 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "~"))
                 {
-                    if (!InventoryModify(context, data))
+                    if (!InventoryModify(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个库存条目");

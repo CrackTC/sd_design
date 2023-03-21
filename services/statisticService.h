@@ -11,6 +11,6 @@
  *      有收支条目：   yuan   jiao   cent
  *      无收支条目：备注返回“不存在收支条目”
  * * * * * */
-Table *GetStatistics(Table *a);
+Table *GetStatistics(__attribute__((unused)) Table *a);
 
 #endif // STATISTIC_H

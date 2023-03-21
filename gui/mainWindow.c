@@ -1,18 +1,15 @@
 #include "mainWindow.h"
-#include "../data/table.h"
 #include "../utils.h"
 #include "layout.h"
 #include <malloc.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #define SECTION_COUNT 11
 
 const char *const sections[SECTION_COUNT] = {"",     "商品", "库存", "货损", "订单", "折扣",
                                              "顾客", "员工", "日志", "统计", "退货"};
-const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,     ProfitPageLayout,   LossPageLayout,
+const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout, InventoryPageLayout,   LossPageLayout,
                                          OrderPageLayout,   DiscountPageLayout, CustomerPageLayout, StaffPageLayout,
                                          JournalPageLayout, ProfitPageLayout,   RefundPageLayout};
 

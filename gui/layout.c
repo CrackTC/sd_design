@@ -1,11 +1,6 @@
 #include "layout.h"
-#include "../utils.h"
-#include "../data/linkedList.h"
 #include <malloc.h>
 #include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 static struct nk_rect none = {0, 0, 0, 0};
 
@@ -31,7 +26,7 @@ void DrawMessageBox(struct nk_context *context, const char *title, int draw, con
 {
     if (draw)
     {
-        if (nk_popup_begin(context, NK_POPUP_DYNAMIC, title, 0, nk_rect(0, 100, 400, 400)))
+        if (nk_popup_begin(context, NK_POPUP_DYNAMIC, title, 0, nk_rect(0, 100, 800, 400)))
         {
             nk_layout_row_dynamic(context, 0, 1);
             {

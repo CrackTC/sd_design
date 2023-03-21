@@ -2,7 +2,6 @@
 #include "config.h"
 #include "layout.h"
 #include "mainWindow.h"
-#include <stdlib.h>
 
 void WelcomePageLayout(struct nk_context *context, struct Window *window)
 {

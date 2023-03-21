@@ -1,8 +1,6 @@
-#include "../data/amount.h"
 #include "../data/linkedList.h"
 #include "../data/operation.h"
 #include "../data/table.h"
-#include "../data/time.h"
 #include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../utils.h"
@@ -11,10 +9,8 @@
 #include "mainWindow.h"
 #include "stddef.h"
 #include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -53,7 +49,7 @@ void SendJournalRequest(struct Data *data)
     }
 }
 
-int JournalLookup(struct nk_context *context, struct Data *data)
+int JournalLookup(struct Data *data)
 {
     LinkedList *now = data->journalCheckList->next;
     LinkedList *rowNow = data->journalTable->rows->next;
@@ -64,7 +60,7 @@ int JournalLookup(struct nk_context *context, struct Data *data)
             TableRow *titleRow = CloneRow(GetTableTitle(data->journalTable));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
-            PushWindow(context, NewJournalDetail("日志详情", table));
+            PushWindow(NewJournalDetail("日志详情", table));
             FreeTable(table);
             return 1;
         }
@@ -151,7 +147,7 @@ void JournalPageLayout(struct nk_context *context, struct Window *window)
     {
         if (nk_style_push_font(context, &fontSmall->handle))
         {
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查询"))
                 {
@@ -159,16 +155,16 @@ void JournalPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查看"))
                 {
-                    if (!JournalLookup(context, data))
+                    if (!JournalLookup(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个日志条目");

@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "../data/customer.h"
-#include "../data/linkedList.h"
 #include "../data/order.h"
 #include "../data/table.h"
 #include "../utils.h"
@@ -192,7 +191,7 @@ Table *GetSingleCustomer(Table *a)
 }
 
 // 获取所有客户信息
-Table *GetAllCustomer(Table *a)
+Table *GetAllCustomer(__attribute__((unused)) Table *a)
 {
     LinkedList *head = GetAllCustomers();
 
@@ -242,6 +241,7 @@ Table *GetAllCustomer(Table *a)
         AppendTable(goback, row);
 
         customer = customer->next;
+        head = head->next;
     }
     // 返回值
     return goback;

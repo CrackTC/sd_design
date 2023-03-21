@@ -1,11 +1,10 @@
 #include "statisticService.h"
 #include "../data/amount.h"
 #include "../data/profit.h"
-#include "../data/table.h"
 #include "../utils.h"
 
 // 读取所有的收支条目并计算总金额、输出总金额
-Table *GetStatistics(Table *a)
+Table *GetStatistics(__attribute__((unused)) Table *a)
 {
     Amount totalamount = NewAmount(0, 0, 0);
 

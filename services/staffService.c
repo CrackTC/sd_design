@@ -1,7 +1,6 @@
 #include "staffService.h"
 #include "../data/permission.h"
 #include "../utils.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -47,7 +46,6 @@ Table *AddStaff(Table *newStaff)
                 password = GetRowItemByColumnName(newStaff, row, oneTitle);
             if (strcmp(oneTitle, "name"))
                 name = GetRowItemByColumnName(newStaff, row, oneTitle);
-            ;
             if (strcmp(oneTitle, "contact"))
                 contact = GetRowItemByColumnName(newStaff, row, oneTitle);
             if (strcmp(oneTitle, "isEnabled"))
@@ -112,7 +110,6 @@ Table *GetItemOfOneStaff(Table *staff)
         if (targetStaff != NULL)
         { // 若可以找到相应员工
             PermissionEntry *permission = GetPermissionEntryByStaffId(Id);
-            char *permissionString = PermissionToString(permission);
 
             /*构建这个要查询的员工信息表格*/
             Table *targetStaffTitle = CreateStaffTableTitle(); // 创建表头
@@ -200,7 +197,7 @@ Table *UpdateStaff(Table *staff)
     {
         TableRow *titleRow = GetTableTitle(staff);
         LinkedList *title = titleRow->items;
-        const char *oneTitle = (char *)title->data; // 获取标题名
+        const char *oneTitle; // 获取标题名
 
         TableRow *row = GetRowByIndex(staff, 1);                 // 得到这个员工的具体信息所在行
         int id = atoi(GetRowItemByColumnName(staff, row, "id")); // 得到这个员工的工号id
@@ -345,7 +342,6 @@ Table *LogIn(Table *staff)
             TableRow *title = NewTableRow();  // 创建一个表格头
             AppendTableRow(title, "success"); // 表格头标题为succes
             TableRow *Item = NewTableRow();   // 创建一个表格行
-            char tempString[5];
             free(AppendTableRow(Item, LongLongToString(success))); // 表格行保存的信息是：是否密码输入正确
             Table *match = NewTable(title, "Whether the given password is same to the correct relevant password !");
             /*创建一个表格保存是否密码输入正确 */

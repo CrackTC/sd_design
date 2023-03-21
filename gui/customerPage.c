@@ -1,8 +1,6 @@
-#include "../data/amount.h"
 #include "../data/linkedList.h"
 #include "../data/operation.h"
 #include "../data/table.h"
-#include "../data/time.h"
 #include "../services/customerService.h"
 #include "../services/journalService.h"
 #include "../services/judgeService.h"
@@ -12,10 +10,8 @@
 #include "mainWindow.h"
 #include "stddef.h"
 #include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -116,7 +112,7 @@ void SendCustomerRequest(struct Data *data)
     }
 }
 
-int CustomerLookup(struct nk_context *context, struct Data *data)
+int CustomerLookup(struct Data *data)
 {
     LinkedList *now = data->customerCheckList->next;
     LinkedList *rowNow = data->customerTable->rows->next;
@@ -127,7 +123,7 @@ int CustomerLookup(struct nk_context *context, struct Data *data)
             TableRow *titleRow = CloneRow(GetTableTitle(data->customerTable));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
-            PushWindow(context, NewCustomerDetail("客户详情", table));
+            PushWindow(NewCustomerDetail("客户详情", table));
             FreeTable(table);
             return 1;
         }
@@ -137,7 +133,7 @@ int CustomerLookup(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-void CustomerAdd(struct nk_context *context, struct Data *data)
+void CustomerAdd(struct Data *data)
 {
     TableRow *row = NewTableRow();
     AppendTableRow(row, "客户等级");
@@ -151,11 +147,11 @@ void CustomerAdd(struct nk_context *context, struct Data *data)
     AppendTableRow(row, "");
     AppendTable(table, row);
 
-    PushWindow(context, NewCustomerEdit("客户编辑", data->id, data->password, table, 0));
+    PushWindow(NewCustomerEdit("客户编辑", data->id, data->password, table, 0));
     FreeTable(table);
 }
 
-int CustomerModify(struct nk_context *context, struct Data *data)
+int CustomerModify(struct Data *data)
 {
     LinkedList *now = data->customerCheckList->next;
     LinkedList *rowNow = data->customerTable->rows->next;
@@ -177,7 +173,7 @@ int CustomerModify(struct nk_context *context, struct Data *data)
             AppendTableRow(row, GetRowItemByColumnName(data->customerTable, rowNow->data, "客户联系方式"));
             AppendTable(table, row);
 
-            PushWindow(context, NewCustomerEdit("客户编辑", data->id, data->password, table, 1));
+            PushWindow(NewCustomerEdit("客户编辑", data->id, data->password, table, 1));
             FreeTable(table);
             return 1;
         }
@@ -264,7 +260,7 @@ void CustomerPageLayout(struct nk_context *context, struct Window *window)
     {
         if (nk_style_push_font(context, &fontSmall->handle))
         {
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查询"))
                 {
@@ -272,16 +268,16 @@ void CustomerPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查看"))
                 {
-                    if (!CustomerLookup(context, data))
+                    if (!CustomerLookup(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个客户条目");
@@ -289,25 +285,25 @@ void CustomerPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "+"))
                 {
-                    CustomerAdd(context, data);
+                    CustomerAdd(data);
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "-"))
                 {
@@ -316,16 +312,16 @@ void CustomerPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "~"))
                 {
-                    if (!CustomerModify(context, data))
+                    if (!CustomerModify(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个客户条目");

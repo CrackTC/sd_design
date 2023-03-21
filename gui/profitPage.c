@@ -1,8 +1,6 @@
-#include "../data/amount.h"
 #include "../data/linkedList.h"
 #include "../data/operation.h"
 #include "../data/table.h"
-#include "../data/time.h"
 #include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../services/statisticService.h"
@@ -12,10 +10,8 @@
 #include "mainWindow.h"
 #include "stddef.h"
 #include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -54,7 +50,7 @@ void SendProfitRequest(struct Data *data)
     }
 }
 
-int ProfitLookup(struct nk_context *context, struct Data *data)
+int ProfitLookup(struct Data *data)
 {
     LinkedList *now = data->profitCheckList->next;
     LinkedList *rowNow = data->profitTable->rows->next;
@@ -65,7 +61,7 @@ int ProfitLookup(struct nk_context *context, struct Data *data)
             TableRow *titleRow = CloneRow(GetTableTitle(data->profitTable));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
-            PushWindow(context, NewProfitDetail("收支详情", table));
+            PushWindow(NewProfitDetail("收支详情", table));
             FreeTable(table);
             return 1;
         }
@@ -152,7 +148,7 @@ void ProfitPageLayout(struct nk_context *context, struct Window *window)
     {
         if (nk_style_push_font(context, &fontSmall->handle))
         {
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查询"))
                 {
@@ -160,16 +156,16 @@ void ProfitPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查看"))
                 {
-                    if (!ProfitLookup(context, data))
+                    if (!ProfitLookup(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个收支条目");

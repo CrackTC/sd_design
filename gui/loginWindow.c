@@ -4,7 +4,6 @@
 #include "layout.h"
 #include <malloc.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 struct Data
@@ -16,10 +15,6 @@ struct Data
 
 int SendLoginRequest(const char *id, const char *password, char **name)
 {
-#warning
-    *name = CloneString("Test");
-    return 1;
-
     int staffId;
     sscanf(id, "%d", &staffId);
     int loginSuccess;
@@ -27,7 +22,7 @@ int SendLoginRequest(const char *id, const char *password, char **name)
 
     if (loginSuccess)
     {
-        *name = CloneString(GetRowItemByColumnName(table, GetRowByIndex(table, 1), "name"));
+        *name = CloneString(GetRowItemByColumnName(table, GetRowByIndex(table, 1), "员工姓名"));
         FreeTable(table);
         return 1;
     }

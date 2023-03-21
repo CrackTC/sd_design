@@ -2,7 +2,6 @@
 #include "../data/linkedList.h"
 #include "../data/operation.h"
 #include "../data/table.h"
-#include "../data/time.h"
 #include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../services/saleService.h"
@@ -11,10 +10,8 @@
 #include "layout.h"
 #include "mainWindow.h"
 #include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -53,7 +50,7 @@ void SendOrderRequest(struct Data *data)
     }
 }
 
-int OrderAdd(struct nk_context *context, struct Data *data)
+int OrderAdd(struct Data *data)
 {
     LinkedList *itemCheckNow = data->itemCheckList->next;
     LinkedList *itemRowNow = data->itemTable->rows->next;
@@ -83,7 +80,7 @@ int OrderAdd(struct nk_context *context, struct Data *data)
                     AppendTableRow(row, "0");
                     AppendTable(table, row);
 
-                    PushWindow(context, NewOrderEdit("订单编辑", data->id, data->password, table, 0));
+                    PushWindow(NewOrderEdit("订单编辑", data->id, data->password, table, 0));
                     FreeTable(table);
                     return 1;
                 }
@@ -98,7 +95,7 @@ int OrderAdd(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-int OrderModify(struct nk_context *context, struct Data *data)
+int OrderModify(struct Data *data)
 {
     LinkedList *now = data->orderCheckList->next;
     LinkedList *rowNow = data->orderTable->rows->next;
@@ -130,7 +127,7 @@ int OrderModify(struct nk_context *context, struct Data *data)
                 AppendTable(table, row);
             }
 
-            PushWindow(context, NewOrderEdit("订单编辑", data->id, data->password, table, 1));
+            PushWindow(NewOrderEdit("订单编辑", data->id, data->password, table, 1));
             FreeTable(table);
             return 1;
         }
@@ -278,7 +275,7 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
     {
         if (nk_style_push_font(context, &fontSmall->handle))
         {
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查询"))
                 {
@@ -286,12 +283,12 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查看"))
                 {
@@ -304,7 +301,7 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
                             TableRow *titleRow = CloneRow(GetTableTitle(data->orderTable));
                             Table *table = NewTable(titleRow, "");
                             AppendTable(table, CloneRow(rowNow->data));
-                            PushWindow(context, NewOrderDetail("订单详情", table));
+                            PushWindow(NewOrderDetail("订单详情", table));
                             FreeTable(table);
                             break;
                         }
@@ -314,16 +311,16 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "+"))
                 {
-                    if (!OrderAdd(context, data))
+                    if (!OrderAdd(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请确保在商品页面选择一个商品条目，且在客户页面选择一个客户条目");
@@ -331,12 +328,12 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "-"))
                 {
@@ -345,16 +342,16 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "~"))
                 {
-                    if (!OrderModify(context, data))
+                    if (!OrderModify(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个订单条目");

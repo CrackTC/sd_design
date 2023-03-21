@@ -7,14 +7,14 @@
  *input: NULL
  * return:如果有过期的货物 则返回过期货物的表格 否则返回无过期表格
  **/
-Table *UpdateInventory(Table *input);
+Table *UpdateInventory(__attribute__((unused)) Table *input);
 
 /*
  *role:展示库存紧缺的货存信息
  *input:NULL
  * return;返回库存紧缺的商品的剩余库存 若无缺货状态的商品 则返回无缺货商品
  **/
-Table *ShowLackInventory(Table *input);
+Table *ShowLackInventory(__attribute__((unused)) Table *input);
 
 // 向某一个系统中添加某一个结构体的函数
 
@@ -122,7 +122,7 @@ Table *ReviseLossInventory(Table *input);
  * input：NULL
  * return:全部货存信息的表格
  **/
-Table *ShowInventory(Table *input);
+Table *ShowInventory(__attribute__((unused)) Table *input);
 
 /*
  * role: 展示所有的商品

@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_VERTEX_BUFFER 16 * 1024 * 1024
-#define MAX_ELEMENT_BUFFER 4 * 1024 * 1024
+#define MAX_VERTEX_BUFFER (16 * 1024 * 1024)
+#define MAX_ELEMENT_BUFFER (4 * 1024 * 1024)
 #define NK_IMPLEMENTATION
 #define NK_GLFW_GL3_IMPLEMENTATION
 
@@ -35,7 +35,7 @@ int ShouldExit(struct nk_context *context)
     return 1;
 }
 
-void PushWindow(struct nk_context *context, Window *window)
+void PushWindow(Window *window)
 {
     LinkedList *now = windows;
     while (now != NULL)

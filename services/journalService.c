@@ -1,7 +1,6 @@
 #include "journalService.h"
 #include "../utils.h"
 #include <malloc.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -62,7 +61,9 @@ Table *AddJournal(Table *table, int staffId, Operation operation)
     {
         free(arguments[i]);
     }
-    free(arguments);
+    if (arguments != NULL) {
+        free(arguments);
+    }
 
     int judge = AppendJournalEntry(newJournal); // 判断是否添加成功
     if (judge == 0)
@@ -354,7 +355,6 @@ Table *GetAllJournalOfOneOperationInExactTime(Table *table)
                 time1 = GetJournalEntryTime(journal);
                 arguments = GetJournalEntryArguments(journal); // 获取多个操作
                 /*向table信息行中放入具体信息*/
-                char tempString[10];
                 free(AppendTableRow(item, LongLongToString(staffid)));
                 free(AppendTableRow(item, TimeToString(GetTimeInfo(&time1, 1))));
                 free(AppendTableRow(item, CloneString(OperationToString(operation))));
@@ -415,7 +415,6 @@ Table *GetAllJournalOfOneStaff(Table *staff)
         time = GetJournalEntryTime(journal);
         arguments = GetJournalEntryArguments(journal); // 获取多个操作
         /*向table信息行中放入具体信息*/
-        char tempString[10];
         free(AppendTableRow(item, LongLongToString(staffid)));
         free(AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1))));
         free(AppendTableRow(item, CloneString(OperationToString(operation))));
@@ -439,7 +438,7 @@ Table *GetAllJournalOfOneStaff(Table *staff)
 }
 
 /*读取全部日志*/
-Table *GetAllJournal(Table *table)
+Table *GetAllJournal(__attribute__((unused)) Table *table)
 {
     LinkedList *allJournalLink = GetAllJournals(); // 获取某个操作的链表
     TableRow *title = NewTableRow();               // 开创标题行
@@ -471,7 +470,6 @@ Table *GetAllJournal(Table *table)
         operation = GetJournalEntryOperation(journal);
         arguments = GetJournalEntryArguments(journal); // 获取多个操作
         /*向table信息行中放入具体信息*/
-        char tempString[10];
         free(AppendTableRow(item, LongLongToString(staffid)));
         free(AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1))));
         free(AppendTableRow(item, CloneString(OperationToString(operation))));

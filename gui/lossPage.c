@@ -1,4 +1,3 @@
-#include "../data/amount.h"
 #include "../data/linkedList.h"
 #include "../data/operation.h"
 #include "../data/table.h"
@@ -12,10 +11,8 @@
 #include "mainWindow.h"
 #include "stddef.h"
 #include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -115,7 +112,7 @@ void SendLossRequest(struct Data *data)
     }
 }
 
-int LossLookup(struct nk_context *context, struct Data *data)
+int LossLookup(struct Data *data)
 {
     LinkedList *now = data->lossCheckList->next;
     LinkedList *rowNow = data->lossTable->rows->next;
@@ -126,7 +123,7 @@ int LossLookup(struct nk_context *context, struct Data *data)
             TableRow *titleRow = CloneRow(GetTableTitle(data->lossTable));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
-            PushWindow(context, NewLossDetail("货损详情", table));
+            PushWindow(NewLossDetail("货损详情", table));
             FreeTable(table);
             return 1;
         }
@@ -136,7 +133,7 @@ int LossLookup(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-int LossAdd(struct nk_context *context, struct Data *data)
+int LossAdd(struct Data *data)
 {
     LinkedList *now = data->inventoryCheckList->next;
     LinkedList *rowNow = data->inventoryTable->rows->next;
@@ -168,7 +165,7 @@ int LossAdd(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "");
             AppendTable(table, row);
 
-            PushWindow(context, NewLossEdit("货损编辑", data->id, data->password, table, 0));
+            PushWindow(NewLossEdit("货损编辑", data->id, data->password, table, 0));
             FreeTable(table);
             return 1;
         }
@@ -178,7 +175,7 @@ int LossAdd(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-int LossModify(struct nk_context *context, struct Data *data)
+int LossModify(struct Data *data)
 {
     LinkedList *now = data->lossCheckList->next;
     LinkedList *rowNow = data->lossTable->rows->next;
@@ -216,7 +213,7 @@ int LossModify(struct nk_context *context, struct Data *data)
 
             AppendTable(table, row);
 
-            PushWindow(context, NewLossEdit("货损编辑", data->id, data->password, table, 1));
+            PushWindow(NewLossEdit("货损编辑", data->id, data->password, table, 1));
             FreeTable(table);
             return 1;
         }
@@ -303,7 +300,7 @@ void LossPageLayout(struct nk_context *context, struct Window *window)
     {
         if (nk_style_push_font(context, &fontSmall->handle))
         {
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查询"))
                 {
@@ -311,16 +308,16 @@ void LossPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查看"))
                 {
-                    if (!LossLookup(context, data))
+                    if (!LossLookup(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个货损条目");
@@ -328,16 +325,16 @@ void LossPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "+"))
                 {
-                    if (!LossAdd(context, data))
+                    if (!LossAdd(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请在库存页面选择一个库存条目");
@@ -345,12 +342,12 @@ void LossPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "-"))
                 {
@@ -359,16 +356,16 @@ void LossPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "~"))
                 {
-                    if (!LossModify(context, data))
+                    if (!LossModify(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个货损条目");

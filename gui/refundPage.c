@@ -2,7 +2,6 @@
 #include "../data/linkedList.h"
 #include "../data/operation.h"
 #include "../data/table.h"
-#include "../data/time.h"
 #include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../services/saleService.h"
@@ -12,10 +11,8 @@
 #include "mainWindow.h"
 #include "stddef.h"
 #include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -115,7 +112,7 @@ void SendRefundRequest(struct Data *data)
     }
 }
 
-int RefundLookup(struct nk_context *context, struct Data *data)
+int RefundLookup(struct Data *data)
 {
     LinkedList *now = data->refundCheckList->next;
     LinkedList *rowNow = data->refundTable->rows->next;
@@ -126,7 +123,7 @@ int RefundLookup(struct nk_context *context, struct Data *data)
             TableRow *titleRow = CloneRow(GetTableTitle(data->refundTable));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
-            PushWindow(context, NewRefundDetail("退款详情", table));
+            PushWindow(NewRefundDetail("退款详情", table));
             FreeTable(table);
             return 1;
         }
@@ -136,7 +133,7 @@ int RefundLookup(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-int RefundAdd(struct nk_context *context, struct Data *data)
+int RefundAdd(struct Data *data)
 {
     LinkedList *now = data->orderCheckList->next;
     LinkedList *rowNow = data->orderTable->rows->next;
@@ -168,7 +165,7 @@ int RefundAdd(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "");
             AppendTable(table, row);
 
-            PushWindow(context, NewRefundEdit("退款编辑", data->id, data->password, table, 0));
+            PushWindow(NewRefundEdit("退款编辑", data->id, data->password, table, 0));
             FreeTable(table);
             return 1;
         }
@@ -178,7 +175,7 @@ int RefundAdd(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-int RefundModify(struct nk_context *context, struct Data *data)
+int RefundModify(struct Data *data)
 {
     LinkedList *now = data->refundCheckList->next;
     LinkedList *rowNow = data->refundTable->rows->next;
@@ -209,7 +206,7 @@ int RefundModify(struct nk_context *context, struct Data *data)
             AppendTableRow(row, GetRowItemByColumnName(data->refundTable, rowNow->data, "备注"));
             AppendTable(table, row);
 
-            PushWindow(context, NewRefundEdit("退款编辑", data->id, data->password, table, 1));
+            PushWindow(NewRefundEdit("退款编辑", data->id, data->password, table, 1));
             FreeTable(table);
             return 1;
         }
@@ -296,7 +293,7 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
     {
         if (nk_style_push_font(context, &fontSmall->handle))
         {
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查询"))
                 {
@@ -304,16 +301,16 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查看"))
                 {
-                    if (!RefundLookup(context, data))
+                    if (!RefundLookup(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个退款条目");
@@ -321,16 +318,16 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "+"))
                 {
-                    if (!RefundAdd(context, data))
+                    if (!RefundAdd(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请在商品页面选择一个订单条目");
@@ -338,12 +335,12 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "-"))
                 {
@@ -352,16 +349,16 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "~"))
                 {
-                    if (!RefundModify(context, data))
+                    if (!RefundModify(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个退款条目");

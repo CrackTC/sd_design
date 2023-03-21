@@ -3,13 +3,10 @@
 #include "../data/basicDiscount.h"
 #include "../data/inventory.h"
 #include "../data/item.h"
-#include "../data/linkedList.h"
 #include "../data/lossEntry.h"
 #include "../data/order.h"
 #include "../data/profit.h"
-#include "../data/time.h"
 #include "../utils.h"
-#include <stdio.h>
 #include <string.h>
 
 // 转换函数 将字符1到9  转换为数字1到9
@@ -144,7 +141,7 @@ Table *AddInventory(Table *input)
 }
 
 // 更新货存链表 并将过期的货物放入货损链表中
-Table *UpdateInventory(Table *input)
+Table *UpdateInventory(__attribute__((unused)) Table *input)
 {
     // 获取货存管理中的全部链表
     LinkedList *head = GetAllInventory();
@@ -229,7 +226,7 @@ Table *UpdateInventory(Table *input)
 }
 
 // 展示所有的缺货状态的货物
-Table *ShowLackInventory(Table *input)
+Table *ShowLackInventory(__attribute__((unused)) Table *input)
 {
     // 创建表格 该表格用于有货存过少时使用
     Table *tableLack;
@@ -469,8 +466,7 @@ Table *AddItem(Table *input)
 
     // 获取要加入的商品的信息
     TableRow *row = GetRowByIndex(input, 1);
-    // 将Id由字符转为整数类型
-    int id = change(GetRowItemByColumnName(input, row, "id"));
+
     // 获取该商品的名称
     const char *itemName = GetRowItemByColumnName(input, row, "name");
 
@@ -570,7 +566,7 @@ Table *DeleteItemById(Table *input)
 }
 
 // 展示货存系统中的全部信息
-Table *ShowInventory(Table *input)
+Table *ShowInventory(__attribute__((unused)) Table *input)
 {
     // 用于记录一共有多少批货物
     int inventoryCount = 0;
@@ -808,7 +804,7 @@ Table *ShowSingleInventoryById(Table *input)
         // 创建表格
         table = NewTable(row, "以下为要查找的信息");
 
-        row = NewTableRow();
+        // row = NewTableRow();
         row = ShowSingleInventoryByOperation(entry);
         AppendTable(table, row);
     }

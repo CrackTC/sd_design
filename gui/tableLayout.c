@@ -1,7 +1,6 @@
 #include "../data/linkedList.h"
 #include "../data/table.h"
 #include "layout.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

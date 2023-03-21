@@ -18,7 +18,7 @@ Table *GetAllJournalOfOneStaff(Table *table);
 /*读取某员工的某操作所有日志*/
 Table *GetAllJournalOfOneStaffOfOneOperation(Table *table);
 /*读取全部日志*/
-Table *GetAllJournal(Table *table);
+Table *GetAllJournal(__attribute__((unused)) Table *table);
 /*读取一条日志（根据员工id，操作，时间）*/
 Table *GetOneJournalByIdOperationTime(Table *table);
 

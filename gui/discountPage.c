@@ -1,4 +1,3 @@
-#include "../data/amount.h"
 #include "../data/linkedList.h"
 #include "../data/operation.h"
 #include "../data/table.h"
@@ -12,10 +11,8 @@
 #include "mainWindow.h"
 #include "stddef.h"
 #include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-static void MessageBoxCallback(int ok, void *parameter)
+static void MessageBoxCallback(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -116,7 +113,7 @@ void SendDiscountRequest(struct Data *data)
     }
 }
 
-int DiscountLookup(struct nk_context *context, struct Data *data)
+int DiscountLookup(struct Data *data)
 {
     LinkedList *now = data->discountCheckList->next;
     LinkedList *rowNow = data->discountTable->rows->next;
@@ -127,7 +124,7 @@ int DiscountLookup(struct nk_context *context, struct Data *data)
             TableRow *titleRow = CloneRow(GetTableTitle(data->discountTable));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
-            PushWindow(context, NewDiscountDetail("折扣详情", table));
+            PushWindow(NewDiscountDetail("折扣详情", table));
             FreeTable(table);
             return 1;
         }
@@ -137,7 +134,7 @@ int DiscountLookup(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-int DiscountAdd(struct nk_context *context, struct Data *data)
+int DiscountAdd(struct Data *data)
 {
     LinkedList *now = data->itemCheckList->next;
     LinkedList *rowNow = data->itemTable->rows->next;
@@ -170,7 +167,7 @@ int DiscountAdd(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "");
             AppendTableRow(row, "");
             AppendTable(table, row);
-            PushWindow(context, NewDiscountEdit("折扣编辑", data->id, data->password, table, 0));
+            PushWindow(NewDiscountEdit("折扣编辑", data->id, data->password, table, 0));
             FreeTable(table);
             return 1;
         }
@@ -180,7 +177,7 @@ int DiscountAdd(struct nk_context *context, struct Data *data)
     return 0;
 }
 
-int DiscountModify(struct nk_context *context, struct Data *data)
+int DiscountModify(struct Data *data)
 {
     LinkedList *now = data->discountCheckList->next;
     LinkedList *rowNow = data->discountTable->rows->next;
@@ -219,7 +216,7 @@ int DiscountModify(struct nk_context *context, struct Data *data)
             free(AppendTableRow(row, LongLongToString(info.second)));
 
             AppendTable(table, row);
-            PushWindow(context, NewDiscountEdit("折扣编辑", data->id, data->password, table, 1));
+            PushWindow(NewDiscountEdit("折扣编辑", data->id, data->password, table, 1));
             FreeTable(table);
             return 1;
         }
@@ -306,7 +303,7 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
     {
         if (nk_style_push_font(context, &fontSmall->handle))
         {
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查询"))
                 {
@@ -314,16 +311,16 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查看"))
                 {
-                    if (!DiscountLookup(context, data))
+                    if (!DiscountLookup(data))
                     {
                         data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个折扣条目");
@@ -331,16 +328,16 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "+"))
                 {
-                    if (!DiscountAdd(context, data))
+                    if (!DiscountAdd(data))
                     {
                         data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请在商品页面选择一个商品条目");
@@ -348,12 +345,12 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "-"))
                 {
@@ -362,16 +359,16 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "~"))
                 {
-                    if (!DiscountModify(context, data))
+                    if (!DiscountModify(data))
                     {
                         data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个折扣条目");

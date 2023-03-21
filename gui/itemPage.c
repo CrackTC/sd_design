@@ -11,10 +11,8 @@
 #include "layout.h"
 #include "mainWindow.h"
 #include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -24,7 +22,7 @@ static void MessageBoxCallBack(int ok, void *parameter)
 void SendItemRequest(struct Data *data)
 {
     int hasPermission;
-    data->itemTable = judge(data->id, &hasPermission, data->password, OP_READ_ITEM);
+    judge(data->id, &hasPermission, data->password, OP_READ_ITEM);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
@@ -53,7 +51,7 @@ void SendItemRequest(struct Data *data)
     }
 }
 
-void ItemAdd(struct nk_context *context, struct Data *data)
+void ItemAdd(struct Data *data)
 {
     TableRow *row = NewTableRow();
     AppendTableRow(row, "商品名称");
@@ -83,11 +81,11 @@ void ItemAdd(struct nk_context *context, struct Data *data)
     AppendTableRow(row, "2");
     AppendTable(table, row);
 
-    PushWindow(context, NewItemEdit("商品编辑", data->id, data->password, table, 0));
+    PushWindow(NewItemEdit("商品编辑", data->id, data->password, table, 0));
     FreeTable(table);
 }
 
-int ItemModify(struct nk_context *context, struct Data *data)
+int ItemModify(struct Data *data)
 {
     LinkedList *now = data->itemCheckList->next;
     LinkedList *rowNow = data->itemTable->rows->next;
@@ -137,7 +135,7 @@ int ItemModify(struct nk_context *context, struct Data *data)
                 AppendTable(table, row);
             }
 
-            PushWindow(context, NewItemEdit("商品编辑", data->id, data->password, table, 1));
+            PushWindow(NewItemEdit("商品编辑", data->id, data->password, table, 1));
             FreeTable(table);
             return 1;
         }
@@ -285,7 +283,7 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
     {
         if (nk_style_push_font(context, &fontSmall->handle))
         {
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查询"))
                 {
@@ -293,12 +291,12 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.15);
+            nk_layout_row_push(context, 0.15f);
             {
                 if (nk_button_label(context, "查看"))
                 {
@@ -311,7 +309,7 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
                             TableRow *titleRow = CloneRow(GetTableTitle(data->itemTable));
                             Table *table = NewTable(titleRow, "");
                             AppendTable(table, CloneRow(rowNow->data));
-                            PushWindow(context, NewItemDetail("商品详情", table));
+                            PushWindow(NewItemDetail("商品详情", table));
                             FreeTable(table);
                             break;
                         }
@@ -321,25 +319,25 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "+"))
                 {
-                    ItemAdd(context, data);
+                    ItemAdd(data);
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "-"))
                 {
@@ -348,16 +346,16 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
                 }
             }
 
-            nk_layout_row_push(context, 0.01);
+            nk_layout_row_push(context, 0.01f);
             {
                 PlaceNothing(context);
             }
 
-            nk_layout_row_push(context, 0.08);
+            nk_layout_row_push(context, 0.08f);
             {
                 if (nk_button_label(context, "~"))
                 {
-                    if (!ItemModify(context, data))
+                    if (!ItemModify(data))
                     {
                         data->messageCallback = MessageBoxCallBack;
                         data->message = CloneString("请选择一个商品条目");
