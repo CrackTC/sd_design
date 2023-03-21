@@ -4,6 +4,8 @@
 #include "../data/table.h"
 #include "../data/time.h"
 #include "../services/judgeService.h"
+#include "../services/inventoryService.h"
+#include "../services/journalService.h"
 #include "../utils.h"
 #include "config.h"
 #include "layout.h"
@@ -21,11 +23,6 @@ static void MessageBoxCallBack(int ok, void *parameter)
 
 void SendItemRequest(struct Data *data)
 {
-#warning
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("缺少权限：读取商品");
-    return;
-
     int hasPermission;
     data->itemTable = judge(data->id, &hasPermission, data->password, OP_READ_ITEM);
     if (!hasPermission)
@@ -35,7 +32,25 @@ void SendItemRequest(struct Data *data)
         return;
     }
 
-#warning finish read call
+    AddJournal(NULL, data->id, OP_READ_ITEM);
+    Table *response = ShowItem(NULL);
+    if (response != NULL)
+    {
+        if (response->remark != NULL && response->remark[0] != '\0')
+        {
+            data->messageCallback = MessageBoxCallBack;
+            data->message = CloneString(response->remark);
+        }
+
+        FreeList(data->itemCheckList);
+        data->itemCheckList = NewCheckList();
+        data->itemTable = response;
+    }
+    else
+    {
+        data->messageCallback = MessageBoxCallBack;
+        data->message = CloneString("查询失败: 响应为NULL");
+    }
 }
 
 void ItemAdd(struct nk_context *context, struct Data *data)
@@ -80,10 +95,10 @@ int ItemModify(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
-#warning
             TableRow *row = NewTableRow();
 
             {
+                AppendTableRow(row, "id");
                 AppendTableRow(row, "商品名称");
                 AppendTableRow(row, "数量");
                 AppendTableRow(row, "年");
@@ -101,6 +116,7 @@ int ItemModify(struct nk_context *context, struct Data *data)
 
             {
                 row = NewTableRow();
+                AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品编号"));
                 AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品名称"));
                 AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "数量"));
 
@@ -133,16 +149,13 @@ int ItemModify(struct nk_context *context, struct Data *data)
 
 void ItemDelete(int ok, void *parameter)
 {
+    MessageBoxCallBack(ok, parameter);
     if (ok == 0)
     {
-        MessageBoxCallBack(ok, parameter);
         return;
     }
-#warning
+
     struct Data *data = parameter;
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("Successfully deleted!");
-    return;
 
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_DELETE_ITEM);
@@ -163,18 +176,36 @@ void ItemDelete(int ok, void *parameter)
             TableRow *row = NewTableRow();
             AppendTableRow(row, "id");
             Table *table = NewTable(row, NULL);
+
             row = NewTableRow();
             AppendTableRow(row, id);
             AppendTable(table, row);
-#warning finish deletion call
 
+            AddJournal(table, data->id, OP_DELETE_ITEM);
+            Table *response = DeleteItemById(table);
             FreeTable(table);
+
+            if (response != NULL)
+            {
+                int error = 0;
+                if (response->remark != NULL && response->remark[0] != '\0')
+                {
+                    data->messageCallback = MessageBoxCallBack;
+                    data->message = CloneString(response->remark);
+                    error = 1;
+                }
+                FreeTable(response);
+                if (error)
+                {
+                    return;
+                }
+            }
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-
-    MessageBoxCallBack(ok, parameter);
+    data->messageCallback = MessageBoxCallBack;
+    data->message = CloneString("删除成功");
 }
 
 void ItemPageLayout(struct nk_context *context, struct Window *window)

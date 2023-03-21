@@ -1,4 +1,6 @@
 #include "../data/operation.h"
+#include "../services/inventoryService.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../utils.h"
 #include "config.h"
@@ -19,10 +21,6 @@ struct Data
 
 static int SendRequest(struct Data *data)
 {
-    data->message = CloneString("没有权限");
-    return 0;
-
-#warning
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_INVENTORY : OP_ADD_INVENTORY;
     judge(data->id, &hasPermission, data->password, operation);
@@ -32,6 +30,80 @@ static int SendRequest(struct Data *data)
         return 0;
     }
 #warning finish edit call
+    TableRow *row = NewTableRow();
+    if (data->modify)
+    {
+        AppendTableRow(row, "itemId");
+    }
+    AppendTableRow(row, "number");
+    AppendTableRow(row, "y1");
+    AppendTableRow(row, "m1");
+    AppendTableRow(row, "d1");
+    AppendTableRow(row, "h1");
+    AppendTableRow(row, "min1");
+    AppendTableRow(row, "s1");
+    AppendTableRow(row, "y2");
+    AppendTableRow(row, "m2");
+    AppendTableRow(row, "d2");
+    AppendTableRow(row, "h2");
+    AppendTableRow(row, "min2");
+    AppendTableRow(row, "s2");
+    AppendTableRow(row, "yuan");
+    AppendTableRow(row, "jiao");
+    AppendTableRow(row, "cent");
+    Table *request = NewTable(row, NULL);
+
+    row = NewTableRow();
+    TableRow *sourceRow = GetRowByIndex(data->inventory, 1);
+    if (data->modify)
+    {
+        AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "商品编号"));
+    }
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "数量"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "年1"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "月1"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "日1"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "时1"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "分1"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "秒1"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "年2"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "月2"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "日2"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "时2"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "分2"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "秒2"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "元"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "角"));
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "分"));
+    AppendTable(request, row);
+
+    Table *response;
+    if (data->modify)
+    {
+        AddJournal(request, data->id, OP_UPDATE_INVENTORY);
+        response = ReviseInventory(request);
+    }
+    else
+    {
+        AddJournal(request, data->id, OP_ADD_INVENTORY);
+        response = AddInventory(request);
+    }
+    FreeTable(request);
+
+    if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
+    {
+        data->message = CloneString(response->remark);
+    }
+    else
+    {
+        data->message = CloneString("操作成功完成");
+    }
+
+    if (response != NULL)
+    {
+        FreeTable(response);
+    }
+
     return 1;
 }
 

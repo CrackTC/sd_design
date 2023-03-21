@@ -3,6 +3,8 @@
 #include "../data/operation.h"
 #include "../data/table.h"
 #include "../data/time.h"
+#include "../services/inventoryService.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../utils.h"
 #include "config.h"
@@ -22,16 +24,13 @@ static void MessageBoxCallBack(int ok, void *parameter)
 
 void InventoryDelete(int ok, void *parameter)
 {
+    MessageBoxCallBack(ok, parameter);
     if (ok == 0)
     {
-        MessageBoxCallBack(ok, parameter);
         return;
     }
-#warning
+
     struct Data *data = parameter;
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("Succuessfully deleted!");
-    return;
 
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_DELETE_INVENTORY);
@@ -53,35 +52,68 @@ void InventoryDelete(int ok, void *parameter)
             TableRow *row = NewTableRow();
             AppendTableRow(row, "id");
             Table *table = NewTable(row, NULL);
+
             row = NewTableRow();
             AppendTableRow(row, id);
             AppendTable(table, row);
-#warning finish deletion call
 
+            AddJournal(table, data->id, OP_DELETE_INVENTORY);
+            Table *response = DeleteInventoryById(table);
             FreeTable(table);
+
+            if (response != NULL)
+            {
+                int error = 0;
+                if (response->remark != NULL && response->remark[0] != '\0')
+                {
+                    data->messageCallback = MessageBoxCallBack;
+                    data->message = CloneString(response->remark);
+                    error = 1;
+                }
+                FreeTable(response);
+                if (error)
+                {
+                    return;
+                }
+            }
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-
-    MessageBoxCallBack(ok, parameter);
+    data->messageCallback = MessageBoxCallBack;
+    data->message = CloneString("删除成功");
 }
 
 void SendInventoryRequest(struct Data *data)
 {
-#warning
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("缺少权限：读取库存");
-    return;
-
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_READ_INVENTORY);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：读取库存");
+        return;
     }
-#warning finish read call
+
+    AddJournal(NULL, data->id, OP_READ_INVENTORY);
+    Table *response = ShowInventory(NULL);
+    if (response != NULL)
+    {
+        if (response->remark != NULL && response->remark[0] != '\0')
+        {
+            data->messageCallback = MessageBoxCallBack;
+            data->message = CloneString(response->remark);
+        }
+
+        FreeList(data->inventoryCheckList);
+        data->inventoryCheckList = NewCheckList();
+        data->inventoryTable = response;
+    }
+    else
+    {
+        data->messageCallback = MessageBoxCallBack;
+        data->message = CloneString("查询失败: 响应为NULL");
+    }
 }
 
 int InventoryLookup(struct nk_context *context, struct Data *data)
@@ -113,7 +145,6 @@ int InventoryAdd(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
-#warning
             TableRow *row = NewTableRow();
             AppendTableRow(row, "商品编号");
             AppendTableRow(row, "商品名称");
@@ -172,8 +203,8 @@ int InventoryModify(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
-#warning
             TableRow *row = NewTableRow();
+            AppendTableRow(row, "id");
             AppendTableRow(row, "商品编号");
             AppendTableRow(row, "商品名称");
             AppendTableRow(row, "数量");
@@ -194,6 +225,7 @@ int InventoryModify(struct nk_context *context, struct Data *data)
             AppendTableRow(row, "分");
             Table *table = NewTable(row, "");
             row = NewTableRow();
+            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "id"));
             AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "商品编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "商品名称"));
             AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "数量"));

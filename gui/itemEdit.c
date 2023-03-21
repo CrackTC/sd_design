@@ -1,4 +1,6 @@
 #include "../data/operation.h"
+#include "../services/inventoryService.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../utils.h"
 #include "config.h"
@@ -19,10 +21,6 @@ struct Data
 
 static int SendRequest(struct Data *data)
 {
-    data->message = CloneString("没有权限");
-    return 0;
-
-#warning
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_ITEM : OP_ADD_ITEM;
     judge(data->id, &hasPermission, data->password, operation);
@@ -31,7 +29,69 @@ static int SendRequest(struct Data *data)
         data->message = CloneString("没有权限");
         return 0;
     }
-#warning finish edit call
+
+    TableRow *row = NewTableRow();
+    if (data->modify)
+    {
+        AppendTableRow(row, "id");
+    }
+    AppendTableRow(row, "name");
+    AppendTableRow(row, "yuan");
+    AppendTableRow(row, "jiao");
+    AppendTableRow(row, "cent");
+    AppendTableRow(row, "y1");
+    AppendTableRow(row, "m1");
+    AppendTableRow(row, "d1");
+    AppendTableRow(row, "h1");
+    AppendTableRow(row, "min1");
+    AppendTableRow(row, "s1");
+    Table *request = NewTable(row, NULL);
+
+    row = NewTableRow();
+    TableRow *sourceRow = GetRowByIndex(data->item, 1);
+    if (data->modify)
+    {
+        AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "id"));
+    }
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "商品名称"));
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "元"));
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "角"));
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "分"));
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "年"));
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "月"));
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "日"));
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "时"));
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "分"));
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "秒"));
+    AppendTable(request, row);
+
+    Table *response;
+    if (data->modify)
+    {
+        AddJournal(request, data->id, OP_UPDATE_ITEM);
+        response = ReviseAnItemByItemId(request);
+    }
+    else
+    {
+        AddJournal(request, data->id, OP_ADD_ITEM);
+        response = AddItem(request);
+    }
+    FreeTable(request);
+
+    if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
+    {
+        data->message = CloneString(response->remark);
+    }
+    else
+    {
+        data->message = CloneString("操作成功完成");
+    }
+
+    if (response != NULL)
+    {
+        FreeTable(response);
+    }
+
     return 1;
 }
 

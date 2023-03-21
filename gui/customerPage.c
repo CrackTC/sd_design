@@ -92,6 +92,7 @@ void SendCustomerRequest(struct Data *data)
     {
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：读取客户");
+        return;
     }
 
     AddJournal(NULL, data->id, OP_READ_CUSTOMER);
