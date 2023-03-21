@@ -1,4 +1,6 @@
 #include "../data/operation.h"
+#include "../services/customerService.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../utils.h"
 #include "config.h"
@@ -19,25 +21,70 @@ struct Data
 
 static int SendRequest(struct Data *data)
 {
-    data->message = "没有权限";
-    return 0;
-
-#warning
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_CUSTOMER : OP_ADD_CUSTOMER;
     judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
-        data->message = "没有权限";
+        data->message = CloneString("没有权限");
         return 0;
     }
-#warning finish edit call
+
+    TableRow *row = NewTableRow();
+    if (data->modify)
+    {
+        AppendTableRow(row, "id");
+    }
+    AppendTableRow(row, "level");
+    AppendTableRow(row, "name");
+    AppendTableRow(row, "contact");
+    Table *request = NewTable(row, NULL);
+
+    row = NewTableRow();
+    TableRow *sourceRow = GetRowByIndex(data->customer, 1);
+    if (data->modify)
+    {
+        AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "id"));
+    }
+    AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "客户等级"));
+    AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "客户姓名"));
+    AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "客户联系方式"));
+    AppendTable(request, row);
+
+    Table *response;
+    if (data->modify)
+    {
+        AddJournal(request, data->id, OP_UPDATE_CUSTOMER);
+        response = UpdateCustomer(request);
+    }
+    else
+    {
+        AddJournal(request, data->id, OP_ADD_CUSTOMER);
+        response = AddCustomer(request);
+    }
+    FreeTable(request);
+
+    if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
+    {
+        data->message = CloneString(response->remark);
+    }
+    else
+    {
+        data->message = CloneString("操作成功完成");
+    }
+
+    if (response != NULL)
+    {
+        FreeTable(response);
+    }
+
     return 1;
 }
 
 static void MessageBoxCallBack(int ok, void *parameter)
 {
     struct Data *data = parameter;
+    free(data->message);
     data->message = NULL;
 }
 

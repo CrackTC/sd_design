@@ -3,6 +3,8 @@
 #include "../data/operation.h"
 #include "../data/table.h"
 #include "../data/time.h"
+#include "../services/customerService.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../utils.h"
 #include "config.h"
@@ -27,11 +29,8 @@ void CustomerDelete(int ok, void *parameter)
     {
         return;
     }
-#warning
+
     struct Data *data = parameter;
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("Succuessfully deleted!");
-    return;
 
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_DELETE_CUSTOMER);
@@ -53,27 +52,40 @@ void CustomerDelete(int ok, void *parameter)
             TableRow *row = NewTableRow();
             AppendTableRow(row, "id");
             Table *table = NewTable(row, NULL);
+
             row = NewTableRow();
             AppendTableRow(row, id);
             AppendTable(table, row);
-#warning finish deletion call
 
+            AddJournal(table, data->id, OP_DELETE_CUSTOMER);
+            Table *response = DeleteCustomer(table);
             FreeTable(table);
+
+            if (response != NULL)
+            {
+                int error = 0;
+                if (response->remark != NULL && response->remark[0] != '\0')
+                {
+                    data->messageCallback = MessageBoxCallBack;
+                    data->message = CloneString(response->remark);
+                    error = 1;
+                }
+                FreeTable(response);
+                if (error)
+                {
+                    return;
+                }
+            }
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-
-    MessageBoxCallBack(ok, parameter);
+    data->messageCallback = MessageBoxCallBack;
+    data->message = CloneString("删除成功");
 }
 
 void SendCustomerRequest(struct Data *data)
 {
-#warning
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("缺少权限：读取客户");
-    return;
-
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_READ_CUSTOMER);
     if (!hasPermission)
@@ -81,7 +93,26 @@ void SendCustomerRequest(struct Data *data)
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：读取客户");
     }
-#warning finish read call
+
+    AddJournal(NULL, data->id, OP_READ_CUSTOMER);
+    Table *response = GetAllCustomer(NULL);
+    if (response != NULL)
+    {
+        if (response->remark != NULL && response->remark[0] != '\0')
+        {
+            data->messageCallback = MessageBoxCallBack;
+            data->message = CloneString(response->remark);
+        }
+
+        FreeList(data->customerCheckList);
+        data->customerCheckList = NewCheckList();
+        data->customerTable = response;
+    }
+    else
+    {
+        data->messageCallback = MessageBoxCallBack;
+        data->message = CloneString("查询失败: 响应为NULL");
+    }
 }
 
 int CustomerLookup(struct nk_context *context, struct Data *data)
@@ -107,7 +138,6 @@ int CustomerLookup(struct nk_context *context, struct Data *data)
 
 void CustomerAdd(struct nk_context *context, struct Data *data)
 {
-#warning
     TableRow *row = NewTableRow();
     AppendTableRow(row, "客户等级");
     AppendTableRow(row, "客户姓名");
@@ -132,14 +162,15 @@ int CustomerModify(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
-#warning
             TableRow *row = NewTableRow();
+            AppendTableRow(row, "id");
             AppendTableRow(row, "客户等级");
             AppendTableRow(row, "客户姓名");
             AppendTableRow(row, "客户联系方式");
             Table *table = NewTable(row, "");
 
             row = NewTableRow();
+            AppendTableRow(row, GetRowItemByColumnName(data->customerTable, rowNow->data, "id"));
             AppendTableRow(row, GetRowItemByColumnName(data->customerTable, rowNow->data, "客户等级"));
             AppendTableRow(row, GetRowItemByColumnName(data->customerTable, rowNow->data, "客户姓名"));
             AppendTableRow(row, GetRowItemByColumnName(data->customerTable, rowNow->data, "客户联系方式"));
