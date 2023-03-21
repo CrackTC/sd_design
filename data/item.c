@@ -32,6 +32,7 @@ Item *NewItem(const char *name, Amount *price, Time *shelfLife)
     Item *item = malloc(sizeof(Item));
     item->id = GenerateId(systemList, GetAllItems, &idCount);
     item->name = CloneString(name);
+    item->price = *price;
     item->shelfLife = *shelfLife;
     return item;
 }
