@@ -367,7 +367,7 @@ Table *DeleteSingleLossById(Table *input)
     // 获取要修改的货物的编号
     TableRow *row = GetRowByIndex(input, 1);
     // 将Id由字符转为整数类型
-    int id = change(GetRowItemByColumnName(input, row, "Id"));
+    int id = change(GetRowItemByColumnName(input, row, "id"));
     LossEntry *entry = GetLossEntryById(id);
     if (entry != NULL)
     {
@@ -507,7 +507,7 @@ Table *AddLossInventory(Table *input)
     TableRow *row = GetRowByIndex(input, 1);
 
     // 获取货存Id
-    int inventoryId = change(GetRowItemByColumnName(input, row, "Id"));
+    int inventoryId = change(GetRowItemByColumnName(input, row, "inventoryId"));
     // 获取货损数量
     int number = change(GetRowItemByColumnName(input, row, "number"));
     // 获取货损原因
@@ -996,7 +996,7 @@ Table *ReviseLossInventory(Table *input)
     Table *table;
     TableRow *row = GetRowByIndex(input, 1);
     // 获取表格中相应的信息
-    LossEntry *entry = GetLossEntryById(change(GetRowItemByColumnName(input, row, "Id")));
+    LossEntry *entry = GetLossEntryById(change(GetRowItemByColumnName(input, row, "id")));
     if (entry != NULL)
     {
         // 判断要修改的货存编号是否存在
@@ -1011,10 +1011,10 @@ Table *ReviseLossInventory(Table *input)
             Time time1 = NewDateTime(y, m, d, h, min, s);
 
             // 获取原有的货损数量
-            int oldNumber = GetLossEntryNumber(GetLossEntryById(change(GetRowItemByColumnName(input, row, "Id"))));
+            int oldNumber = GetLossEntryNumber(GetLossEntryById(change(GetRowItemByColumnName(input, row, "id"))));
             // 获取原有的货损库存编号
             int oldInventoryId =
-                GetLossEntryInventoryId(GetLossEntryById(change(GetRowItemByColumnName(input, row, "Id"))));
+                GetLossEntryInventoryId(GetLossEntryById(change(GetRowItemByColumnName(input, row, "id"))));
             // 获取修改后的数量
             int NewNumber = change(GetRowItemByColumnName(input, row, "number"));
             if (NewNumber <=
