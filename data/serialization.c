@@ -18,23 +18,23 @@ int Serialize(const Table *table, const char *path)
         return -1;
     }
 
-    fprintf(filePointer, "remark:\n");
-    fprintf(filePointer, "    len: %lu\n", table->remark == NULL ? 0 : strlen(table->remark));
-    fprintf(filePointer, "    val: %s\n", table->remark == NULL ? "" : table->remark);
-    fprintf(filePointer, "columnCount: %d\n", ((TableRow *)table->rows->data)->columnCount);
-    fprintf(filePointer, "rows:\n");
+    fprintf(filePointer, "remark:");
+    fprintf(filePointer, "\n    len: %lu", table->remark == NULL ? 0 : strlen(table->remark));
+    fprintf(filePointer, "\n    val: %s", table->remark == NULL ? "" : table->remark);
+    fprintf(filePointer, "\ncolumnCount: %d", ((TableRow *)table->rows->data)->columnCount);
+    fprintf(filePointer, "\nrows:");
 
     LinkedList *now = table->rows;
     while (now != NULL)
     {
-        fprintf(filePointer, "    row:\n");
+        fprintf(filePointer, "\n    row:");
 
         TableRow *row = now->data;
         LinkedList *itemNow = row->items;
         while (itemNow != NULL)
         {
-            fprintf(filePointer, "        len: %lu\n", strlen(itemNow->data));
-            fprintf(filePointer, "        val: %s\n", (char *)itemNow->data);
+            fprintf(filePointer, "\n        len: %lu", strlen(itemNow->data));
+            fprintf(filePointer, "\n        val: %s", (char *)itemNow->data);
             itemNow = itemNow->next;
         }
 
