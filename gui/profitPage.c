@@ -3,7 +3,9 @@
 #include "../data/operation.h"
 #include "../data/table.h"
 #include "../data/time.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
+#include "../services/statisticService.h"
 #include "../utils.h"
 #include "config.h"
 #include "layout.h"
@@ -22,19 +24,34 @@ static void MessageBoxCallBack(int ok, void *parameter)
 
 void SendProfitRequest(struct Data *data)
 {
-#warning
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("缺少权限：读取统计");
-    return;
-
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_READ_STATISTICS);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：读取统计");
+        return;
     }
-#warning finish read call
+
+    AddJournal(NULL, data->id, OP_READ_STATISTICS);
+    Table *response = GetStatistics(NULL);
+    if (response != NULL)
+    {
+        if (response->remark != NULL && response->remark[0] != '\0')
+        {
+            data->messageCallback = MessageBoxCallBack;
+            data->message = CloneString(response->remark);
+        }
+
+        FreeList(data->profitCheckList);
+        data->profitCheckList = NewCheckList();
+        data->profitTable = response;
+    }
+    else
+    {
+        data->messageCallback = MessageBoxCallBack;
+        data->message = CloneString("查询失败: 响应为NULL");
+    }
 }
 
 int ProfitLookup(struct nk_context *context, struct Data *data)
@@ -181,9 +198,8 @@ void ProfitPageLayout(struct nk_context *context, struct Window *window)
             if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
             {
                 TableLayout(context, data->profitTable, data->profitCheckList,
-                            data->profitPropertySelected == 0
-                                ? NULL
-                                : data->profitProperties[data->profitPropertySelected],
+                            data->profitPropertySelected == 0 ? NULL
+                                                              : data->profitProperties[data->profitPropertySelected],
                             data->profitValueBuffer);
                 nk_group_end(context);
             }

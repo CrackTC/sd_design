@@ -3,6 +3,7 @@
 #include "../data/operation.h"
 #include "../data/table.h"
 #include "../data/time.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
 #include "../utils.h"
 #include "config.h"
@@ -22,19 +23,34 @@ static void MessageBoxCallBack(int ok, void *parameter)
 
 void SendJournalRequest(struct Data *data)
 {
-#warning
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("缺少权限：读取日志");
-    return;
-
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_READ_JOURNAL);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：读取日志");
+        return;
     }
-#warning finish read call
+
+    AddJournal(NULL, data->id, OP_READ_JOURNAL);
+    Table *response = GetAllJournal(NULL);
+    if (response != NULL)
+    {
+        if (response->remark != NULL && response->remark[0] != '\0')
+        {
+            data->messageCallback = MessageBoxCallBack;
+            data->message = CloneString(response->remark);
+        }
+
+        FreeList(data->journalCheckList);
+        data->journalCheckList = NewCheckList();
+        data->journalTable = response;
+    }
+    else
+    {
+        data->messageCallback = MessageBoxCallBack;
+        data->message = CloneString("查询失败: 响应为NULL");
+    }
 }
 
 int JournalLookup(struct nk_context *context, struct Data *data)

@@ -3,7 +3,9 @@
 #include "../data/operation.h"
 #include "../data/table.h"
 #include "../data/time.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
+#include "../services/saleService.h"
 #include "../utils.h"
 #include "config.h"
 #include "layout.h"
@@ -22,16 +24,13 @@ static void MessageBoxCallBack(int ok, void *parameter)
 
 void RefundDelete(int ok, void *parameter)
 {
+    MessageBoxCallBack(ok, parameter);
     if (ok == 0)
     {
-        MessageBoxCallBack(ok, parameter);
         return;
     }
-#warning
+
     struct Data *data = parameter;
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("Succuessfully deleted!");
-    return;
 
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_DELETE_REFUND);
@@ -56,32 +55,64 @@ void RefundDelete(int ok, void *parameter)
             row = NewTableRow();
             AppendTableRow(row, id);
             AppendTable(table, row);
-#warning finish deletion call
 
+            AddJournal(table, data->id, OP_DELETE_REFUND);
+            Table *response = RemoveRefund(table);
             FreeTable(table);
+
+            if (response != NULL)
+            {
+                int error = 0;
+                if (response->remark != NULL && response->remark[0] != '\0')
+                {
+                    data->messageCallback = MessageBoxCallBack;
+                    data->message = CloneString(response->remark);
+                    error = 1;
+                }
+                FreeTable(response);
+                if (error)
+                {
+                    return;
+                }
+            }
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-
-    MessageBoxCallBack(ok, parameter);
+    data->messageCallback = MessageBoxCallBack;
+    data->message = CloneString("删除成功");
 }
 
 void SendRefundRequest(struct Data *data)
 {
-#warning
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("缺少权限：读取退款");
-    return;
-
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_READ_REFUND);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：读取退款");
+        return;
     }
-#warning finish read call
+
+    AddJournal(NULL, data->id, OP_READ_REFUND);
+    Table *response = GetAllRefund(NULL);
+    if (response != NULL)
+    {
+        if (response->remark != NULL && response->remark[0] != '\0')
+        {
+            data->messageCallback = MessageBoxCallBack;
+            data->message = CloneString(response->remark);
+        }
+
+        FreeList(data->refundCheckList);
+        data->refundCheckList = NewCheckList();
+        data->refundTable = response;
+    }
+    else
+    {
+        data->messageCallback = MessageBoxCallBack;
+        data->message = CloneString("查询失败: 响应为NULL");
+    }
 }
 
 int RefundLookup(struct nk_context *context, struct Data *data)
@@ -113,7 +144,6 @@ int RefundAdd(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
-#warning
             TableRow *row = NewTableRow();
             AppendTableRow(row, "订单编号");
             AppendTableRow(row, "退款原因");
@@ -156,7 +186,6 @@ int RefundModify(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
-#warning
             TableRow *row = NewTableRow();
             AppendTableRow(row, "订单编号");
             AppendTableRow(row, "退款原因");

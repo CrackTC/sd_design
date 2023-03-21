@@ -1,5 +1,7 @@
 #include "../data/operation.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
+#include "../services/saleService.h"
 #include "../utils.h"
 #include "config.h"
 #include "layout.h"
@@ -19,10 +21,6 @@ struct Data
 
 static int SendRequest(struct Data *data)
 {
-    data->message = CloneString("没有权限");
-    return 0;
-
-#warning
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_REFUND : OP_ADD_REFUND;
     judge(data->id, &hasPermission, data->password, operation);
@@ -31,7 +29,57 @@ static int SendRequest(struct Data *data)
         data->message = CloneString("没有权限");
         return 0;
     }
-#warning finish edit call
+
+    TableRow *row = NewTableRow();
+
+    AppendTableRow(row, "id");
+    AppendTableRow(row, "reason");
+    AppendTableRow(row, "yuan");
+    AppendTableRow(row, "jiao");
+    AppendTableRow(row, "cent");
+    AppendTableRow(row, "number");
+    AppendTableRow(row, "remark");
+    Table *request = NewTable(row, NULL);
+
+    row = NewTableRow();
+    TableRow *sourceRow = GetRowByIndex(data->refund, 1);
+
+    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "订单编号"));
+    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "退款原因"));
+    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "元"));
+    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "角"));
+    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "分"));
+    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "退回数目"));
+    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "备注"));
+    AppendTable(request, row);
+
+    Table *response;
+    if (data->modify)
+    {
+        AddJournal(request, data->id, OP_UPDATE_REFUND);
+        response = UpdateRefund(request);
+    }
+    else
+    {
+        AddJournal(request, data->id, OP_ADD_REFUND);
+        response = AddRefund(request);
+    }
+    FreeTable(request);
+
+    if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
+    {
+        data->message = CloneString(response->remark);
+    }
+    else
+    {
+        data->message = CloneString("操作成功完成");
+    }
+
+    if (response != NULL)
+    {
+        FreeTable(response);
+    }
+
     return 1;
 }
 
