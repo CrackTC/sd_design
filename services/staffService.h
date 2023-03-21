@@ -21,7 +21,5 @@ Table *CreateStaffTableTitle(void);
 
 /*将数字字符串转化为int型整数*/
 int atoi(const char *ch);
-/*将int整数转化为字符串*/
-/* const char *itoa(int a); */
 
 #endif
