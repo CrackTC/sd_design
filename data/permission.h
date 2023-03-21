@@ -54,6 +54,15 @@ LinkedList *GetAllPermissionEntry();
 PermissionEntry *GetPermissionEntryByStaffId(int staffId);
 
 /*
+ * Name: PermissionToString
+ * Description: 将权限条目转换为字符串形式
+ * Arguments:
+ *     entry: 权限条目
+ * Returns: 字符串表示
+ * */
+char *PermissionToString(PermissionEntry *entry);
+
+/*
  * Name: GetPermissionEntryXXX
  * Description: 获取权限条目的某个成员
  * Arguments:

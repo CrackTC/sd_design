@@ -7,6 +7,7 @@
 #include <malloc.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 static const char *path = "data/permission.txt";
@@ -86,6 +87,15 @@ LinkedList *GetAllPermissionEntry()
 
     systemList = list;
     return list;
+}
+
+char *PermissionToString(PermissionEntry *entry)
+{
+    char *permissionString = malloc((OPERATION_COUNT + 1) * sizeof(char));
+    for (int i = 0; i < OPERATION_COUNT; i++)
+        permissionString[i] = entry->hasPermission[i] + '0';
+    permissionString[OPERATION_COUNT] = '\0';
+    return permissionString;
 }
 
 PermissionEntry *GetPermissionEntryByStaffId(int staffId)
