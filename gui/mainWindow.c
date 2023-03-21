@@ -102,7 +102,6 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->inventoryProperties = NULL;
 
     {
-#warning
         TableRow *row = NewTableRow();
         AppendTableRow(row, "id");
         AppendTableRow(row, "商品编号");
@@ -113,35 +112,35 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "购入单价");
         Table *table = NewTable(row, NULL);
 
-        row = NewTableRow();
-        AppendTableRow(row, "id");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "数量");
-        AppendTableRow(row, "2004-07-07 00:00:00");
-        AppendTableRow(row, "2000-01-01 10:30:00");
-        AppendTableRow(row, "20.30元");
-        AppendTable(table, row);
+        /*         row = NewTableRow(); */
+        /*         AppendTableRow(row, "id"); */
+        /*         AppendTableRow(row, "商品编号"); */
+        /*         AppendTableRow(row, "商品名称"); */
+        /*         AppendTableRow(row, "数量"); */
+        /*         AppendTableRow(row, "2004-07-07 00:00:00"); */
+        /*         AppendTableRow(row, "2000-01-01 10:30:00"); */
+        /*         AppendTableRow(row, "20.30元"); */
+        /*         AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "id");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "数量");
-        AppendTableRow(row, "2004-07-07 00:00:00");
-        AppendTableRow(row, "2000-01-01 10:30:00");
-        AppendTableRow(row, "10.12元");
-        AppendTable(table, row);
+        /*         row = NewTableRow(); */
+        /*         AppendTableRow(row, "id"); */
+        /*         AppendTableRow(row, "商品编号"); */
+        /*         AppendTableRow(row, "商品名称"); */
+        /*         AppendTableRow(row, "数量"); */
+        /*         AppendTableRow(row, "2004-07-07 00:00:00"); */
+        /*         AppendTableRow(row, "2000-01-01 10:30:00"); */
+        /*         AppendTableRow(row, "10.12元"); */
+        /*         AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "id");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "数量");
-        AppendTableRow(row, "2004-07-07 00:00:00");
-        AppendTableRow(row, "2000-01-01 10:30:00");
-        AppendTableRow(row, "8.99元");
-        AppendTable(table, row);
+        /*         row = NewTableRow(); */
+        /*         AppendTableRow(row, "id"); */
+        /*         AppendTableRow(row, "商品编号"); */
+        /*         AppendTableRow(row, "商品名称"); */
+        /*         AppendTableRow(row, "数量"); */
+        /*         AppendTableRow(row, "2004-07-07 00:00:00"); */
+        /*         AppendTableRow(row, "2000-01-01 10:30:00"); */
+        /*         AppendTableRow(row, "8.99元"); */
+        /*         AppendTable(table, row); */
 
         data->inventoryTable = table;
     }
@@ -155,7 +154,6 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->itemProperties = NULL;
 
     {
-#warning
         TableRow *row = NewTableRow();
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
@@ -164,29 +162,29 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "售价");
         Table *table = NewTable(row, NULL);
 
-        row = NewTableRow();
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "农夫山泉");
-        AppendTableRow(row, "20");
-        AppendTableRow(row, "0000-08-00 00:00:00");
-        AppendTableRow(row, "20.00");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "农夫山泉"); */
+        /* AppendTableRow(row, "20"); */
+        /* AppendTableRow(row, "0000-08-00 00:00:00"); */
+        /* AppendTableRow(row, "20.00"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "二锅头");
-        AppendTableRow(row, "30");
-        AppendTableRow(row, "0000-08-00 00:00:00");
-        AppendTableRow(row, "21.00");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "二锅头"); */
+        /* AppendTableRow(row, "30"); */
+        /* AppendTableRow(row, "0000-08-00 00:00:00"); */
+        /* AppendTableRow(row, "21.00"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "威士忌");
-        AppendTableRow(row, "40");
-        AppendTableRow(row, "0000-08-00 00:00:00");
-        AppendTableRow(row, "30.00");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "威士忌"); */
+        /* AppendTableRow(row, "40"); */
+        /* AppendTableRow(row, "0000-08-00 00:00:00"); */
+        /* AppendTableRow(row, "30.00"); */
+        /* AppendTable(table, row); */
 
         data->itemTable = table;
     }
@@ -209,23 +207,23 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "截止日期");
         Table *table = NewTable(row, NULL);
 
-        row = NewTableRow();
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "农夫山泉");
-        AppendTableRow(row, "30");
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "2004-07-07 00:00:00");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "农夫山泉"); */
+        /* AppendTableRow(row, "30"); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "2004-07-07 00:00:00"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "二锅头");
-        AppendTableRow(row, "70");
-        AppendTableRow(row, "3");
-        AppendTableRow(row, "2004-07-07 00:00:00");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "二锅头"); */
+        /* AppendTableRow(row, "70"); */
+        /* AppendTableRow(row, "3"); */
+        /* AppendTableRow(row, "2004-07-07 00:00:00"); */
+        /* AppendTable(table, row); */
 
         data->discountTable = table;
     }
@@ -239,7 +237,6 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->orderProperties = NULL;
 
     {
-#warning
         TableRow *row = NewTableRow();
         AppendTableRow(row, "id");
         AppendTableRow(row, "库存编号");
@@ -252,41 +249,41 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "总价");
         Table *table = NewTable(row, NULL);
 
-        row = NewTableRow();
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "农夫山泉");
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "张三");
-        AppendTableRow(row, "20");
-        AppendTableRow(row, "2004-07-07 00:00:00");
-        AppendTableRow(row, "20.00");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "农夫山泉"); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "张三"); */
+        /* AppendTableRow(row, "20"); */
+        /* AppendTableRow(row, "2004-07-07 00:00:00"); */
+        /* AppendTableRow(row, "20.00"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "二锅头");
-        AppendTableRow(row, "3");
-        AppendTableRow(row, "李四");
-        AppendTableRow(row, "3");
-        AppendTableRow(row, "2004-07-07 00:00:00");
-        AppendTableRow(row, "20.00");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "二锅头"); */
+        /* AppendTableRow(row, "3"); */
+        /* AppendTableRow(row, "李四"); */
+        /* AppendTableRow(row, "3"); */
+        /* AppendTableRow(row, "2004-07-07 00:00:00"); */
+        /* AppendTableRow(row, "20.00"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "威士忌");
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "王五");
-        AppendTableRow(row, "7");
-        AppendTableRow(row, "2004-07-07 00:00:00");
-        AppendTableRow(row, "20.00");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "威士忌"); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "王五"); */
+        /* AppendTableRow(row, "7"); */
+        /* AppendTableRow(row, "2004-07-07 00:00:00"); */
+        /* AppendTableRow(row, "20.00"); */
+        /* AppendTable(table, row); */
 
         data->orderTable = table;
     }
@@ -300,7 +297,6 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->customerProperties = NULL;
 
     {
-#warning
         TableRow *row = NewTableRow();
         AppendTableRow(row, "id");
         AppendTableRow(row, "客户等级");
@@ -308,26 +304,26 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "客户联系方式");
         Table *table = NewTable(row, NULL);
 
-        row = NewTableRow();
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "DHC");
-        AppendTableRow(row, "8008208820");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "DHC"); */
+        /* AppendTableRow(row, "8008208820"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "李四");
-        AppendTableRow(row, "12315");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "李四"); */
+        /* AppendTableRow(row, "12315"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "黄金眼");
-        AppendTableRow(row, "88001818");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "黄金眼"); */
+        /* AppendTableRow(row, "88001818"); */
+        /* AppendTable(table, row); */
 
         data->customerTable = table;
     }
@@ -341,7 +337,6 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->journalProperties = NULL;
 
     {
-#warning
         TableRow *row = NewTableRow();
         AppendTableRow(row, "id");
         AppendTableRow(row, "员工编号");
@@ -351,32 +346,32 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "参数");
         Table *table = NewTable(row, NULL);
 
-        row = NewTableRow();
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "DHC");
-        AppendTableRow(row, "8008208820");
-        AppendTableRow(row, "查看库存");
-        AppendTableRow(row, "8008208820");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "DHC"); */
+        /* AppendTableRow(row, "8008208820"); */
+        /* AppendTableRow(row, "查看库存"); */
+        /* AppendTableRow(row, "8008208820"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "李四");
-        AppendTableRow(row, "12315");
-        AppendTableRow(row, "删库跑路");
-        AppendTableRow(row, "12315");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "李四"); */
+        /* AppendTableRow(row, "12315"); */
+        /* AppendTableRow(row, "删库跑路"); */
+        /* AppendTableRow(row, "12315"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "黄金眼");
-        AppendTableRow(row, "88001818");
-        AppendTableRow(row, "挪用公款");
-        AppendTableRow(row, "88001818");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "黄金眼"); */
+        /* AppendTableRow(row, "88001818"); */
+        /* AppendTableRow(row, "挪用公款"); */
+        /* AppendTableRow(row, "88001818"); */
+        /* AppendTable(table, row); */
 
         data->journalTable = table;
     }
@@ -390,7 +385,6 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->lossProperties = NULL;
 
     {
-#warning
         TableRow *row = NewTableRow();
         AppendTableRow(row, "id");
         AppendTableRow(row, "库存编号");
@@ -399,29 +393,29 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "货损原因");
         Table *table = NewTable(row, NULL);
 
-        row = NewTableRow();
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "1919-08-10");
-        AppendTableRow(row, "8008208820");
-        AppendTableRow(row, "8008208820");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "1919-08-10"); */
+        /* AppendTableRow(row, "8008208820"); */
+        /* AppendTableRow(row, "8008208820"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "1919-08-10");
-        AppendTableRow(row, "12315");
-        AppendTableRow(row, "12315");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "1919-08-10"); */
+        /* AppendTableRow(row, "12315"); */
+        /* AppendTableRow(row, "12315"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "1919-08-10");
-        AppendTableRow(row, "88001818");
-        AppendTableRow(row, "88001818");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, "1919-08-10"); */
+        /* AppendTableRow(row, "88001818"); */
+        /* AppendTableRow(row, "88001818"); */
+        /* AppendTable(table, row); */
 
         data->lossTable = table;
     }
@@ -435,24 +429,23 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->profitProperties = NULL;
 
     {
-#warning
         TableRow *row = NewTableRow();
         AppendTableRow(row, "收支");
         AppendTableRow(row, "事项");
         AppendTableRow(row, "时间");
         Table *table = NewTable(row, NULL);
 
-        row = NewTableRow();
-        AppendTableRow(row, "12345");
-        AppendTableRow(row, "销售");
-        AppendTableRow(row, "1919-08-10");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "12345"); */
+        /* AppendTableRow(row, "销售"); */
+        /* AppendTableRow(row, "1919-08-10"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "-114514");
-        AppendTableRow(row, "退款");
-        AppendTableRow(row, "1919-08-10");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "-114514"); */
+        /* AppendTableRow(row, "退款"); */
+        /* AppendTableRow(row, "1919-08-10"); */
+        /* AppendTable(table, row); */
 
         data->profitTable = table;
     }
@@ -466,7 +459,6 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->refundProperties = NULL;
 
     {
-#warning
         TableRow *row = NewTableRow();
         AppendTableRow(row, "订单编号");
         AppendTableRow(row, "退款原因");
@@ -476,23 +468,23 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "备注");
         Table *table = NewTable(row, NULL);
 
-        row = NewTableRow();
-        AppendTableRow(row, "12345");
-        AppendTableRow(row, "不想要了");
-        AppendTableRow(row, "1919-08-10");
-        AppendTableRow(row, "100.00");
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "12345"); */
+        /* AppendTableRow(row, "不想要了"); */
+        /* AppendTableRow(row, "1919-08-10"); */
+        /* AppendTableRow(row, "100.00"); */
+        /* AppendTableRow(row, "2"); */
+        /* AppendTableRow(row, ""); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "114514");
-        AppendTableRow(row, "无理由退换货");
-        AppendTableRow(row, "1919-08-10");
-        AppendTableRow(row, "10.00");
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "114514"); */
+        /* AppendTableRow(row, "无理由退换货"); */
+        /* AppendTableRow(row, "1919-08-10"); */
+        /* AppendTableRow(row, "10.00"); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, ""); */
+        /* AppendTable(table, row); */
 
         data->refundTable = table;
     }
@@ -506,7 +498,6 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->staffProperties = NULL;
 
     {
-#warning
         TableRow *row = NewTableRow();
         AppendTableRow(row, "id");
         AppendTableRow(row, "已启用");
@@ -515,21 +506,21 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "员工权限");
         Table *table = NewTable(row, NULL);
 
-        row = NewTableRow();
-        AppendTableRow(row, "12345");
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "张三");
-        AppendTableRow(row, "8008208820");
-        AppendTableRow(row, "00000000000000000000000000000000000");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "12345"); */
+        /* AppendTableRow(row, "1"); */
+        /* AppendTableRow(row, "张三"); */
+        /* AppendTableRow(row, "8008208820"); */
+        /* AppendTableRow(row, "00000000000000000000000000000000000"); */
+        /* AppendTable(table, row); */
 
-        row = NewTableRow();
-        AppendTableRow(row, "114514");
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "李四");
-        AppendTableRow(row, "12315");
-        AppendTableRow(row, "11111111111111111111111111111111111");
-        AppendTable(table, row);
+        /* row = NewTableRow(); */
+        /* AppendTableRow(row, "114514"); */
+        /* AppendTableRow(row, "0"); */
+        /* AppendTableRow(row, "李四"); */
+        /* AppendTableRow(row, "12315"); */
+        /* AppendTableRow(row, "11111111111111111111111111111111111"); */
+        /* AppendTable(table, row); */
 
         data->staffTable = table;
     }
