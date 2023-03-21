@@ -688,6 +688,7 @@ Table *UpdateDiscount(Table *a)
     int day = atoi(GetRowItemByColumnName(a, information, "day"));
     int hour = atoi(GetRowItemByColumnName(a, information, "hour"));
     int minute = atoi(GetRowItemByColumnName(a, information, "minute"));
+    int second = atoi(GetRowItemByColumnName(a, information, "second"));
 
     BasicDiscount *discount = GetBasicDiscountById(discountid);
     if (discount == NULL)
@@ -698,7 +699,7 @@ Table *UpdateDiscount(Table *a)
     }
 
     // 数据准备
-    Time newtime = NewDateTime(year, month, day, hour, minute, 0);
+    Time newtime = NewDateTime(year, month, day, hour, minute, second);
     if (newtime.value < 0)
     {
         TableRow *row = NewTableRow();

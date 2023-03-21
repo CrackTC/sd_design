@@ -5,12 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*将int整数转化为字符串*/
-/* const char *itoa0(char *ch, int num) */
-/* { */
-/*     sprintf(ch, "%d", num); */
-/*     return ch; */
-/* } */
 /*字符串清零*/
 char *empty(char *ch)
 {
@@ -65,7 +59,7 @@ Table *AddStaff(Table *newStaff)
         }
 
         Staff *staff;
-        PermissionEntry *staffPermission = NULL;              // 新擦黄建员工的权限
+        PermissionEntry *staffPermission = NULL;              // 新建员工的权限
         staff = NewStaff(isEnabled, name, password, contact); // 新建一个具有上述信息的员工
         int judge1 = AppendStaff(staff); // 追加这个新员工，judge1：判断是否追加成功
         if (judge1 == 0)
@@ -95,7 +89,6 @@ Table *AddStaff(Table *newStaff)
 
         return newStaff;
     }
-
     else
     {                                        // 若传入的是空表格
         TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
@@ -115,32 +108,44 @@ Table *GetItemOfOneStaff(Table *staff)
     {
         TableRow *row = GetRowByIndex(staff, 1);
         int Id = atoi(GetRowItemByColumnName(staff, row, "id")); // 得到要查询的员工的工号
-        PermissionEntry *permission = GetPermissionEntryByStaffId(Id);
+        Staff *targetStaff = GetStaffById(Id);                   // 依据工号找到要查询的员工
+        if (targetStaff != NULL)
+        { // 若可以找到相应员工
+            PermissionEntry *permission = GetPermissionEntryByStaffId(Id);
+            char *permissionString = PermissionToString(permission);
 
-        Staff *targetStaff = GetStaffById(Id); // 依据工号找到要查询的员工
-        /*构建这个要查询的员工信息表格*/
-        Table *targetStaffTitle = CreateStaffTableTitle(); // 创建表头
-        TableRow *targetStaffItem = NewTableRow();         // 创建一个具有该员工具体信息的表格行
-        free(AppendTableRow(targetStaffItem, LongLongToString(GetStaffId(targetStaff))));           // 加入Id
-        free(AppendTableRow(targetStaffItem, CloneString(GetStaffName(targetStaff))));              // 加入名字
-        free(AppendTableRow(targetStaffItem, LongLongToString(GetStaffAvailability(targetStaff)))); // 加入可用性
-        free(AppendTableRow(targetStaffItem, CloneString(GetStaffContact(targetStaff)))); // 加入联系方式
-        free(AppendTableRow(targetStaffItem, PermissionToString(permission)));            // 加入员工权限
-        int judge =
-            AppendTable(targetStaffTitle, targetStaffItem); // 将员工具体信息追加到表格中，judge用来判断追加是否成功
-        if (judge == 0)
-            return targetStaffTitle; // 若成功，返回该表格
+            /*构建这个要查询的员工信息表格*/
+            Table *targetStaffTitle = CreateStaffTableTitle(); // 创建表头
+            TableRow *targetStaffItem = NewTableRow();         // 创建一个具有该员工具体信息的表格行
+            free(AppendTableRow(targetStaffItem, LongLongToString(GetStaffId(targetStaff)))); // 加入Id
+            free(AppendTableRow(targetStaffItem, CloneString(GetStaffName(targetStaff))));    // 加入名字
+            free(AppendTableRow(targetStaffItem,
+                                LongLongToString(GetStaffAvailability(targetStaff))));        // 加入可用性
+            free(AppendTableRow(targetStaffItem, CloneString(GetStaffContact(targetStaff)))); // 加入联系方式
+            free(AppendTableRow(targetStaffItem, PermissionToString(permission)));            // 加入员工权限
+            int judge =
+                AppendTable(targetStaffTitle, targetStaffItem); // 将员工具体信息追加到表格中，judge用来判断追加是否成功
+            if (judge == 0)
+                return targetStaffTitle; // 若成功，返回该表格
+            else
+            {                                        // 若失败，返回空表格，指出出错信息
+                TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
+                Table *remark_table = NewTable(blank_row, "There is fault exsiting in reading items of a staff!");
+                /*创建一个空表格，只有备注说明查询员工信息时出错*/
+                return remark_table; // 返回空表格
+            }
+        }
         else
-        {                                        // 若失败，返回空表格，指出出错信息
+        {                                        // 若找不到相应员工
             TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(blank_row, "There is fault exsiting in reading items of a staff!");
-            /*创建一个空表格，只有备注说明查询员工信息时出错*/
+            Table *remark_table = NewTable(blank_row, "There is no target-staff !");
+            /*创建一个空表格，只有备注说明 没有该员工*/
             return remark_table; // 返回空表格
         }
     }
 
     else
-    {
+    {                                        // 若传入的staff是空表格
         TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
         Table *remark_table = NewTable(blank_row, "There is no provided information ");
         /*创建一个空表格，只有备注说明 没有给予任何信息*/
@@ -154,9 +159,16 @@ Table *GetItemOfAllStaff(Table *table)
     const LinkedList *allStaff = GetAllStaff();    // 用allStaff获取所有的员工
     Table *allStaffItem = CreateStaffTableTitle(); // 创建一个员工信息标题表格行
 
-    const LinkedList *p = allStaff; // p指向员工信息链表头
+    const LinkedList *p = allStaff;
+    if (p == NULL)
+    {                                        // 如果没有员工
+        TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "There are no staffs ");
+        /*创建一个空表格，只有备注说明 没有员工*/
+        return remark_table; // 返回空表格
+    }
     while (p != NULL)
-    {
+    {                                           // 至少有一个员工
         Staff *staff = (Staff *)p->data;        // 获取当前员工
         TableRow *oneStaffItem = NewTableRow(); // 创建一个员工信息标题表格行
         PermissionEntry *permission = GetPermissionEntryByStaffId(GetStaffId(staff));      // 获取该员工的权限
@@ -180,7 +192,7 @@ Table *GetItemOfAllStaff(Table *table)
     return allStaffItem; // 返回全部员工信息表格
 }
 
-/*改变一名员工的已有信息*/ /*改密码吗*/ /*没有更改权限的代码，待完成*/
+/*改变一名员工的已有信息*/ /*改密码吗*/
 /*   Table*staff传入要修改的信息   */
 Table *UpdateStaff(Table *staff)
 {
@@ -193,52 +205,62 @@ Table *UpdateStaff(Table *staff)
         TableRow *row = GetRowByIndex(staff, 1);                 // 得到这个员工的具体信息所在行
         int id = atoi(GetRowItemByColumnName(staff, row, "id")); // 得到这个员工的工号id
         Staff *objectStaff = GetStaffById(id);                   // 根据id得到这个员工
-        PermissionEntry *staffPermission = GetPermissionEntryByStaffId(id); // 获得该员工的权限条目
+        if (objectStaff != NULL)
+        {                                                                       // 若有这个员工
+            PermissionEntry *staffPermission = GetPermissionEntryByStaffId(id); // 获得该员工的权限条目
 
-        char name[50];
-        int isEnabled = -1;
-        char contact[20];
-        char operationString[30];
-        /*获取要修改的信息*/
-        while (title != NULL)
-        {
-            oneTitle = (char *)title->data;                                       // 获取标题
-            const char *givenItem = GetRowItemByColumnName(staff, row, oneTitle); // 获取标题对应的信息
-            /*获取保存要修改的信息*/
-            if (strcmp(oneTitle, "isEnabled"))
+            char name[50];
+            int isEnabled = -1;
+            char contact[20];
+            char operationString[30];
+            /*获取要修改的信息*/
+            while (title != NULL)
             {
-                isEnabled = atoi(givenItem);
-                SetStaffAvailability(objectStaff, isEnabled);
-            }
-            if (strcmp(oneTitle, "contact"))
-            {
-                strcpy(contact, givenItem);
-                SetStaffContact(objectStaff, contact);
-            }
-            if (strcmp(oneTitle, "name"))
-            {
-                strcpy(name, givenItem);
-                SetStaffName(objectStaff, name);
-            }
-            if (strcmp(oneTitle, "permission"))
-            {
-                strcpy(operationString, givenItem);
-                Operation operation = StringToOperation(operationString);
-                int allow = atoi(GetRowItemByColumnName(staff, row, "allow"));
-                SetPermissionEntryPermissions(staffPermission, operation, allow);
-            }
+                oneTitle = (char *)title->data;                                       // 获取标题
+                const char *givenItem = GetRowItemByColumnName(staff, row, oneTitle); // 获取标题对应的信息
+                /*获取保存要修改的信息*/
+                if (strcmp(oneTitle, "isEnabled"))
+                {
+                    isEnabled = atoi(givenItem);
+                    SetStaffAvailability(objectStaff, isEnabled);
+                }
+                if (strcmp(oneTitle, "contact"))
+                {
+                    strcpy(contact, givenItem);
+                    SetStaffContact(objectStaff, contact);
+                }
+                if (strcmp(oneTitle, "name"))
+                {
+                    strcpy(name, givenItem);
+                    SetStaffName(objectStaff, name);
+                }
+                if (strcmp(oneTitle, "permission"))
+                {
+                    strcpy(operationString, givenItem);
+                    Operation operation = StringToOperation(operationString);
+                    int allow = atoi(GetRowItemByColumnName(staff, row, "allow"));
+                    SetPermissionEntryPermissions(staffPermission, operation, allow);
+                }
 
-            title = title->next;
+                title = title->next;
+            }
+            /*修改员工信息*/
+
+            StaffSave();      // 保存员工基本信息修改
+            PermissionSave(); // 保存权限修改
+
+            return staff;
         }
-        /*修改员工信息*/
-
-        StaffSave();      // 保存员工基本信息修改
-        PermissionSave(); // 保存权限修改
-
-        return staff;
+        else
+        {                                        // 若没有这个员工
+            TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
+            Table *remark_table = NewTable(blank_row, "There is no target-staff !");
+            /*创建一个空表格，只有备注说明 没有该员工*/
+            return remark_table; // 返回空表格
+        }
     }
     else
-    {
+    {                                        // 若传入的是一个空表格
         TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
         Table *remark_table = NewTable(blank_row, "There is no provided information ");
         /*创建一个空表格，只有备注说明 没有给予任何信息*/
@@ -260,42 +282,90 @@ Table *DeleteStaff(Table *staff)
         /*FreeTable(staff);                */                        // 释放原有的员工具体信息表格
 
         Staff *objectStaff = GetStaffById(id); // 根据id得到这个员工
-        SetStaffAvailability(objectStaff, 0);  // 将这个员工设置为不可用
-        /*创建一个表格，包含已经删除的员工的信息*/
-        Table *oriStaff = CreateStaffTableTitle();
-        TableRow *oriStaffItem = NewTableRow();
-        char tempString1[20], tempString2[20];
-        PermissionEntry *permission = GetPermissionEntryByStaffId(GetStaffId(objectStaff));
-        free(AppendTableRow(oriStaffItem, LongLongToString(GetStaffId(objectStaff))));           // 加入Id
-        free(AppendTableRow(oriStaffItem, CloneString(GetStaffName(objectStaff))));              // 加入名字
-        free(AppendTableRow(oriStaffItem, LongLongToString(GetStaffAvailability(objectStaff)))); // 加入可用性
-        free(AppendTableRow(oriStaffItem, CloneString(GetStaffContact(objectStaff))));           // 加入联系方式
-        free(AppendTableRow(oriStaffItem, PermissionToString(permission)));
-        int judge = AppendTable(oriStaff, oriStaffItem); // 判断是否添加入表格成功
+        if (objectStaff != NULL)
+        {                                         // 若可以找到这个员工
+            SetStaffAvailability(objectStaff, 0); // 将这个员工设置为不可用
+            /*创建一个表格，包含已经删除的员工的信息*/
+            Table *oriStaff = CreateStaffTableTitle();
+            TableRow *oriStaffItem = NewTableRow();
+            PermissionEntry *permission = GetPermissionEntryByStaffId(GetStaffId(objectStaff));
+            free(AppendTableRow(oriStaffItem, LongLongToString(GetStaffId(objectStaff)))); // 加入Id
+            free(AppendTableRow(oriStaffItem, CloneString(GetStaffName(objectStaff))));    // 加入名字
+            free(AppendTableRow(oriStaffItem,
+                                LongLongToString(GetStaffAvailability(objectStaff))));     // 加入可用性
+            free(AppendTableRow(oriStaffItem, CloneString(GetStaffContact(objectStaff)))); // 加入联系方式
+            free(AppendTableRow(oriStaffItem, PermissionToString(permission)));
+            int judge = AppendTable(oriStaff, oriStaffItem); // 判断是否添加入表格成功
 
-        /*释放该员工*/
-        RemoveStaff(objectStaff); // 释放这个员工
-        if (judge0 == 0)
-            StaffSave(); // 若释放成功，则保存这个更改
+            /*释放该员工*/
+            RemoveStaff(objectStaff); // 释放这个员工
+
+            /*返回删除的员工信息表格*/
+            if (judge == 0)
+                return oriStaff; // 若添加表格成功，则返回该表格
+            else
+            {                                        // 若失败，返回一个空表格
+                TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
+                Table *remark_table = NewTable(blank_row, "There is fault exsiting in recording one deleted staff !");
+                /*创建一个空表格，只有备注说明添加员工信息表格出错*/
+                return remark_table; // 返回空表格
+            }
+        }
         else
-        {                                        // 若释放失败，返回一个空表格
+        {                                        // 若没有这个员工
             TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(blank_row, "There is fault exsiting in deleting one staff !");
-            /*创建一个空表格，只有备注说明删除员工出错*/
+            Table *remark_table = NewTable(blank_row, "There is no target-staff !");
+            /*创建一个空表格，只有备注说明 没有该员工*/
             return remark_table; // 返回空表格
         }
-        /*释放该员工的权限*/
-        RemovePermissionEntry(permission);
-        PermissionSave();
+    }
+    else
+    {                                        // 若传入的表格是空表
+        TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "There is no provided information ");
+        /*创建一个空表格，只有备注说明 没有给予任何信息*/
+        return remark_table; // 返回空表格
+    }
+}
 
-        /*返回删除的员工信息表格*/
-        if (judge == 0)
-            return oriStaff; // 若添加表格成功，则返回该表格
+/*员工登录*/
+Table *LogIn(Table *staff)
+{
+    if (staff != NULL)
+    {
+        TableRow *row = GetRowByIndex(staff, 1);                                    // 取得员工信息所在表格行
+        int id = atoi(GetRowItemByColumnName(staff, row, "id"));                    // 取得员工id
+        const char *inPutPassword = GetRowItemByColumnName(staff, row, "password"); // 取得员工输入的密码
+
+        Staff *objStaff = GetStaffById(id); // 根据id找到该员工
+        if (objStaff != NULL)
+        {                                                               // 若存在这个员工
+            int success = VerifyStaffPassword(objStaff, inPutPassword); // 判断密码是否输入正确
+
+            TableRow *title = NewTableRow();  // 创建一个表格头
+            AppendTableRow(title, "success"); // 表格头标题为succes
+            TableRow *Item = NewTableRow();   // 创建一个表格行
+            char tempString[5];
+            free(AppendTableRow(Item, LongLongToString(success))); // 表格行保存的信息是：是否密码输入正确
+            Table *match = NewTable(title, "Whether the given password is same to the correct relevant password !");
+            /*创建一个表格保存是否密码输入正确 */
+            int judge = AppendTable(match, Item); // judge判断该表格是否添加具体信息没问题
+            if (judge == 0)
+                return match; // 若输入正确，返回该表格
+            else
+            {
+                TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
+                Table *remark_table =
+                    NewTable(blank_row, "There is fault exsiting in judging whether the given paassword is correct !");
+                /*创建一个空表格，只有备注说明判断密码输入是否正确时出错*/
+                return remark_table; // 返回空表格
+            }
+        }
         else
-        {                                        // 若失败，返回一个空表格
+        {                                        // 若不存在这个员工
             TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(blank_row, "There is fault exsiting in recording one deleted staff !");
-            /*创建一个空表格，只有备注说明添加员工信息表格出错*/
+            Table *remark_table = NewTable(blank_row, "There is no target-staff !");
+            /*创建一个空表格，只有备注说明 没有该员工*/
             return remark_table; // 返回空表格
         }
     }

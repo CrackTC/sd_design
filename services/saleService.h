@@ -114,6 +114,7 @@ Table *RemoveDiscount(Table *a);
  *      日    day
  *      小时  hour
  *      分钟  minute
+ *      秒    second
  *
  *  返回值：
  *      失败：备注返回“时间信息有误” 或 “不存在符合条件的折扣”
