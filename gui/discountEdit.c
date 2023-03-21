@@ -1,5 +1,7 @@
 #include "../data/operation.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
+#include "../services/saleService.h"
 #include "../utils.h"
 #include "config.h"
 #include "layout.h"
@@ -19,10 +21,6 @@ struct Data
 
 static int SendRequest(struct Data *data)
 {
-    data->message = CloneString("没有权限");
-    return 0;
-
-#warning
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_DISCOUNT : OP_ADD_DISCOUNT;
     judge(data->id, &hasPermission, data->password, operation);
@@ -31,7 +29,67 @@ static int SendRequest(struct Data *data)
         data->message = CloneString("没有权限");
         return 0;
     }
-#warning finish edit call
+
+    TableRow *row = NewTableRow();
+    if (data->modify)
+    {
+        AppendTableRow(row, "discountid");
+    }
+    AppendTableRow(row, "itemid");
+    AppendTableRow(row, "ratio");
+    AppendTableRow(row, "level");
+    AppendTableRow(row, "year");
+    AppendTableRow(row, "month");
+    AppendTableRow(row, "day");
+    AppendTableRow(row, "hour");
+    AppendTableRow(row, "minute");
+    AppendTableRow(row, "second");
+    Table *request = NewTable(row, NULL);
+
+    row = NewTableRow();
+    TableRow *sourceRow = GetRowByIndex(data->discount, 1);
+    if (data->modify)
+    {
+        AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "id"));
+    }
+    AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "商品编号"));
+    AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "折扣比率"));
+    AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "客户等级"));
+    AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "年"));
+    AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "月"));
+    AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "日"));
+    AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "时"));
+    AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "分"));
+    AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "秒"));
+    AppendTable(request, row);
+
+    Table *response;
+    if (data->modify)
+    {
+        AddJournal(request, data->id, OP_UPDATE_DISCOUNT);
+        response = UpdateDiscount(request);
+    }
+    else
+    {
+        AddJournal(request, data->id, OP_ADD_DISCOUNT);
+        response = UpdateDiscount(request);
+    }
+    FreeTable(request);
+
+    if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
+    {
+        data->message = CloneString(response->remark);
+    }
+    else
+    {
+        data->message = CloneString("操作成功完成");
+    }
+
+    if (response != NULL)
+    {
+        FreeTable(response);
+    }
+
     return 1;
 }
 

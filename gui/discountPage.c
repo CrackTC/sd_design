@@ -3,7 +3,9 @@
 #include "../data/operation.h"
 #include "../data/table.h"
 #include "../data/time.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
+#include "../services/saleService.h"
 #include "../utils.h"
 #include "config.h"
 #include "layout.h"
@@ -13,7 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallback(int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -22,22 +24,19 @@ static void MessageBoxCallBack(int ok, void *parameter)
 
 void DiscountDelete(int ok, void *parameter)
 {
+    MessageBoxCallback(ok, parameter);
     if (ok == 0)
     {
-        MessageBoxCallBack(ok, parameter);
         return;
     }
-#warning
+
     struct Data *data = parameter;
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("Succuessfully deleted!");
-    return;
 
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_DELETE_DISCOUNT);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：删除折扣");
         return;
     }
@@ -53,35 +52,68 @@ void DiscountDelete(int ok, void *parameter)
             TableRow *row = NewTableRow();
             AppendTableRow(row, "id");
             Table *table = NewTable(row, NULL);
+
             row = NewTableRow();
             AppendTableRow(row, id);
             AppendTable(table, row);
-#warning finish deletion call
 
+            AddJournal(table, data->id, OP_DELETE_DISCOUNT);
+            Table *response = RemoveDiscount(table);
             FreeTable(table);
+
+            if (response != NULL)
+            {
+                int error = 0;
+                if (response->remark != NULL && response->remark[0] != '\0')
+                {
+                    data->messageCallback = MessageBoxCallback;
+                    data->message = CloneString(response->remark);
+                    error = 1;
+                }
+                FreeTable(response);
+                if (error)
+                {
+                    return;
+                }
+            }
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-
-    MessageBoxCallBack(ok, parameter);
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("删除成功");
 }
 
 void SendDiscountRequest(struct Data *data)
 {
-#warning
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("缺少权限：读取折扣");
-    return;
-
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_READ_DISCOUNT);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：读取折扣");
+        return;
     }
-#warning finish read call
+
+    AddJournal(NULL, data->id, OP_READ_DISCOUNT);
+    Table *response = GetAllDiscount(NULL);
+    if (response != NULL)
+    {
+        if (response->remark != NULL && response->remark[0] != '\0')
+        {
+            data->messageCallback = MessageBoxCallback;
+            data->message = CloneString(response->remark);
+        }
+
+        FreeList(data->discountCheckList);
+        data->discountCheckList = NewCheckList();
+        data->discountTable = response;
+    }
+    else
+    {
+        data->messageCallback = MessageBoxCallback;
+        data->message = CloneString("查询失败: 响应为NULL");
+    }
 }
 
 int DiscountLookup(struct nk_context *context, struct Data *data)
@@ -113,7 +145,6 @@ int DiscountAdd(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
-#warning
             TableRow *row = NewTableRow();
             AppendTableRow(row, "商品编号");
             AppendTableRow(row, "商品名称");
@@ -157,8 +188,8 @@ int DiscountModify(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
-#warning
             TableRow *row = NewTableRow();
+            AppendTableRow(row, "id");
             AppendTableRow(row, "商品编号");
             AppendTableRow(row, "商品名称");
             AppendTableRow(row, "折扣比率");
@@ -172,6 +203,7 @@ int DiscountModify(struct nk_context *context, struct Data *data)
             Table *table = NewTable(row, "");
 
             row = NewTableRow();
+            AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "id"));
             AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "商品编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "商品名称"));
             AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "折扣比率"));
@@ -185,7 +217,6 @@ int DiscountModify(struct nk_context *context, struct Data *data)
             free(AppendTableRow(row, LongLongToString(info.hour)));
             free(AppendTableRow(row, LongLongToString(info.minute)));
             free(AppendTableRow(row, LongLongToString(info.second)));
-
 
             AppendTable(table, row);
             PushWindow(context, NewDiscountEdit("折扣编辑", data->id, data->password, table, 1));
@@ -294,7 +325,7 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!DiscountLookup(context, data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个折扣条目");
                     }
                 }
@@ -311,7 +342,7 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!DiscountAdd(context, data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请在商品页面选择一个商品条目");
                     }
                 }
@@ -342,7 +373,7 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!DiscountModify(context, data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个折扣条目");
                     }
                 }
