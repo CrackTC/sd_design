@@ -35,7 +35,7 @@ JournalEntry *NewJournalEntry(int staffId, Time *time, Operation operation, cons
     entry->time = *time;
     entry->operation = operation;
 
-    entry->arguments = malloc(argumentCount * sizeof(char *));
+    entry->arguments = argumentCount == 0 ? NULL : malloc(argumentCount * sizeof(char *));
     for (int i = 0; i < argumentCount; i++)
         entry->arguments[i] = CloneString(arguments[i]);
 
@@ -202,6 +202,10 @@ int AppendJournalEntry(JournalEntry *entry)
 
 char *JoinArguments(char **arguments, int argumentCount)
 {
+    if (argumentCount == 0)
+    {
+        return CloneString("");
+    }
     int length = 0;
     for (int i = 0; i < argumentCount; i++)
     {
