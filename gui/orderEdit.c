@@ -1,5 +1,7 @@
 #include "../data/operation.h"
 #include "../services/judgeService.h"
+#include "../services/journalService.h"
+#include "../services/saleService.h"
 #include "../utils.h"
 #include "config.h"
 #include "layout.h"
@@ -19,10 +21,6 @@ struct Data
 
 static int SendRequest(struct Data *data)
 {
-    data->message = CloneString("没有权限");
-    return 0;
-
-#warning
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_ORDER : OP_ADD_ORDER;
     judge(data->id, &hasPermission, data->password, operation);
@@ -31,7 +29,53 @@ static int SendRequest(struct Data *data)
         data->message = CloneString("没有权限");
         return 0;
     }
-#warning finish edit call
+
+    TableRow *row = NewTableRow();
+    if (data->modify)
+    {
+        AppendTableRow(row, "itemid");
+    }
+    AppendTableRow(row, "customerid");
+    AppendTableRow(row, "number");
+    Table *request = NewTable(row, NULL);
+
+    row = NewTableRow();
+    TableRow *sourceRow = GetRowByIndex(data->order, 1);
+    if (data->modify)
+    {
+        AppendTableRow(row, GetRowItemByColumnName(data->order, sourceRow, "id"));
+    }
+    AppendTableRow(row, GetRowItemByColumnName(data->order, sourceRow, "客户编号"));
+    AppendTableRow(row, GetRowItemByColumnName(data->order, sourceRow, "购买数量"));
+    AppendTable(request, row);
+
+    Table *response;
+    if (data->modify)
+    {
+        AddJournal(request, data->id, OP_UPDATE_ORDER);
+        response = UpdateOrder(request);
+    }
+    else
+    {
+        AddJournal(request, data->id, OP_ADD_ORDER);
+        response = AddOrder(request);
+    }
+    FreeTable(request);
+
+    if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
+    {
+        data->message = CloneString(response->remark);
+    }
+    else
+    {
+        data->message = CloneString("操作成功完成");
+    }
+
+    if (response != NULL)
+    {
+        FreeTable(response);
+    }
+
     return 1;
 }
 

@@ -3,7 +3,9 @@
 #include "../data/operation.h"
 #include "../data/table.h"
 #include "../data/time.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
+#include "../services/saleService.h"
 #include "../utils.h"
 #include "config.h"
 #include "layout.h"
@@ -21,11 +23,6 @@ static void MessageBoxCallBack(int ok, void *parameter)
 
 void SendOrderRequest(struct Data *data)
 {
-#warning
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("缺少权限：读取订单");
-    return;
-
     int hasPermission;
     data->orderTable = judge(data->id, &hasPermission, data->password, OP_READ_ORDER);
     if (!hasPermission)
@@ -35,7 +32,25 @@ void SendOrderRequest(struct Data *data)
         return;
     }
 
-#warning finish read call
+    AddJournal(NULL, data->id, OP_READ_ORDER);
+    Table *response = GetAllOrder(NULL);
+    if (response != NULL)
+    {
+        if (response->remark != NULL && response->remark[0] != '\0')
+        {
+            data->messageCallback = MessageBoxCallBack;
+            data->message = CloneString(response->remark);
+        }
+
+        FreeList(data->orderCheckList);
+        data->orderCheckList = NewCheckList();
+        data->orderTable = response;
+    }
+    else
+    {
+        data->messageCallback = MessageBoxCallBack;
+        data->message = CloneString("查询失败: 响应为NULL");
+    }
 }
 
 int OrderAdd(struct nk_context *context, struct Data *data)
@@ -91,10 +106,10 @@ int OrderModify(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
-#warning
             TableRow *row = NewTableRow();
 
             {
+                AppendTableRow(row, "id");
                 AppendTableRow(row, "商品编号");
                 AppendTableRow(row, "商品名称");
                 AppendTableRow(row, "客户编号");
@@ -106,6 +121,7 @@ int OrderModify(struct nk_context *context, struct Data *data)
 
             {
                 row = NewTableRow();
+                AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "id"));
                 AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "商品编号"));
                 AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "商品名称"));
                 AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "客户编号"));
@@ -126,16 +142,13 @@ int OrderModify(struct nk_context *context, struct Data *data)
 
 void OrderDelete(int ok, void *parameter)
 {
+    MessageBoxCallBack(ok, parameter);
     if (ok == 0)
     {
-        MessageBoxCallBack(ok, parameter);
         return;
     }
-#warning
+
     struct Data *data = parameter;
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("Successfully deleted!");
-    return;
 
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_DELETE_ORDER);
@@ -156,18 +169,36 @@ void OrderDelete(int ok, void *parameter)
             TableRow *row = NewTableRow();
             AppendTableRow(row, "id");
             Table *table = NewTable(row, NULL);
+
             row = NewTableRow();
             AppendTableRow(row, id);
             AppendTable(table, row);
-#warning finish deletion call
 
+            AddJournal(table, data->id, OP_DELETE_ORDER);
+            Table *response = RemoveAnOrder(table);
             FreeTable(table);
+
+            if (response != NULL)
+            {
+                int error = 0;
+                if (response->remark != NULL && response->remark[0] != '\0')
+                {
+                    data->messageCallback = MessageBoxCallBack;
+                    data->message = CloneString(response->remark);
+                    error = 1;
+                }
+                FreeTable(response);
+                if (error)
+                {
+                    return;
+                }
+            }
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-
-    MessageBoxCallBack(ok, parameter);
+    data->messageCallback = MessageBoxCallBack;
+    data->message = CloneString("删除成功");
 }
 
 void OrderPageLayout(struct nk_context *context, struct Window *window)
