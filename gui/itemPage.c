@@ -55,7 +55,6 @@ void ItemAdd(struct Data *data)
 {
     TableRow *row = NewTableRow();
     AppendTableRow(row, "商品名称");
-    AppendTableRow(row, "数量");
     AppendTableRow(row, "年");
     AppendTableRow(row, "月");
     AppendTableRow(row, "日");

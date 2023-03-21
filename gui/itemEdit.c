@@ -132,22 +132,6 @@ void ItemEditLayout(struct nk_context *context, Window *window)
             nk_layout_row_end(context);
         }
 
-        nk_layout_row_begin(context, NK_STATIC, 0, 2);
-        {
-            nk_style_push_font(context, &fontMedium->handle);
-            {
-                nk_layout_row_push(context, 100);
-                nk_label(context, "数量", NK_TEXT_CENTERED);
-                nk_style_pop_font(context);
-            }
-            nk_layout_row_push(context, 300);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "数量"), 512, nk_filter_decimal);
-
-            nk_layout_row_end(context);
-        }
-
         nk_layout_row_begin(context, NK_STATIC, 0, 13);
         {
             nk_style_push_font(context, &fontMedium->handle);

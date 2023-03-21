@@ -154,9 +154,8 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         TableRow *row = NewTableRow();
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "数量");
-        AppendTableRow(row, "保质期");
         AppendTableRow(row, "售价");
+        AppendTableRow(row, "保质期");
         Table *table = NewTable(row, NULL);
 
         /* row = NewTableRow(); */
