@@ -24,8 +24,6 @@ Table *GetOneJournalByIdOperationTime(Table *table);
 
 /*将数字字符串转化为int型整数*/
 int atoi(const char *ch);
-/*将int整数转化为字符串*/
-char *itoa(char *ch, int num);
 
 /*读取‘=’之前的字符*/
 char *getStringBefore(char *ch, char *string);
