@@ -12,9 +12,9 @@
 
 const char *const sections[SECTION_COUNT] = {"",     "商品", "库存", "货损", "订单", "折扣",
                                              "顾客", "员工", "日志", "统计", "退货"};
-const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,     ProfitPageLayout, LossPageLayout,
-                                         OrderPageLayout,   DiscountPageLayout, CustomerPageLayout,  WelcomePageLayout,
-                                         JournalPageLayout, ProfitPageLayout,  WelcomePageLayout};
+const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,     ProfitPageLayout,   LossPageLayout,
+                                         OrderPageLayout,   DiscountPageLayout, CustomerPageLayout, WelcomePageLayout,
+                                         JournalPageLayout, ProfitPageLayout,   WelcomePageLayout};
 
 void MainWindowLayout(struct nk_context *context, Window *window)
 {
@@ -460,37 +460,23 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
     data->profitProperties = NULL;
 
     {
-#error
+#warning
         TableRow *row = NewTableRow();
-        AppendTableRow(row, "id");
-        AppendTableRow(row, "库存编号");
-        AppendTableRow(row, "损耗时间");
-        AppendTableRow(row, "货损数量");
-        AppendTableRow(row, "货损原因");
+        AppendTableRow(row, "收支");
+        AppendTableRow(row, "事项");
+        AppendTableRow(row, "时间");
         Table *table = NewTable(row, NULL);
 
         row = NewTableRow();
-        AppendTableRow(row, "0");
-        AppendTableRow(row, "0");
+        AppendTableRow(row, "12345");
+        AppendTableRow(row, "销售");
         AppendTableRow(row, "1919-08-10");
-        AppendTableRow(row, "8008208820");
-        AppendTableRow(row, "8008208820");
         AppendTable(table, row);
 
         row = NewTableRow();
-        AppendTableRow(row, "1");
-        AppendTableRow(row, "1");
+        AppendTableRow(row, "-114514");
+        AppendTableRow(row, "退款");
         AppendTableRow(row, "1919-08-10");
-        AppendTableRow(row, "12315");
-        AppendTableRow(row, "12315");
-        AppendTable(table, row);
-
-        row = NewTableRow();
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "2");
-        AppendTableRow(row, "1919-08-10");
-        AppendTableRow(row, "88001818");
-        AppendTableRow(row, "88001818");
         AppendTable(table, row);
 
         data->profitTable = table;
