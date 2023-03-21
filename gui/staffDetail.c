@@ -25,19 +25,24 @@ void StaffDetailLayout(struct nk_context *context, Window *window)
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
                                        GetRowItemByColumnName(data->staff, dataRow, "id"), 512, nk_filter_default);
 
-        nk_label(context, "可用性", NK_TEXT_CENTERED);
+        nk_label(context, "已启用", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->staff, dataRow, "可用性"), 512,
+                                       GetRowItemByColumnName(data->staff, dataRow, "已启用"), 512,
                                        nk_filter_default);
 
-        nk_label(context, "姓名", NK_TEXT_CENTERED);
+        nk_label(context, "员工姓名", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->staff, dataRow, "姓名"), 512,
+                                       GetRowItemByColumnName(data->staff, dataRow, "员工姓名"), 512,
                                        nk_filter_default);
 
-        nk_label(context, "联系方式", NK_TEXT_CENTERED);
+        nk_label(context, "员工联系方式", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->staff, dataRow, "联系方式"), 512,
+                                       GetRowItemByColumnName(data->staff, dataRow, "员工联系方式"), 512,
+                                       nk_filter_default);
+
+        nk_label(context, "员工权限", NK_TEXT_CENTERED);
+        nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
+                                       GetRowItemByColumnName(data->staff, dataRow, "员工权限"), 512,
                                        nk_filter_default);
 
         if (nk_button_label(context, "确定"))

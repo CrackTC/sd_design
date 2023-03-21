@@ -65,4 +65,10 @@ struct Data
     const char **refundProperties;
     struct Table *refundTable;
     struct LinkedList *refundCheckList;
+
+    int staffPropertySelected;
+    char *staffValueBuffer;
+    const char **staffProperties;
+    struct Table *staffTable;
+    struct LinkedList *staffCheckList;
 };

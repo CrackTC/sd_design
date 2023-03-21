@@ -13,7 +13,7 @@
 const char *const sections[SECTION_COUNT] = {"",     "商品", "库存", "货损", "订单", "折扣",
                                              "顾客", "员工", "日志", "统计", "退货"};
 const LayoutFunc pages[SECTION_COUNT] = {WelcomePageLayout, ItemPageLayout,     ProfitPageLayout,   LossPageLayout,
-                                         OrderPageLayout,   DiscountPageLayout, CustomerPageLayout, WelcomePageLayout,
+                                         OrderPageLayout,   DiscountPageLayout, CustomerPageLayout, StaffPageLayout,
                                          JournalPageLayout, ProfitPageLayout,   RefundPageLayout};
 
 void MainWindowLayout(struct nk_context *context, Window *window)
@@ -522,6 +522,45 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTable(table, row);
 
         data->refundTable = table;
+    }
+
+    data->staffPropertySelected = 0;
+    data->staffValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
+    memset(data->staffValueBuffer, 0, BUFFER_SIZE * sizeof(char));
+
+    a = malloc(sizeof(int *));
+    *a = 0;
+    data->staffCheckList = AppendData(data->staffCheckList, a);
+
+    data->staffProperties = NULL;
+
+    {
+#warning
+        TableRow *row = NewTableRow();
+        AppendTableRow(row, "id");
+        AppendTableRow(row, "已启用");
+        AppendTableRow(row, "员工姓名");
+        AppendTableRow(row, "员工联系方式");
+        AppendTableRow(row, "员工权限");
+        Table *table = NewTable(row, NULL);
+
+        row = NewTableRow();
+        AppendTableRow(row, "12345");
+        AppendTableRow(row, "1");
+        AppendTableRow(row, "张三");
+        AppendTableRow(row, "8008208820");
+        AppendTableRow(row, "00000000000000000000000000000000000");
+        AppendTable(table, row);
+
+        row = NewTableRow();
+        AppendTableRow(row, "114514");
+        AppendTableRow(row, "0");
+        AppendTableRow(row, "李四");
+        AppendTableRow(row, "12315");
+        AppendTableRow(row, "11111111111111111111111111111111111");
+        AppendTable(table, row);
+
+        data->staffTable = table;
     }
 
     window->data = data;

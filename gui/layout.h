@@ -60,6 +60,7 @@ Window *NewRefundDetail(const char *title, const Table *refund);
 Window *NewRefundEdit(const char *title, int id, const char *password, Table *refund, int modify);
 
 Window *NewStaffDetail(const char *title, const Table *staff);
+Window *NewStaffEdit(const char *title, int id, const char *password, Table *staff, int modify);
 
 void WelcomePageLayout(struct nk_context *context, struct Window *window);
 void InventoryPageLayout(struct nk_context *context, struct Window *window);
@@ -71,6 +72,7 @@ void JournalPageLayout(struct nk_context *context, struct Window *window);
 void LossPageLayout(struct nk_context *context, struct Window *window);
 void ProfitPageLayout(struct nk_context *context, struct Window *window);
 void RefundPageLayout(struct nk_context *context, struct Window *window);
+void StaffPageLayout(struct nk_context *context, struct Window *window);
 
 void PlaceNothing(struct nk_context *context);
 void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);
