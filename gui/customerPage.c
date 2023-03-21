@@ -22,9 +22,9 @@ static void MessageBoxCallBack(int ok, void *parameter)
 
 void CustomerDelete(int ok, void *parameter)
 {
+    MessageBoxCallBack(ok, parameter);
     if (ok == 0)
     {
-        MessageBoxCallBack(ok, parameter);
         return;
     }
 #warning

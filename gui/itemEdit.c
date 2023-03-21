@@ -19,7 +19,7 @@ struct Data
 
 static int SendRequest(struct Data *data)
 {
-    data->message = "没有权限";
+    data->message = CloneString("没有权限");
     return 0;
 
 #warning
@@ -28,7 +28,7 @@ static int SendRequest(struct Data *data)
     judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
-        data->message = "没有权限";
+        data->message = CloneString("没有权限");
         return 0;
     }
 #warning finish edit call
@@ -38,6 +38,7 @@ static int SendRequest(struct Data *data)
 static void MessageBoxCallBack(int ok, void *parameter)
 {
     struct Data *data = parameter;
+    free(data->message);
     data->message = NULL;
 }
 
