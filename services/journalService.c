@@ -41,7 +41,7 @@ Table *AddJournal(Table *table, int staffId, Operation operation)
         { // 遍历获取标题
             int len1 = strlen(title->data);
             int len2 = strlen(data->data);
-            char *result = malloc((len1 + len2 + 3) * sizeof(char));
+            char *result = malloc((len1 + len2 + 4) * sizeof(char));
 
             strcpy(result, title->data);
             strcat(result, " = ");
