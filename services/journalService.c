@@ -5,12 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*将int整数转化为字符串*/
-char *itoa(char *ch, int num)
-{
-    sprintf(ch, "%d", num);
-    return ch;
-}
 /*读取=之前的字符*/
 char *getStringBefore(char *ch, char *string)
 {
@@ -28,36 +22,49 @@ char *getStringBefore(char *ch, char *string)
 }
 
 /*写一条进货日志*/
-Table *AddJournal(Table *table, int staffid, Operation operation)
+Table *AddJournal(Table *table, int staffId, Operation operation)
 {
-    TableRow *row = GetRowByIndex(table, 1); // 获取信息行
-    Time time = GetSystemTime();             // 获取系统时间
+    char **arguments = NULL;
+    int argumentCount = 0;
+    Time time = GetSystemTime(); // 获取系统时间
+    if (table != NULL)
+    {
+        TableRow *row = GetRowByIndex(table, 1); // 获取信息行
 
-    TableRow *titleTableRow = GetTableTitle(table); // 获取标题行
-    int argumentCount = titleTableRow->columnCount; // 获取表格中有几个标题（arguments字符串的个数）
-    char *arguments[100]; // 这里的这个100指的是arguments总功能包含多少条操作信息（100应该够用了吧）
-    // arguments = (char**)malloc(argumentCount * sizeof(char*));//给arguments地方来存储信息  //陈若珂写的
-    int i = 0; // 用来设置 argument[i]
-    LinkedList *title = titleTableRow->items;
-    while (title != NULL)
-    { // 遍历获取标题
-        if (strcmp((char *)title->data, "id") != 0 && strcmp((char *)title->data, "operation") != 0)
-        {
-            char tempString[110]; // 这里的110指的是一条操作信息共有多少个字符
-            strcpy(tempString, (char *)title->data);
-            arguments[i] = tempString;                    // argument[i]中存放标题
-            arguments[i] = strncat(arguments[i], "=", 1); // 在尾部追加一个‘=’
-            const char *item = GetRowItemByColumnName(table, titleTableRow, (char *)title->data);
-            int length = strlen(item);                          // 获取这一列标题的长度
-            arguments[i] = strncat(arguments[i], item, length); // 在尾部追加具体的那一列的信息（那一列第二行的信息）
+        TableRow *titleTableRow = GetTableTitle(table); // 获取标题行
+        argumentCount = titleTableRow->columnCount; // 获取表格中有几个标题（arguments字符串的个数）
+        arguments = (char **)malloc(argumentCount * sizeof(char *)); // 给arguments地方来存储信息  //陈若珂写的
+        int i = 0;                                                   // 用来设置 argument[i]
+
+        LinkedList *title = titleTableRow->items;
+        LinkedList *data = row->items;
+        while (title != NULL)
+        { // 遍历获取标题
+            int len1 = strlen(title->data);
+            int len2 = strlen(data->data);
+            char *result = malloc((len1 + len2 + 3) * sizeof(char));
+
+            strcpy(result, title->data);
+            strcat(result, " = ");
+            strcat(result, data->data);
+            arguments[i] = result;
+
             i++;
-            argumentCount--;
+            title = title->next;
+            data = data->next;
         }
-        title = title->next;
     }
+
     JournalEntry *newJournal =
-        NewJournalEntry(staffid, &time, operation, (const char **)arguments, argumentCount); // 开创新日志条目
-    int judge = AppendJournalEntry(newJournal);                                              // 判断是否添加成功
+        NewJournalEntry(staffId, &time, operation, (const char **)arguments, argumentCount); // 开创新日志条目
+                                                                                             //
+    for (int i = 0; i < argumentCount; i++)
+    {
+        free(arguments[i]);
+    }
+    free(arguments);
+
+    int judge = AppendJournalEntry(newJournal); // 判断是否添加成功
     if (judge == 0)
         JournalSave(); // 若输入正确，返回该表格
     else
@@ -67,11 +74,6 @@ Table *AddJournal(Table *table, int staffid, Operation operation)
             NewTable(blank_row, "There is fault exsiting in adding a journal-entry !"); // 指明错误信息
         return remark_table;                                                            // 返回空表格
     }
-    ///*释放arguments*/
-    // for (int j = 0; j < i; i++) {//陈若珂写的
-    //	free(arguments[j]);
-    // }
-    // free(arguments);//陈若珂写的
 
     return table;
 }
@@ -105,7 +107,7 @@ Table *GetAllJournalOfOneStaffOfOneOperation(Table *table)
             int argumentCount = GetJournalEntryArgumentCount(journal); // 获取操作个数
 
             TableRow *item = NewTableRow();                            // 创建具体信息表格行
-            AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1))); // 将时间放进去
+            free(AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1)))); // 将时间放进去
             for (int i = 0; i < argumentCount; i++)
             { // 遍历所有操作
                 char temp[50];
@@ -157,11 +159,11 @@ Table *GetOneJournalByIdOperationTime(Table *table)
             int argumentCount = GetJournalEntryArgumentCount(journal); // 获取操作个数
 
             TableRow *item = NewTableRow();               // 创建具体信息表格行
-            AppendTableRow(item, CloneString(givenTime)); // 将时间放进去
+            free(AppendTableRow(item, CloneString(givenTime))); // 将时间放进去
             for (int i = 0; i < argumentCount; i++)
             { // 遍历所有操作
                 char temp[50];
-                AppendTableRow(title, getStringBefore(temp, arguments[i])); // 将操作名放入title标题行
+                free(AppendTableRow(title, getStringBefore(temp, arguments[i]))); // 将操作名放入title标题行
                 AppendTableRow(item, arguments[i]);                         // 将具体操作放入信息行
             }
 
@@ -220,10 +222,10 @@ Table *GetAllJournalOfOneOperation(Table *table)
         time = GetJournalEntryTime(journal);
         arguments = GetJournalEntryArguments(journal); // 获取多个操作
         /*向table信息行中放入具体信息*/
-        char tempString[10];
-        AppendTableRow(item, itoa(tempString, staffid));
-        AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1)));
-        AppendTableRow(item, CloneString(OperationToString(operation)));
+
+        free(AppendTableRow(item, LongLongToString(staffid)));
+        free(AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1))));
+        free(AppendTableRow(item, CloneString(OperationToString(operation))));
         for (int i = 0; i < argumentCount; i++)
         {
             AppendTableRow(item, arguments[i]);
@@ -353,9 +355,9 @@ Table *GetAllJournalOfOneOperationInExactTime(Table *table)
                 arguments = GetJournalEntryArguments(journal); // 获取多个操作
                 /*向table信息行中放入具体信息*/
                 char tempString[10];
-                AppendTableRow(item, itoa(tempString, staffid));
-                AppendTableRow(item, TimeToString(GetTimeInfo(&time1, 1)));
-                AppendTableRow(item, CloneString(OperationToString(operation)));
+                free(AppendTableRow(item, LongLongToString(staffid)));
+                free(AppendTableRow(item, TimeToString(GetTimeInfo(&time1, 1))));
+                free(AppendTableRow(item, CloneString(OperationToString(operation))));
                 for (int i = 0; i < argumentCount; i++)
                 {
                     AppendTableRow(item, arguments[i]);
@@ -414,9 +416,9 @@ Table *GetAllJournalOfOneStaff(Table *staff)
         arguments = GetJournalEntryArguments(journal); // 获取多个操作
         /*向table信息行中放入具体信息*/
         char tempString[10];
-        AppendTableRow(item, itoa(tempString, staffid));
-        AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1)));
-        AppendTableRow(item, CloneString(OperationToString(operation)));
+        free(AppendTableRow(item, LongLongToString(staffid)));
+        free(AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1))));
+        free(AppendTableRow(item, CloneString(OperationToString(operation))));
         for (int i = 0; i < argumentCount; i++)
         {
             AppendTableRow(item, arguments[i]);
@@ -470,9 +472,9 @@ Table *GetAllJournal(Table *table)
         arguments = GetJournalEntryArguments(journal); // 获取多个操作
         /*向table信息行中放入具体信息*/
         char tempString[10];
-        AppendTableRow(item, itoa(tempString, staffid));
-        AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1)));
-        AppendTableRow(item, CloneString(OperationToString(operation)));
+        free(AppendTableRow(item, LongLongToString(staffid)));
+        free(AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1))));
+        free(AppendTableRow(item, CloneString(OperationToString(operation))));
         for (int i = 0; i < argumentCount; i++)
         {
             AppendTableRow(item, arguments[i]);
