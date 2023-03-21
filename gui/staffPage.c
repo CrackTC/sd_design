@@ -3,7 +3,9 @@
 #include "../data/operation.h"
 #include "../data/table.h"
 #include "../data/time.h"
+#include "../services/journalService.h"
 #include "../services/judgeService.h"
+#include "../services/staffService.h"
 #include "../utils.h"
 #include "config.h"
 #include "layout.h"
@@ -22,16 +24,13 @@ static void MessageBoxCallBack(int ok, void *parameter)
 
 void StaffDelete(int ok, void *parameter)
 {
+    MessageBoxCallBack(ok, parameter);
     if (ok == 0)
     {
-        MessageBoxCallBack(ok, parameter);
         return;
     }
-#warning
+
     struct Data *data = parameter;
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("Succuessfully deleted!");
-    return;
 
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_DELETE_STAFF);
@@ -56,32 +55,64 @@ void StaffDelete(int ok, void *parameter)
             row = NewTableRow();
             AppendTableRow(row, id);
             AppendTable(table, row);
-#warning finish deletion call
 
+            AddJournal(table, data->id, OP_DELETE_STAFF);
+            Table *response = DeleteStaff(table);
             FreeTable(table);
+
+            if (response != NULL)
+            {
+                int error = 0;
+                if (response->remark != NULL && response->remark[0] != '\0')
+                {
+                    data->messageCallback = MessageBoxCallBack;
+                    data->message = CloneString(response->remark);
+                    error = 1;
+                }
+                FreeTable(response);
+                if (error)
+                {
+                    return;
+                }
+            }
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-
-    MessageBoxCallBack(ok, parameter);
+    data->messageCallback = MessageBoxCallBack;
+    data->message = CloneString("删除成功");
 }
 
 void SendStaffRequest(struct Data *data)
 {
-#warning
-    data->messageCallback = MessageBoxCallBack;
-    data->message = CloneString("缺少权限：读取员工");
-    return;
-
     int hasPermission;
     judge(data->id, &hasPermission, data->password, OP_READ_STAFF);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：读取员工");
+        return;
     }
-#warning finish read call
+
+    AddJournal(NULL, data->id, OP_READ_STAFF);
+    Table *response = GetItemOfAllStaff(NULL);
+    if (response != NULL)
+    {
+        if (response->remark != NULL && response->remark[0] != '\0')
+        {
+            data->messageCallback = MessageBoxCallBack;
+            data->message = CloneString(response->remark);
+        }
+
+        FreeList(data->staffCheckList);
+        data->staffCheckList = NewCheckList();
+        data->staffTable = response;
+    }
+    else
+    {
+        data->messageCallback = MessageBoxCallBack;
+        data->message = CloneString("查询失败: 响应为NULL");
+    }
 }
 
 int StaffLookup(struct nk_context *context, struct Data *data)
@@ -107,7 +138,6 @@ int StaffLookup(struct nk_context *context, struct Data *data)
 
 void StaffAdd(struct nk_context *context, struct Data *data)
 {
-#warning
     TableRow *row = NewTableRow();
     AppendTableRow(row, "员工密码");
     AppendTableRow(row, "员工姓名");
@@ -136,8 +166,8 @@ int StaffModify(struct nk_context *context, struct Data *data)
     {
         if (*(int *)now->data == 1)
         {
-#warning
             TableRow *row = NewTableRow();
+            AppendTableRow(row, "id");
             AppendTableRow(row, "员工密码");
             AppendTableRow(row, "员工姓名");
             AppendTableRow(row, "员工联系方式");
@@ -146,6 +176,7 @@ int StaffModify(struct nk_context *context, struct Data *data)
             Table *table = NewTable(row, "");
 
             row = NewTableRow();
+            AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "id"));
             AppendTableRow(row, "");
             AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工姓名"));
             AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工联系方式"));

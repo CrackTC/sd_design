@@ -1,5 +1,7 @@
 #include "../data/operation.h"
 #include "../services/judgeService.h"
+#include "../services/journalService.h"
+#include "../services/staffService.h"
 #include "../utils.h"
 #include "config.h"
 #include "layout.h"
@@ -19,10 +21,6 @@ struct Data
 
 static int SendRequest(struct Data *data)
 {
-    data->message = CloneString("没有权限");
-    return 0;
-
-#warning
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_STAFF : OP_ADD_STAFF;
     judge(data->id, &hasPermission, data->password, operation);
@@ -31,7 +29,57 @@ static int SendRequest(struct Data *data)
         data->message = CloneString("没有权限");
         return 0;
     }
-#warning finish edit call
+
+    TableRow *row = NewTableRow();
+    if (data->modify)
+    {
+        AppendTableRow(row, "id");
+    }
+    AppendTableRow(row, "isEnabled");
+    AppendTableRow(row, "name");
+    AppendTableRow(row, "contact");
+    AppendTableRow(row, "permission");
+    Table *request = NewTable(row, NULL);
+
+    row = NewTableRow();
+    TableRow *sourceRow = GetRowByIndex(data->staff, 1);
+    if (data->modify)
+    {
+        AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "id"));
+    }
+    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工可用性"));
+    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工姓名"));
+    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工联系方式"));
+    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工权限信息"));
+    AppendTable(request, row);
+
+    Table *response;
+    if (data->modify)
+    {
+        AddJournal(request, data->id, OP_UPDATE_STAFF);
+        response = UpdateStaff(request);
+    }
+    else
+    {
+        AddJournal(request, data->id, OP_ADD_CUSTOMER);
+        response = AddStaff(request);
+    }
+    FreeTable(request);
+
+    if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
+    {
+        data->message = CloneString(response->remark);
+    }
+    else
+    {
+        data->message = CloneString("操作成功完成");
+    }
+
+    if (response != NULL)
+    {
+        FreeTable(response);
+    }
+
     return 1;
 }
 
