@@ -172,7 +172,7 @@ Table *GetOneJournalByIdOperationTime(Table *table)
     {
         JournalEntry *journal = (JournalEntry *)p->data;
         const char *oriOperation = OperationToString(GetJournalEntryOperation(journal));
-        Time tempTime = GetJournalEntryTime(journal);                  // 获取该日志条目中的时间
+        Time tempTime = GetJournalEntryTime(journal);            // 获取该日志条目中的时间
         char *oriTime = TimeToString(GetTimeInfo(&tempTime, 1)); // 将时间转化为字符串
         /*若是要查询的那条日志*/
         if (strcmp(givenOperation, oriOperation) == 0 && strcmp(givenTime, oriTime) == 0)
@@ -183,13 +183,13 @@ Table *GetOneJournalByIdOperationTime(Table *table)
             char **arguments = GetJournalEntryArguments(journal);      // 获取多个操作
             int argumentCount = GetJournalEntryArgumentCount(journal); // 获取操作个数
 
-            TableRow *item = NewTableRow();               // 创建具体信息表格行
-            AppendTableRow(item, givenTime); // 将时间放进去
+            TableRow *item = NewTableRow();                     // 创建具体信息表格行
+            free(AppendTableRow(item, CloneString(givenTime))); // 将时间放进去
             for (int i = 0; i < argumentCount; i++)
             { // 遍历所有操作
                 char temp[50];
                 free(AppendTableRow(title, getStringBefore(temp, arguments[i]))); // 将操作名放入title标题行
-                AppendTableRow(item, arguments[i]);                         // 将具体操作放入信息行
+                AppendTableRow(item, arguments[i]);                               // 将具体操作放入信息行
             }
 
             /*将这一个具体日志信息表格行加入表格中*/
