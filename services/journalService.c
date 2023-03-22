@@ -69,11 +69,10 @@ Table *AddJournal(Table *table, int staffId, Operation operation)
     if (judge == 0)
         JournalSave(); // 若输入正确，返回该表格
     else
-    {                                        // 否，返回空表格
-        TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-        Table *remark_table =
-            NewTable(blank_row, "There is fault exsiting in adding a journal-entry !"); // 指明错误信息
-        return remark_table;                                                            // 返回空表格
+    {                                                                      // 否，返回空表格
+        TableRow *blank_row = NewTableRow();                               // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "添加日志条目时出错 !"); // 指明错误信息
+        return remark_table;                                               // 返回空表格
     }
 
     return table;
@@ -82,19 +81,33 @@ Table *AddJournal(Table *table, int staffId, Operation operation)
 /*读取某员工的所有某操作日志*/
 Table *GetAllJournalOfOneStaffOfOneOperation(Table *table)
 {
+    if (table == NULL)
+    {
+        TableRow *blank_row = NewTableRow();                             // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "没有提供任何信息 !"); // 指明错误信息
+        return remark_table;                                             // 返回空表格
+    }
+
     TableRow *row = GetRowByIndex(table, 1);
     const char *idString = GetRowItemByColumnName(table, row, "id");
     int staffid = atoi(idString); // 获取员工工号
     const char *operationString = GetRowItemByColumnName(table, row, "operation");
     Operation operation = StringToOperation(operationString); // 获取操作
 
-    LinkedList *staffAllStockJournal = GetJournalsByStaffId(staffid); // 根据staffid获取该员工的全部日志
+    LinkedList *staffAllJournal = GetJournalsByStaffId(staffid); // 根据staffid获取该员工的全部日志
+    if (staffAllJournal == NULL)
+    {                                                                        // 若该员工没有操作日志
+        TableRow *blank_row = NewTableRow();                                 // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "没有该员工的操作日志 !"); // 指明错误信息
+        return remark_table;                                                 // 返回空表格
+    }
+
     /*开创新表格，放入标题title，给予备注*/
     TableRow *title = NewTableRow();
     AppendTableRow(title, "time");
-    Table *oneStaffAllStockJournal = NewTable(title, "All stocking journals of one staff");
+    Table *oneStaffAllStockJournal = NewTable(title, "某员工的所有操作日志");
 
-    LinkedList *p = staffAllStockJournal;
+    LinkedList *p = staffAllJournal;
     const char *givenOperation = OperationToString(operation);
     while (p != NULL)
     {                                                                       // 遍历员工日志
@@ -107,7 +120,7 @@ Table *GetAllJournalOfOneStaffOfOneOperation(Table *table)
             char **arguments = GetJournalEntryArguments(journal);      // 获取多个操作
             int argumentCount = GetJournalEntryArgumentCount(journal); // 获取操作个数
 
-            TableRow *item = NewTableRow();                            // 创建具体信息表格行
+            TableRow *item = NewTableRow();                                  // 创建具体信息表格行
             free(AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1)))); // 将时间放进去
             for (int i = 0; i < argumentCount; i++)
             { // 遍历所有操作
@@ -121,10 +134,8 @@ Table *GetAllJournalOfOneStaffOfOneOperation(Table *table)
             if (judge != 0)
             {
                 TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-                Table *remark_table =
-                    NewTable(blank_row,
-                             "There is fault exsiting in reading all operation-journal of one staff !"); // 指明错误信息
-                return remark_table; // 返回空表格
+                Table *remark_table = NewTable(blank_row, "读取某员工所有操作日志时出错 !"); // 指明错误信息
+                return remark_table;                                                         // 返回空表格
             }
         }
         p = p->next; // 指向下一个日志
@@ -136,6 +147,13 @@ Table *GetAllJournalOfOneStaffOfOneOperation(Table *table)
 /*读取一条日志（根据员工id，操作，时间）*/
 Table *GetOneJournalByIdOperationTime(Table *table)
 {
+    if (table == NULL)
+    {                                                                    // 若没有传递信息
+        TableRow *blank_row = NewTableRow();                             // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "没有提供任何信息 !"); // 指明错误信息
+        return remark_table;                                             // 返回空表格
+    }
+
     TableRow *row = GetRowByIndex(table, 1);
     const char *givenOperation = GetRowItemByColumnName(table, row, "operation");
     const char *idString = GetRowItemByColumnName(table, row, "id");
@@ -143,16 +161,22 @@ Table *GetOneJournalByIdOperationTime(Table *table)
     const char *givenTime = GetRowItemByColumnName(table, row, "time");
 
     LinkedList *staffJournalLinkedList = GetJournalsByStaffId(staffid);
+    if (staffJournalLinkedList == NULL)
+    {                                                                      // 若该员工没有操作日志
+        TableRow *blank_row = NewTableRow();                               // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "该员工没有操作日志 !"); // 指明错误信息
+        return remark_table;                                               // 返回空表格
+    }
     LinkedList *p = staffJournalLinkedList;
     while (p != NULL)
     {
         JournalEntry *journal = (JournalEntry *)p->data;
         const char *oriOperation = OperationToString(GetJournalEntryOperation(journal));
         Time tempTime = GetJournalEntryTime(journal);                  // 获取该日志条目中的时间
-        const char *oriTime = TimeToString(GetTimeInfo(&tempTime, 1)); // 将时间转化为字符串
+        char *oriTime = TimeToString(GetTimeInfo(&tempTime, 1)); // 将时间转化为字符串
         /*若是要查询的那条日志*/
         if (strcmp(givenOperation, oriOperation) == 0 && strcmp(givenTime, oriTime) == 0)
-        {
+        { // 根据操作和时间寻找该员工的日志
             TableRow *title = NewTableRow();
             AppendTableRow(title, "time");
             Table *oneJournal = NewTable(title, "one journal");
@@ -160,7 +184,7 @@ Table *GetOneJournalByIdOperationTime(Table *table)
             int argumentCount = GetJournalEntryArgumentCount(journal); // 获取操作个数
 
             TableRow *item = NewTableRow();               // 创建具体信息表格行
-            free(AppendTableRow(item, CloneString(givenTime))); // 将时间放进去
+            AppendTableRow(item, givenTime); // 将时间放进去
             for (int i = 0; i < argumentCount; i++)
             { // 遍历所有操作
                 char temp[50];
@@ -173,19 +197,19 @@ Table *GetOneJournalByIdOperationTime(Table *table)
             if (judge != 0)
             {
                 TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-                Table *remark_table =
-                    NewTable(blank_row, "There is fault exsiting in reading one journal !"); // 指明错误信息
-                return remark_table;                                                         // 返回空表格
+                Table *remark_table = NewTable(blank_row, "读取某个员工某个时间的某个操作日志时出错 !"); // 指明错误信息
+                return remark_table; // 返回空表格
             }
 
             return oneJournal; // 不用再找了
         }
+        free(oriTime);
         p = p->next;
     }
     /*找完了还没找到要查询的日志*/
-    TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-    Table *remark_table = NewTable(blank_row, "There is fault exsiting in reading one journal !"); // 指明错误信息
-    return remark_table;                                                                           // 返回空表格
+    TableRow *blank_row = NewTableRow();                             // 创建一个空的表格行
+    Table *remark_table = NewTable(blank_row, "没有要查询的日志 !"); // 指明错误信息
+    return remark_table;                                             // 返回空表格
 }
 
 /*读取某操作的全部日志*/
@@ -196,11 +220,17 @@ Table *GetAllJournalOfOneOperation(Table *table)
     Operation operation = StringToOperation(operationString);
 
     LinkedList *allJournalLink = GetJournalsByOperation(operation); // 获取某个操作的链表
-    TableRow *title = NewTableRow();                                // 开创标题行
+    if (allJournalLink == NULL)
+    {                                                            // 若没有该操作的日志
+        TableRow *blank_row = NewTableRow();                     // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "没有日志 !"); // 指明错误信息
+        return remark_table;                                     // 返回空表格
+    }
+    TableRow *title = NewTableRow(); // 开创标题行
     AppendTableRow(title, "id");
     AppendTableRow(title, "time");
     AppendTableRow(title, "operation");
-    Table *allJournalOfOneOperation = NewTable(title, "All Journal Of One Operation"); // 备注待修改
+    Table *allJournalOfOneOperation = NewTable(title, "某操作的所有日志"); // 备注待修改
 
     JournalEntry *journal = (JournalEntry *)allJournalLink->data; // 获取第一个日志信息
     int argumentCount = GetJournalEntryArgumentCount(journal);
@@ -235,10 +265,9 @@ Table *GetAllJournalOfOneOperation(Table *table)
         judge = AppendTable(allJournalOfOneOperation, item);
         if (judge != 0)
         {
-            TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(
-                blank_row, "There is fault exsiting in reading all journals of one operation !"); // 指明错误信息
-            return remark_table;                                                                  // 返回空表格
+            TableRow *blank_row = NewTableRow();                                     // 创建一个空的表格行
+            Table *remark_table = NewTable(blank_row, "读取某操作所有日志时出错 !"); // 指明错误信息
+            return remark_table;                                                     // 返回空表格
         }
 
         allJournalLink = allJournalLink->next;
@@ -251,15 +280,6 @@ Table *GetAllJournalOfOneOperation(Table *table)
 /*需要我判断这个输入的时间是否正确吗*/
 Table *GetAllJournalOfOneOperationInExactTime(Table *table)
 {
-
-    ///*若给出的时间参数是两个Time*传入的话*/
-    // if (CompareTime(oriTime, endTime) != -1) {
-    //	TableRow* blank_row = NewTableRow();                   //创建一个空的表格行
-    //	Table* remark_table = NewTable(blank_row, "There is fault exsiting in the given time period !");//指明错误信息
-    //	return remark_table;//返回空表格
-    // }
-    // else   //  直接和else {//符合大小要求  这句话相连接
-
     /*如果是以table作为参数传入两个个时间的话，要这么写; */
     // TableRow* titleRow = GetTableTitle(table);
     // LinkedList* titleLink = titleRow->items;
@@ -267,6 +287,13 @@ Table *GetAllJournalOfOneOperationInExactTime(Table *table)
     // oriTimeName = (char*)titleLink->data;//获取表格中初始时间名字
     // titleLink = titleLink->next;
     // endTimeName = (char*)titleLink->data;//获取表格中末尾时间名字
+
+    if (table == NULL)
+    {                                                                // 若没有传递信息
+        TableRow *blank_row = NewTableRow();                         // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "没有提供信息 !"); // 指明错误信息
+        return remark_table;                                         // 返回空表格
+    }
 
     const Time *oriTime, *endTime;
     Operation operation;
@@ -282,12 +309,18 @@ Table *GetAllJournalOfOneOperationInExactTime(Table *table)
     if (CompareTime(oriTime, endTime) != -1)
     {                                        // 若给出的时间不符合大小要求
         TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-        Table *remark_table = NewTable(blank_row, "There is fault exsiting in the given time period !"); // 指明错误信息
-        return remark_table; // 返回空表格
+        Table *remark_table = NewTable(blank_row, "给出的查询时间段有问题 !"); // 指明错误信息
+        return remark_table;                                                   // 返回空表格
     }
     else
     {                                                                          // 符合大小要求
         LinkedList *allJournalofOperation = GetJournalsByOperation(operation); // 获取某操作的全部日志
+        if (allJournalofOperation == NULL)
+        {                                                                // 若没有日志
+            TableRow *blank_row = NewTableRow();                         // 创建一个空的表格行
+            Table *remark_table = NewTable(blank_row, "当前没有日志 !"); // 指明错误信息
+            return remark_table;                                         // 返回空表格
+        }
         LinkedList *oriTimeJournalLink = NULL, *endTimeJournalLink = NULL; // 初始时间日志，末尾时间日志
         LinkedList *p = allJournalofOperation;
         while (p != NULL)
@@ -319,10 +352,9 @@ Table *GetAllJournalOfOneOperationInExactTime(Table *table)
 
         if (oriTimeJournalLink == NULL || endTimeJournalLink == NULL)
         {
-            TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table =
-                NewTable(blank_row, "There is fault exsiting in the given time period !"); // 指明错误信息
-            return remark_table;                                                           // 返回空表格
+            TableRow *blank_row = NewTableRow();                                   // 创建一个空的表格行
+            Table *remark_table = NewTable(blank_row, "给出的查询时间段有问题 !"); // 指明错误信息
+            return remark_table;                                                   // 返回空表格
         }
         else
         {
@@ -331,8 +363,7 @@ Table *GetAllJournalOfOneOperationInExactTime(Table *table)
             AppendTableRow(title, "id");
             AppendTableRow(title, "time");
             AppendTableRow(title, "operation");
-            Table *allJournalOfOneOperationInTimePeriod =
-                NewTable(title, "All Journal Of One Operation In Exact Time Period"); // 备注待修改
+            Table *allJournalOfOneOperationInTimePeriod = NewTable(title, "某操作在某时间段的全部日志"); // 备注待修改
 
             JournalEntry *journal = (JournalEntry *)p->data; // 获取第一个日志信息
             int argumentCount = GetJournalEntryArgumentCount(journal);
@@ -367,9 +398,8 @@ Table *GetAllJournalOfOneOperationInExactTime(Table *table)
                 if (judge != 0)
                 {
                     TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-                    Table *remark_table = NewTable(blank_row, "There is fault exsiting in reading all journals of one "
-                                                              "operation in exact time period !"); // 指明错误信息
-                    return remark_table;                                                           // 返回空表格
+                    Table *remark_table = NewTable(blank_row, "查询某操作某段时间内的全部日志时出错 !"); // 指明错误信息
+                    return remark_table; // 返回空表格
                 }
 
                 p = p->next;
@@ -383,16 +413,29 @@ Table *GetAllJournalOfOneOperationInExactTime(Table *table)
 /*读取某员工的所有日志*/
 Table *GetAllJournalOfOneStaff(Table *staff)
 {
+    if (staff == NULL)
+    {                                                                // 若没有传入信息
+        TableRow *blank_row = NewTableRow();                         // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "没有提供信息 !"); // 指明错误信息
+        return remark_table;                                         // 返回空表格
+    }
+
     TableRow *row = GetRowByIndex(staff, 1);
     const char *idString = GetRowItemByColumnName(staff, row, "id");
     int staffid = atoi(idString); // 获取员工工号
 
     LinkedList *allJournalLink = GetJournalsByStaffId(staffid); // 获取某个操作的链表
-    TableRow *title = NewTableRow();                            // 开创标题行
+    if (allJournalLink == NULL)
+    {                                                                // 若该员工没有操作日志
+        TableRow *blank_row = NewTableRow();                         // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "当前没有日志 !"); // 指明错误信息
+        return remark_table;                                         // 返回空表格
+    }
+    TableRow *title = NewTableRow(); // 开创标题行
     AppendTableRow(title, "id");
     AppendTableRow(title, "time");
     AppendTableRow(title, "operation");
-    Table *allJournalOfOneStaff = NewTable(title, "All Journals Of One Staff"); // 备注待修改
+    Table *allJournalOfOneStaff = NewTable(title, "某员工的全部日志"); // 备注待修改
 
     JournalEntry *journal = (JournalEntry *)allJournalLink->data; // 获取第一个日志信息
     int argumentCount = GetJournalEntryArgumentCount(journal);
@@ -426,10 +469,9 @@ Table *GetAllJournalOfOneStaff(Table *staff)
         judge = AppendTable(allJournalOfOneStaff, item);
         if (judge != 0)
         {
-            TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(
-                blank_row, "There is fault exsiting in reading all journals of one operation !"); // 指明错误信息
-            return remark_table;                                                                  // 返回空表格
+            TableRow *blank_row = NewTableRow();                                     // 创建一个空的表格行
+            Table *remark_table = NewTable(blank_row, "读取某员工全部日志时出错 !"); // 指明错误信息
+            return remark_table;                                                     // 返回空表格
         }
 
         allJournalLink = allJournalLink->next;
@@ -441,11 +483,17 @@ Table *GetAllJournalOfOneStaff(Table *staff)
 Table *GetAllJournal(__attribute__((unused)) Table *table)
 {
     LinkedList *allJournalLink = GetAllJournals(); // 获取某个操作的链表
-    TableRow *title = NewTableRow();               // 开创标题行
+    if (allJournalLink == NULL)
+    {
+        TableRow *blank_row = NewTableRow();                         // 创建一个空的表格行
+        Table *remark_table = NewTable(blank_row, "当前没有日志 !"); // 指明错误信息
+        return remark_table;                                         // 返回空表格
+    }
+    TableRow *title = NewTableRow(); // 开创标题行
     AppendTableRow(title, "id");
     AppendTableRow(title, "time");
     AppendTableRow(title, "operation");
-    Table *allJournals = NewTable(title, "All Journals");
+    Table *allJournals = NewTable(title, "全部日志");
 
     JournalEntry *journal = (JournalEntry *)allJournalLink->data; // 获取第一个日志信息
     int argumentCount = GetJournalEntryArgumentCount(journal);
@@ -481,10 +529,9 @@ Table *GetAllJournal(__attribute__((unused)) Table *table)
         judge = AppendTable(allJournals, item);
         if (judge != 0)
         {
-            TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table =
-                NewTable(blank_row, "There is fault exsiting in reading all journals !"); // 指明错误信息
-            return remark_table;                                                          // 返回空表格
+            TableRow *blank_row = NewTableRow();                               // 创建一个空的表格行
+            Table *remark_table = NewTable(blank_row, "读取全部日志时出错 !"); // 指明错误信息
+            return remark_table;                                               // 返回空表格
         }
 
         allJournalLink = allJournalLink->next;
