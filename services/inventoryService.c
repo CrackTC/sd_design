@@ -31,7 +31,7 @@ void AmountToString(const Amount *amount, char *dest)
     char *jiaoString = LongLongToString(jiao);
     char *centString = LongLongToString(cent);
 
-    strcat(dest, yuanString);
+    strcpy(dest, yuanString);
     strcat(dest, ".");
     strcat(dest, jiaoString);
     strcat(dest, centString);
@@ -49,26 +49,26 @@ void GetInventoryInformationFromTable(Table *input, int *itemId, int *number, in
 
     TableRow *row = GetRowByIndex(input, 1);
 
-    *itemId = change(GetRowItemByColumnName(input, row, "itemId"));
-    *number = change(GetRowItemByColumnName(input, row, "number"));
+    *itemId = change(GetRowItemByColumnName(input, row, "商品编号"));
+    *number = change(GetRowItemByColumnName(input, row, "数量"));
 
-    *y1 = change(GetRowItemByColumnName(input, row, "y1"));
-    *m1 = change(GetRowItemByColumnName(input, row, "m1"));
-    *d1 = change(GetRowItemByColumnName(input, row, "d1"));
-    *h1 = change(GetRowItemByColumnName(input, row, "h1"));
-    *min1 = change(GetRowItemByColumnName(input, row, "min1"));
-    *s1 = change(GetRowItemByColumnName(input, row, "s1"));
+    *y1 = change(GetRowItemByColumnName(input, row, "年1"));
+    *m1 = change(GetRowItemByColumnName(input, row, "月1"));
+    *d1 = change(GetRowItemByColumnName(input, row, "日1"));
+    *h1 = change(GetRowItemByColumnName(input, row, "时1"));
+    *min1 = change(GetRowItemByColumnName(input, row, "分1"));
+    *s1 = change(GetRowItemByColumnName(input, row, "秒1"));
 
-    *y2 = change(GetRowItemByColumnName(input, row, "y2"));
-    *m2 = change(GetRowItemByColumnName(input, row, "m2"));
-    *d2 = change(GetRowItemByColumnName(input, row, "d2"));
-    *h2 = change(GetRowItemByColumnName(input, row, "h2"));
-    *min2 = change(GetRowItemByColumnName(input, row, "min2"));
-    *s2 = change(GetRowItemByColumnName(input, row, "s2"));
+    *y2 = change(GetRowItemByColumnName(input, row, "年2"));
+    *m2 = change(GetRowItemByColumnName(input, row, "月2"));
+    *d2 = change(GetRowItemByColumnName(input, row, "日2"));
+    *h2 = change(GetRowItemByColumnName(input, row, "时2"));
+    *min2 = change(GetRowItemByColumnName(input, row, "分2"));
+    *s2 = change(GetRowItemByColumnName(input, row, "秒2"));
 
-    *yuan = change(GetRowItemByColumnName(input, row, "yuan"));
-    *jiao = change(GetRowItemByColumnName(input, row, "jiao"));
-    *cent = change(GetRowItemByColumnName(input, row, "cent"));
+    *yuan = change(GetRowItemByColumnName(input, row, "元"));
+    *jiao = change(GetRowItemByColumnName(input, row, "角"));
+    *cent = change(GetRowItemByColumnName(input, row, "分"));
 }
 
 // 向货存链表中添加一批货物
@@ -91,15 +91,15 @@ Table *AddInventory(Table *input)
     if (GetItemById(itemId) != NULL)
     {
         // 判断输入的入库时间是否大于现在的时间
-        if (CompareTime(&NowTime, &inboundTime))
+        if (CompareTime(&NowTime, &inboundTime) >= 0)
         {
             // 判断输入的生产日期时间是否大于现在时间
-            if (CompareTime(&NowTime, &inboundTime))
+            if (CompareTime(&NowTime, &productionTime) >= 0)
             {
                 // 将获取的货存信息转化为结构体并添加到货存链表中
                 int result1 = AppendInventoryEntry(NewInventoryEntry(itemId, number, &inboundTime, &productionTime,
                                                                      &unitPrice)); // result1 用于存储是否插入成功
-                if (result1 == 1)
+                if (result1 == 0)
                 {
                     InventorySave(); // 将添加结果进行保存
 
@@ -477,13 +477,9 @@ Table *AddItem(Table *input)
     Amount saleprice = NewAmount(yuan, jiao, cent);
 
     // 将字符转化为数字
-    int y1 = change(GetRowItemByColumnName(input, row, "y1"));
-    int m1 = change(GetRowItemByColumnName(input, row, "m1"));
     int d1 = change(GetRowItemByColumnName(input, row, "d1"));
     int h1 = change(GetRowItemByColumnName(input, row, "h1"));
-    int min1 = change(GetRowItemByColumnName(input, row, "min1"));
-    int s1 = change(GetRowItemByColumnName(input, row, "s1"));
-    Time shelfLife = NewDateTime(y1, m1, d1, h1, min1, s1); // 获取保质期时间
+    Time shelfLife = NewTimeSpan(d1, h1); // 获取保质期时间
 
     // 将准备好的信息用于创建商品
     int result = AppendItem(NewItem(itemName, &saleprice, &shelfLife));
@@ -542,7 +538,7 @@ Table *DeleteItemById(Table *input)
     // 获取要删除的货物的名字
     TableRow *row = GetRowByIndex(input, 1);
 
-    int id = change(GetRowItemByColumnName(input, row, "itemId"));
+    int id = change(GetRowItemByColumnName(input, row, "商品编号"));
 
     // 得到要删除的货物的指针
     Item *item = GetItemById(id);
@@ -635,7 +631,7 @@ Table *ShowInventory(__attribute__((unused)) Table *input)
 }
 
 // 展示商品系统中的全部信息
-Table *ShowItem(Table *input)
+Table *ShowItem(__attribute__((unused)) Table *input)
 {
     // 用于记录一共有多少中商品
     int itemCount = 0;
@@ -955,7 +951,7 @@ Table *ReviseAnItemByItemId(Table *input)
     Table *table; // 用于存放该商品信息的表格
     TableRow *row = GetRowByIndex(input, 1);
     // 获取表格中相应的信息
-    Item *item = GetItemById(change(GetRowItemByColumnName(input, row, "Id")));
+    Item *item = GetItemById(change(GetRowItemByColumnName(input, row, "id")));
     if (item != NULL)
     {
         // 获取商品的价格信息
@@ -965,16 +961,12 @@ Table *ReviseAnItemByItemId(Table *input)
         Amount price = NewAmount(yuan, jiao, cent);
 
         // 获取商品的保质期信息
-        char *y = GetRowItemByColumnName(input, row, "y");
-        char *m = GetRowItemByColumnName(input, row, "m");
-        char *d = GetRowItemByColumnName(input, row, "d");
-        char *h = GetRowItemByColumnName(input, row, "h");
-        char *min = GetRowItemByColumnName(input, row, "min");
-        char *s = GetRowItemByColumnName(input, row, "s");
-        Time shelflife = NewDateTime(change(y), change(m), change(d), change(h), change(min), change(s));
+        char *d = GetRowItemByColumnName(input, row, "d1");
+        char *h = GetRowItemByColumnName(input, row, "h1");
+        Time shelflife = NewTimeSpan(change(d), change(h));
 
         // 将要修改的各类信息传入到item中
-        SetItemName(item, GetRowItemByColumnName(input, row, "newItemName"));
+        SetItemName(item, GetRowItemByColumnName(input, row, "name"));
         SetItemPrice(item, &price);
         SetItemShelfLife(item, &shelflife);
         table = NewTable(NULL, "修改成功");

@@ -15,48 +15,67 @@ struct Data
     const char *password;
     char *message;
     int modify;
+    Window *window;
+    void (*messageCallback)(int, void*);
 };
 
-static int SendRequest(struct Data *data)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
+{
+    struct Data *data = parameter;
+    free(data->message);
+    data->message = NULL;
+}
+
+static void FinishCallback(__attribute__((unused)) int ok, void *parameter)
+{
+    MessageBoxCallBack(ok, parameter);
+    struct Data *data = parameter;
+    data->window->isClosed = 1;
+}
+
+static void SendRequest(struct Data *data)
 {
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_INVENTORY : OP_ADD_INVENTORY;
     judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString("没有权限");
-        return 0;
+        return;
     }
-#warning finish edit call
+
     TableRow *row = NewTableRow();
     if (data->modify)
     {
-        AppendTableRow(row, "itemId");
+        AppendTableRow(row, "库存编号");
     }
-    AppendTableRow(row, "number");
-    AppendTableRow(row, "y1");
-    AppendTableRow(row, "m1");
-    AppendTableRow(row, "d1");
-    AppendTableRow(row, "h1");
-    AppendTableRow(row, "min1");
-    AppendTableRow(row, "s1");
-    AppendTableRow(row, "y2");
-    AppendTableRow(row, "m2");
-    AppendTableRow(row, "d2");
-    AppendTableRow(row, "h2");
-    AppendTableRow(row, "min2");
-    AppendTableRow(row, "s2");
-    AppendTableRow(row, "yuan");
-    AppendTableRow(row, "jiao");
-    AppendTableRow(row, "cent");
+    AppendTableRow(row, "商品编号");
+    AppendTableRow(row, "数量");
+    AppendTableRow(row, "年1");
+    AppendTableRow(row, "月1");
+    AppendTableRow(row, "日1");
+    AppendTableRow(row, "时1");
+    AppendTableRow(row, "分1");
+    AppendTableRow(row, "秒1");
+    AppendTableRow(row, "年2");
+    AppendTableRow(row, "月2");
+    AppendTableRow(row, "日2");
+    AppendTableRow(row, "时2");
+    AppendTableRow(row, "分2");
+    AppendTableRow(row, "秒2");
+    AppendTableRow(row, "元");
+    AppendTableRow(row, "角");
+    AppendTableRow(row, "分");
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
     TableRow *sourceRow = GetRowByIndex(data->inventory, 1);
     if (data->modify)
     {
-        AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "商品编号"));
+        AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "库存编号"));
     }
+    AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "商品编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "数量"));
     AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "年1"));
     AppendTableRow(row, GetRowItemByColumnName(data->inventory, sourceRow, "月1"));
@@ -90,10 +109,12 @@ static int SendRequest(struct Data *data)
 
     if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString(response->remark);
     }
     else
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString("操作成功完成");
     }
 
@@ -101,21 +122,12 @@ static int SendRequest(struct Data *data)
     {
         FreeTable(response);
     }
-
-    return 1;
-}
-
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
 }
 
 void InventoryEditLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
     TableRow *dataRow = GetRowByIndex(data->inventory, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
@@ -323,10 +335,7 @@ void InventoryEditLayout(struct nk_context *context, Window *window)
             PlaceNothing(context);
             if (nk_button_label(context, "确定"))
             {
-                if (SendRequest(data))
-                {
-                    window->isClosed = 1;
-                }
+                SendRequest(data);
             }
             PlaceNothing(context);
             if (nk_button_label(context, "取消"))
@@ -360,6 +369,7 @@ Window *NewInventoryEdit(const char *title, int id, const char *password, Table 
     data->id = id;
     data->password = password;
     data->modify = modify;
+    data->window = window;
 
     window->data = data;
     window->next = NULL;

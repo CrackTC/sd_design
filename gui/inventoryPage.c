@@ -202,7 +202,7 @@ int InventoryModify(struct Data *data)
         if (*(int *)now->data == 1)
         {
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "库存编号");
             AppendTableRow(row, "商品编号");
             AppendTableRow(row, "商品名称");
             AppendTableRow(row, "数量");

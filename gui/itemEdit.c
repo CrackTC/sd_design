@@ -15,17 +15,34 @@ struct Data
     const char *password;
     char *message;
     int modify;
+    Window *window;
+    void (*messageCallback)(int, void*);
 };
 
-static int SendRequest(struct Data *data)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
+{
+    struct Data *data = parameter;
+    free(data->message);
+    data->message = NULL;
+}
+
+static void FinishCallback(__attribute__((unused)) int ok, void *parameter)
+{
+    MessageBoxCallBack(ok, parameter);
+    struct Data *data = parameter;
+    data->window->isClosed = 1;
+}
+
+static void SendRequest(struct Data *data)
 {
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_ITEM : OP_ADD_ITEM;
     judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString("没有权限");
-        return 0;
+        return;
     }
 
     TableRow *row = NewTableRow();
@@ -37,12 +54,8 @@ static int SendRequest(struct Data *data)
     AppendTableRow(row, "yuan");
     AppendTableRow(row, "jiao");
     AppendTableRow(row, "cent");
-    AppendTableRow(row, "y1");
-    AppendTableRow(row, "m1");
     AppendTableRow(row, "d1");
     AppendTableRow(row, "h1");
-    AppendTableRow(row, "min1");
-    AppendTableRow(row, "s1");
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
@@ -55,12 +68,8 @@ static int SendRequest(struct Data *data)
     AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "元"));
     AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "角"));
     AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "分"));
-    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "年"));
-    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "月"));
     AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "日"));
     AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "时"));
-    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "分"));
-    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "秒"));
     AppendTable(request, row);
 
     Table *response;
@@ -78,10 +87,12 @@ static int SendRequest(struct Data *data)
 
     if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
     {
+        data->messageCallback = MessageBoxCallBack;
         data->message = CloneString(response->remark);
     }
     else
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString("操作成功完成");
     }
 
@@ -89,21 +100,12 @@ static int SendRequest(struct Data *data)
     {
         FreeTable(response);
     }
-
-    return 1;
-}
-
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
 }
 
 void ItemEditLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
     TableRow *dataRow = GetRowByIndex(data->item, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
@@ -141,26 +143,12 @@ void ItemEditLayout(struct nk_context *context, Window *window)
                 nk_style_pop_font(context);
             }
 
-            nk_layout_row_push(context, 70);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "年"), 512, nk_filter_decimal);
-            nk_layout_row_push(context, 30);
-            nk_label(context, "年", NK_TEXT_CENTERED);
-
-            nk_layout_row_push(context, 40);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "月"), 512, nk_filter_decimal);
-            nk_layout_row_push(context, 30);
-            nk_label(context, "月", NK_TEXT_CENTERED);
-
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
                 GetRowItemByColumnName(data->item, dataRow, "日"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
-            nk_label(context, "日", NK_TEXT_CENTERED);
+            nk_label(context, "天", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
@@ -168,20 +156,6 @@ void ItemEditLayout(struct nk_context *context, Window *window)
                 GetRowItemByColumnName(data->item, dataRow, "时"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "时", NK_TEXT_CENTERED);
-
-            nk_layout_row_push(context, 40);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "分"), 512, nk_filter_decimal);
-            nk_layout_row_push(context, 30);
-            nk_label(context, "分", NK_TEXT_CENTERED);
-
-            nk_layout_row_push(context, 40);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "秒"), 512, nk_filter_decimal);
-            nk_layout_row_push(context, 30);
-            nk_label(context, "秒", NK_TEXT_CENTERED);
 
             nk_layout_row_end(context);
         }
@@ -225,10 +199,7 @@ void ItemEditLayout(struct nk_context *context, Window *window)
             PlaceNothing(context);
             if (nk_button_label(context, "确定"))
             {
-                if (SendRequest(data))
-                {
-                    window->isClosed = 1;
-                }
+                SendRequest(data);
             }
             PlaceNothing(context);
             if (nk_button_label(context, "取消"))
@@ -262,6 +233,7 @@ Window *NewItemEdit(const char *title, int id, const char *password, Table *item
     data->id = id;
     data->password = password;
     data->modify = modify;
+    data->window = window;
 
     window->data = data;
     window->next = NULL;

@@ -129,7 +129,7 @@ Table *ShowInventory(__attribute__((unused)) Table *input);
  * input：NULL
  * return:全部商品信息的表格
  **/
-Table *ShowItem(Table *input);
+Table *ShowItem(__attribute__((unused)) Table *input);
 
 /*
  * role: 展示所有的货损

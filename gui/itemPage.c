@@ -51,16 +51,33 @@ void SendItemRequest(struct Data *data)
     }
 }
 
+int ItemLookup(struct Data *data)
+{
+    LinkedList *now = data->itemCheckList->next;
+    LinkedList *rowNow = data->itemTable->rows->next;
+    while (now != NULL)
+    {
+        if (*(int *)now->data == 1)
+        {
+            TableRow *titleRow = CloneRow(GetTableTitle(data->itemTable));
+            Table *table = NewTable(titleRow, "");
+            AppendTable(table, CloneRow(rowNow->data));
+            PushWindow(NewItemDetail("商品详情", table));
+            FreeTable(table);
+            return 1;
+        }
+        now = now->next;
+        rowNow = rowNow->next;
+    }
+    return 0;
+}
+
 void ItemAdd(struct Data *data)
 {
     TableRow *row = NewTableRow();
     AppendTableRow(row, "商品名称");
-    AppendTableRow(row, "年");
-    AppendTableRow(row, "月");
     AppendTableRow(row, "日");
     AppendTableRow(row, "时");
-    AppendTableRow(row, "分");
-    AppendTableRow(row, "秒");
     AppendTableRow(row, "元");
     AppendTableRow(row, "角");
     AppendTableRow(row, "分");
@@ -68,13 +85,8 @@ void ItemAdd(struct Data *data)
 
     row = NewTableRow();
     AppendTableRow(row, "");
-    AppendTableRow(row, "");
-    AppendTableRow(row, "2023");
     AppendTableRow(row, "1");
     AppendTableRow(row, "1");
-    AppendTableRow(row, "1");
-    AppendTableRow(row, "1");
-    AppendTableRow(row, "2");
     AppendTableRow(row, "2");
     AppendTableRow(row, "2");
     AppendTableRow(row, "2");
@@ -97,13 +109,8 @@ int ItemModify(struct Data *data)
             {
                 AppendTableRow(row, "id");
                 AppendTableRow(row, "商品名称");
-                AppendTableRow(row, "数量");
-                AppendTableRow(row, "年");
-                AppendTableRow(row, "月");
                 AppendTableRow(row, "日");
                 AppendTableRow(row, "时");
-                AppendTableRow(row, "分");
-                AppendTableRow(row, "秒");
                 AppendTableRow(row, "元");
                 AppendTableRow(row, "角");
                 AppendTableRow(row, "分");
@@ -115,16 +122,11 @@ int ItemModify(struct Data *data)
                 row = NewTableRow();
                 AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品编号"));
                 AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品名称"));
-                AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "数量"));
 
                 const char *time = GetRowItemByColumnName(data->itemTable, rowNow->data, "保质期");
                 TimeInfo info = ParseTime(time, 1);
-                free(AppendTableRow(row, LongLongToString(info.year)));
-                free(AppendTableRow(row, LongLongToString(info.month)));
                 free(AppendTableRow(row, LongLongToString(info.day)));
                 free(AppendTableRow(row, LongLongToString(info.hour)));
-                free(AppendTableRow(row, LongLongToString(info.minute)));
-                free(AppendTableRow(row, LongLongToString(info.second)));
 
                 Amount amount = ParseAmount(GetRowItemByColumnName(data->itemTable, rowNow->data, "售价"));
                 free(AppendTableRow(row, LongLongToString(GetAmountYuan(&amount))));
@@ -168,10 +170,10 @@ void ItemDelete(int ok, void *parameter)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->itemTable, rowNow->data, "id");
+            char *id = GetRowItemByColumnName(data->itemTable, rowNow->data, "商品编号");
 
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "商品编号");
             Table *table = NewTable(row, NULL);
 
             row = NewTableRow();
@@ -299,21 +301,10 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
             {
                 if (nk_button_label(context, "查看"))
                 {
-                    LinkedList *now = data->itemCheckList->next;
-                    LinkedList *rowNow = data->itemTable->rows->next;
-                    while (now != NULL)
+                    if (!ItemLookup(data))
                     {
-                        if (*(int *)now->data == 1)
-                        {
-                            TableRow *titleRow = CloneRow(GetTableTitle(data->itemTable));
-                            Table *table = NewTable(titleRow, "");
-                            AppendTable(table, CloneRow(rowNow->data));
-                            PushWindow(NewItemDetail("商品详情", table));
-                            FreeTable(table);
-                            break;
-                        }
-                        now = now->next;
-                        rowNow = rowNow->next;
+                        data->messageCallback = MessageBoxCallBack;
+                        data->message = CloneString("请选择一个商品条目");
                     }
                 }
             }
