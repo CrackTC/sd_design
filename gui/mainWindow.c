@@ -139,7 +139,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
 
     {
         TableRow *row = NewTableRow();
-        AppendTableRow(row, "id");
+        AppendTableRow(row, "折扣编号");
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
         AppendTableRow(row, "折扣比率");
@@ -159,7 +159,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
 
     {
         TableRow *row = NewTableRow();
-        AppendTableRow(row, "id");
+        AppendTableRow(row, "订单编号");
         AppendTableRow(row, "库存编号");
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
@@ -182,7 +182,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
 
     {
         TableRow *row = NewTableRow();
-        AppendTableRow(row, "id");
+        AppendTableRow(row, "客户编号");
         AppendTableRow(row, "客户等级");
         AppendTableRow(row, "客户姓名");
         AppendTableRow(row, "客户联系方式");
@@ -200,9 +200,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
 
     {
         TableRow *row = NewTableRow();
-        AppendTableRow(row, "id");
         AppendTableRow(row, "员工编号");
-        AppendTableRow(row, "员工姓名");
         AppendTableRow(row, "时间");
         AppendTableRow(row, "操作");
         AppendTableRow(row, "参数");
@@ -220,7 +218,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
 
     {
         TableRow *row = NewTableRow();
-        AppendTableRow(row, "id");
+        AppendTableRow(row, "货损编号");
         AppendTableRow(row, "库存编号");
         AppendTableRow(row, "损耗时间");
         AppendTableRow(row, "货损数量");
@@ -276,8 +274,8 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
 
     {
         TableRow *row = NewTableRow();
-        AppendTableRow(row, "id");
-        AppendTableRow(row, "已启用");
+        AppendTableRow(row, "员工编号");
+        AppendTableRow(row, "员工可用性");
         AppendTableRow(row, "员工姓名");
         AppendTableRow(row, "员工联系方式");
         AppendTableRow(row, "员工权限");

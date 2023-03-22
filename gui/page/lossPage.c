@@ -30,7 +30,7 @@ void LossEntryDelete(int ok, void *parameter)
     struct Data *data = parameter;
 
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_DELETE_LOSS);
+    Judge(data->id, &hasPermission, data->password, OP_DELETE_LOSS);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
@@ -44,10 +44,10 @@ void LossEntryDelete(int ok, void *parameter)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->lossTable, rowNow->data, "id");
+            char *id = GetRowItemByColumnName(data->lossTable, rowNow->data, "货损编号");
 
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "货损编号");
             Table *table = NewTable(row, NULL);
             row = NewTableRow();
             AppendTableRow(row, id);
@@ -83,7 +83,7 @@ void LossEntryDelete(int ok, void *parameter)
 void SendLossRequest(struct Data *data)
 {
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_READ_LOSS);
+    Judge(data->id, &hasPermission, data->password, OP_READ_LOSS);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
@@ -154,7 +154,7 @@ int LossAdd(struct Data *data)
             Table *table = NewTable(row, "");
 
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "id"));
+            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "库存编号"));
             AppendTableRow(row, "0");
             AppendTableRow(row, "");
             AppendTableRow(row, "");
@@ -184,7 +184,7 @@ int LossModify(struct Data *data)
         if (*(int *)now->data == 1)
         {
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "货损编号");
             AppendTableRow(row, "库存编号");
             AppendTableRow(row, "货损数量");
             AppendTableRow(row, "货损原因");
@@ -197,7 +197,7 @@ int LossModify(struct Data *data)
             Table *table = NewTable(row, "");
 
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->lossTable, rowNow->data, "id"));
+            AppendTableRow(row, GetRowItemByColumnName(data->lossTable, rowNow->data, "货损编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->lossTable, rowNow->data, "库存编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->lossTable, rowNow->data, "货损数量"));
             AppendTableRow(row, GetRowItemByColumnName(data->lossTable, rowNow->data, "货损原因"));

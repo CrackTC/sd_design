@@ -30,7 +30,7 @@ void RefundDelete(int ok, void *parameter)
     struct Data *data = parameter;
 
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_DELETE_REFUND);
+    Judge(data->id, &hasPermission, data->password, OP_DELETE_REFUND);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
@@ -83,7 +83,7 @@ void RefundDelete(int ok, void *parameter)
 void SendRefundRequest(struct Data *data)
 {
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_READ_REFUND);
+    Judge(data->id, &hasPermission, data->password, OP_READ_REFUND);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;

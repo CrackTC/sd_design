@@ -29,7 +29,7 @@ void StaffDelete(int ok, void *parameter)
     struct Data *data = parameter;
 
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_DELETE_STAFF);
+    Judge(data->id, &hasPermission, data->password, OP_DELETE_STAFF);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
@@ -82,7 +82,7 @@ void StaffDelete(int ok, void *parameter)
 void SendStaffRequest(struct Data *data)
 {
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_READ_STAFF);
+    Judge(data->id, &hasPermission, data->password, OP_READ_STAFF);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
@@ -138,7 +138,7 @@ void StaffAdd(struct Data *data)
     AppendTableRow(row, "员工密码");
     AppendTableRow(row, "员工姓名");
     AppendTableRow(row, "员工联系方式");
-    AppendTableRow(row, "已启用");
+    AppendTableRow(row, "员工可用性");
     AppendTableRow(row, "员工权限");
     Table *table = NewTable(row, "");
 
@@ -163,20 +163,20 @@ int StaffModify(struct Data *data)
         if (*(int *)now->data == 1)
         {
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "员工编号");
             AppendTableRow(row, "员工密码");
             AppendTableRow(row, "员工姓名");
             AppendTableRow(row, "员工联系方式");
-            AppendTableRow(row, "已启用");
+            AppendTableRow(row, "员工可用性");
             AppendTableRow(row, "员工权限");
             Table *table = NewTable(row, "");
 
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "id"));
+            AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工编号"));
             AppendTableRow(row, "");
             AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工姓名"));
             AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工联系方式"));
-            AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "已启用"));
+            AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工可用性"));
             AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工权限"));
             AppendTable(table, row);
 

@@ -346,7 +346,7 @@ Table *DeleteSingleLossById(Table *input)
     // 获取要修改的货物的编号
     TableRow *row = GetRowByIndex(input, 1);
     // 将Id由字符转为整数类型
-    int id = change(GetRowItemByColumnName(input, row, "id"));
+    int id = change(GetRowItemByColumnName(input, row, "货损编号"));
     LossEntry *entry = GetLossEntryById(id);
     if (entry != NULL)
     {
@@ -675,10 +675,10 @@ Table *ShowLossInventory(Table *input)
     // 创建好货损信息表头
     TableRow *row = NewTableRow();
     AppendTableRow(row, "货损编号");
-    AppendTableRow(row, "货存编号");
+    AppendTableRow(row, "库存编号");
     AppendTableRow(row, "货损数量");
     AppendTableRow(row, "货损原因");
-    AppendTableRow(row, "进入货损时的时间");
+    AppendTableRow(row, "损耗时间");
 
     // 创建好表格
     table = NewTable(row, NULL);

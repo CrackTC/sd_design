@@ -55,7 +55,7 @@ Table *AddJournal(Table *table, int staffId, Operation operation)
     }
 
     JournalEntry *newJournal =
-        NewJournalEntry(staffId, &time, operation, (const char **)arguments, argumentCount); // 开创新日志条目
+        NewJournalEntry(staffId, &time, operation, arguments, argumentCount); // 开创新日志条目
                                                                                              //
     for (int i = 0; i < argumentCount; i++)
     {
@@ -482,51 +482,43 @@ Table *GetAllJournalOfOneStaff(Table *staff)
 /*读取全部日志*/
 Table *GetAllJournal(__attribute__((unused)) Table *table)
 {
-    LinkedList *allJournalLink = GetAllJournals(); // 获取某个操作的链表
-    if (allJournalLink == NULL)
+    LinkedList *journalNow = GetAllJournals(); // 获取某个操作的链表
+    if (journalNow == NULL)
     {
         TableRow *blank_row = NewTableRow();                         // 创建一个空的表格行
         Table *remark_table = NewTable(blank_row, "当前没有日志 !"); // 指明错误信息
         return remark_table;                                         // 返回空表格
     }
     TableRow *title = NewTableRow(); // 开创标题行
-    AppendTableRow(title, "id");
-    AppendTableRow(title, "time");
-    AppendTableRow(title, "operation");
-    Table *allJournals = NewTable(title, "全部日志");
+    AppendTableRow(title, "员工编号");
+    AppendTableRow(title, "时间");
+    AppendTableRow(title, "操作");
+    AppendTableRow(title, "参数");
+    Table *allJournals = NewTable(title, NULL);
 
-    JournalEntry *journal = (JournalEntry *)allJournalLink->data; // 获取第一个日志信息
-    int argumentCount = GetJournalEntryArgumentCount(journal);
-    char **arguments = GetJournalEntryArguments(journal);
-    for (int i = 0; i < argumentCount; i++)
-    {
-        char temp[50];
-        AppendTableRow(title, getStringBefore(temp, arguments[i])); // 向title中加入：操作的各个标题
-    }
+    int count = 0;
 
-    int staffid;
-    Time time;
-    int judge;
-    Operation operation;
     /*遍历日志信息，将信息放入table中*/
-    while (allJournalLink != NULL)
+    while (journalNow != NULL)
     {
         TableRow *item = NewTableRow();                 // 创建具体信息行
-        journal = (JournalEntry *)allJournalLink->data; // 获取journal
-        staffid = GetJournalEntryStaffId(journal);
-        time = GetJournalEntryTime(journal);
-        operation = GetJournalEntryOperation(journal);
-        arguments = GetJournalEntryArguments(journal); // 获取多个操作
+        JournalEntry *journal = journalNow->data; // 获取journal
+        count++;
+
+        int staffId = GetJournalEntryStaffId(journal);
+        Time time = GetJournalEntryTime(journal);
+        Operation operation = GetJournalEntryOperation(journal);
+        char **arguments = GetJournalEntryArguments(journal); // 获取多个操作
+        int argumentCount = GetJournalEntryArgumentCount(journal);
+
         /*向table信息行中放入具体信息*/
-        free(AppendTableRow(item, LongLongToString(staffid)));
+        free(AppendTableRow(item, LongLongToString(staffId)));
         free(AppendTableRow(item, TimeToString(GetTimeInfo(&time, 1))));
         free(AppendTableRow(item, CloneString(OperationToString(operation))));
-        for (int i = 0; i < argumentCount; i++)
-        {
-            AppendTableRow(item, arguments[i]);
-        }
+        free(AppendTableRow(item, JoinArguments(arguments, argumentCount)));
+
         /*将信息行加入表格中*/
-        judge = AppendTable(allJournals, item);
+        int judge = AppendTable(allJournals, item);
         if (judge != 0)
         {
             TableRow *blank_row = NewTableRow();                               // 创建一个空的表格行
@@ -534,7 +526,14 @@ Table *GetAllJournal(__attribute__((unused)) Table *table)
             return remark_table;                                               // 返回空表格
         }
 
-        allJournalLink = allJournalLink->next;
+        journalNow = journalNow->next;
     }
+
+    size_t len = strlen("查询到") + IntegerStringLength(count) + strlen("条信息") + 1;
+    char *remark = malloc(len);
+    sprintf(remark, "查询到%d条信息", count);
+    SetTableRemark(allJournals, remark);
+    free(remark);
+
     return allJournals;
 }

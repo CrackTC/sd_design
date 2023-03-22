@@ -11,7 +11,7 @@
  *		  operation 要进行的相关操作
  *返回值:  如果能调用函数 则返回调用函数后的表格 否则返回null
  **/
-Table *judge(int staffId, int *hasPermission, const char *password, Operation operation);
+Table *Judge(int staffId, int *hasPermission, const char *password, Operation operation);
 
 /*
  *写日志函数

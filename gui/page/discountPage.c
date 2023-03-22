@@ -30,7 +30,7 @@ void DiscountDelete(int ok, void *parameter)
     struct Data *data = parameter;
 
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_DELETE_DISCOUNT);
+    Judge(data->id, &hasPermission, data->password, OP_DELETE_DISCOUNT);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallback;
@@ -84,7 +84,7 @@ void DiscountDelete(int ok, void *parameter)
 void SendDiscountRequest(struct Data *data)
 {
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_READ_DISCOUNT);
+    Judge(data->id, &hasPermission, data->password, OP_READ_DISCOUNT);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallback;

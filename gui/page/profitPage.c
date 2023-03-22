@@ -21,7 +21,7 @@ static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 void SendProfitRequest(struct Data *data)
 {
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_READ_STATISTICS);
+    Judge(data->id, &hasPermission, data->password, OP_READ_STATISTICS);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;

@@ -63,6 +63,15 @@ PermissionEntry *GetPermissionEntryByStaffId(int staffId);
 char *PermissionToString(PermissionEntry *entry);
 
 /*
+ * Name: ParsePermission
+ * Description: 从权限的字符串表示获取权限
+ * Arguments:
+ *     permissionString: 权限的字符串表示
+ * Returns: 权限
+ * */
+int *ParsePermission(const char *permissionString);
+
+/*
  * Name: GetPermissionEntryXXX
  * Description: 获取权限条目的某个成员
  * Arguments:

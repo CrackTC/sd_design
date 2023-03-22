@@ -15,40 +15,59 @@ struct Data
     const char *password;
     char *message;
     int modify;
+	Window *window;
+	void (*messageCallback)(int, void*);
 };
 
-static int SendRequest(struct Data *data)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
+{
+	struct Data *data = parameter;
+	free(data->message);
+	data->message = NULL;
+}
+
+static void FinishCallback(__attribute__((unused)) int ok, void *parameter)
+{
+	MessageBoxCallBack(ok, parameter);
+	struct Data *data = parameter;
+	data->window->isClosed = 1;
+}
+
+static void SendRequest(struct Data *data)
 {
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_STAFF : OP_ADD_STAFF;
-    judge(data->id, &hasPermission, data->password, operation);
+    Judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
+		data->messageCallback = FinishCallback;
         data->message = CloneString("没有权限");
-        return 0;
+        return;
     }
 
     TableRow *row = NewTableRow();
     if (data->modify)
     {
-        AppendTableRow(row, "id");
+        AppendTableRow(row, "员工编号");
     }
-    AppendTableRow(row, "isEnabled");
-    AppendTableRow(row, "name");
-    AppendTableRow(row, "contact");
-    AppendTableRow(row, "permission");
+    AppendTableRow(row, "员工可用性");
+	AppendTableRow(row, "员工密码");
+    AppendTableRow(row, "员工姓名");
+    AppendTableRow(row, "员工联系方式");
+    AppendTableRow(row, "员工权限");
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
     TableRow *sourceRow = GetRowByIndex(data->staff, 1);
     if (data->modify)
     {
-        AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "id"));
+        AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工编号"));
     }
     AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工可用性"));
+	AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工密码"));
     AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工姓名"));
     AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工联系方式"));
-    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工权限信息"));
+    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工权限"));
     AppendTable(request, row);
 
     Table *response;
@@ -66,10 +85,12 @@ static int SendRequest(struct Data *data)
 
     if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
     {
+		data->messageCallback = FinishCallback;
         data->message = CloneString(response->remark);
     }
     else
     {
+		data->messageCallback = FinishCallback;
         data->message = CloneString("操作成功完成");
     }
 
@@ -77,21 +98,12 @@ static int SendRequest(struct Data *data)
     {
         FreeTable(response);
     }
-
-    return 1;
-}
-
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
 }
 
 void StaffEditLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
     TableRow *dataRow = GetRowByIndex(data->staff, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
@@ -157,14 +169,14 @@ void StaffEditLayout(struct nk_context *context, Window *window)
             nk_style_push_font(context, &fontMedium->handle);
             {
                 nk_layout_row_push(context, 200);
-                nk_label(context, "已启用", NK_TEXT_CENTERED);
+                nk_label(context, "员工可用性", NK_TEXT_CENTERED);
                 nk_style_pop_font(context);
             }
             nk_layout_row_push(context, 100);
 #warning use checkbox
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "已启用"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->staff, dataRow, "员工可用性"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -192,10 +204,7 @@ void StaffEditLayout(struct nk_context *context, Window *window)
             PlaceNothing(context);
             if (nk_button_label(context, "确定"))
             {
-                if (SendRequest(data))
-                {
-                    window->isClosed = 1;
-                }
+                SendRequest(data);
             }
             PlaceNothing(context);
             if (nk_button_label(context, "取消"))
@@ -229,6 +238,7 @@ Window *NewStaffEdit(const char *title, int id, const char *password, Table *sta
     data->id = id;
     data->password = password;
     data->modify = modify;
+	data->window = window;
 
     window->data = data;
     window->next = NULL;

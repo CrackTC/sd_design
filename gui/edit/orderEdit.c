@@ -21,7 +21,7 @@ static int SendRequest(struct Data *data)
 {
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_ORDER : OP_ADD_ORDER;
-    judge(data->id, &hasPermission, data->password, operation);
+    Judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
         data->message = CloneString("没有权限");

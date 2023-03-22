@@ -21,7 +21,7 @@ static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 void SendOrderRequest(struct Data *data)
 {
     int hasPermission;
-    data->orderTable = judge(data->id, &hasPermission, data->password, OP_READ_ORDER);
+    Judge(data->id, &hasPermission, data->password, OP_READ_ORDER);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
@@ -48,6 +48,27 @@ void SendOrderRequest(struct Data *data)
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("查询失败: 响应为NULL");
     }
+}
+
+int OrderLookup(struct Data *data)
+{
+	LinkedList *now = data->orderCheckList->next;
+	LinkedList *rowNow = data->orderTable->rows->next;
+	while (now != NULL)
+	{
+		if (*(int *)now->data == 1)
+		{
+			TableRow *titleRow = CloneRow(GetTableTitle(data->orderTable));
+			Table *table = NewTable(titleRow, "");
+			AppendTable(table, CloneRow(rowNow->data));
+			PushWindow(NewOrderDetail("订单详情", table));
+			FreeTable(table);
+			return 1;
+		}
+		now = now->next;
+		rowNow = rowNow->next;
+	}
+	return 0;
 }
 
 int OrderAdd(struct Data *data)
@@ -148,11 +169,12 @@ void OrderDelete(int ok, void *parameter)
     struct Data *data = parameter;
 
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_DELETE_ORDER);
+    Judge(data->id, &hasPermission, data->password, OP_DELETE_ORDER);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：删除订单");
+		return;
     }
 
     LinkedList *now = data->orderCheckList->next;
@@ -292,22 +314,11 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
             {
                 if (nk_button_label(context, "查看"))
                 {
-                    LinkedList *now = data->orderCheckList->next;
-                    LinkedList *rowNow = data->orderTable->rows->next;
-                    while (now != NULL)
-                    {
-                        if (*(int *)now->data == 1)
-                        {
-                            TableRow *titleRow = CloneRow(GetTableTitle(data->orderTable));
-                            Table *table = NewTable(titleRow, "");
-                            AppendTable(table, CloneRow(rowNow->data));
-                            PushWindow(NewOrderDetail("订单详情", table));
-                            FreeTable(table);
-                            break;
-                        }
-                        now = now->next;
-                        rowNow = rowNow->next;
-                    }
+					if (!OrderLookup(data))
+					{
+						data->messageCallback = MessageBoxCallBack;
+						data->message = CloneString("请选择一个订单");
+					}
                 }
             }
 

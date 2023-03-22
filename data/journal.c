@@ -52,6 +52,31 @@ void FreeJournalEntry(JournalEntry *entry)
     free(entry);
 }
 
+char **ExplodeArguments(const char *joinedArgument, int argumentCount)
+{
+    char **arguments = malloc(argumentCount * sizeof(char *));
+    int startIndex = 0;
+    int endIndex = 0;
+    int argumentIndex = 0;
+    while (argumentIndex < argumentCount)
+    {
+        while (joinedArgument[endIndex] != '\n' && joinedArgument[endIndex] != '\0')
+            endIndex++;
+        int length = endIndex - startIndex;
+        arguments[argumentIndex] = malloc((length + 1) * sizeof(char));
+        for (int i = 0; i < length; i++)
+        {
+            arguments[argumentIndex][i] = joinedArgument[startIndex + i];
+        }
+        arguments[argumentIndex][length] = '\0';
+        endIndex++;
+        startIndex = endIndex;
+        argumentIndex++;
+    }
+
+    return arguments;
+}
+
 LinkedList *GetAllJournals()
 {
     if (systemList != NULL)
@@ -74,38 +99,16 @@ LinkedList *GetAllJournals()
         rowNode = rowNode->next;
         const TableRow *row = rowNode->data;
 
-        char **arguments;
-        char *joinedArgument;
         JournalEntry *entry = malloc(sizeof(JournalEntry));
 
         sscanf(GetRowItemByColumnName(table, row, staffIdRow), "%d", &entry->staffId);
         sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &entry->time.value);
         sscanf(GetRowItemByColumnName(table, row, operationRow), "%d", &entry->operation);
-        joinedArgument = CloneString(GetRowItemByColumnName(table, row, argumentsRow));
+        char *joinedArgument = CloneString(GetRowItemByColumnName(table, row, argumentsRow));
         sscanf(GetRowItemByColumnName(table, row, argumentCountRow), "%d", &entry->argumentCount);
 
-        arguments = malloc(entry->argumentCount * sizeof(char *));
-        int startIndex = 0;
-        int endIndex = 0;
-        int argumentIndex = 0;
-        while (argumentIndex < entry->argumentCount)
-        {
-            while (joinedArgument[endIndex] != '\n' && joinedArgument[endIndex] != '\0')
-                endIndex++;
-            int length = endIndex - startIndex;
-            arguments[argumentIndex] = malloc((length + 1) * sizeof(char));
-            for (int i = 0; i < length; i++)
-            {
-                arguments[argumentIndex][i] = joinedArgument[startIndex + i];
-            }
-            arguments[argumentIndex][length] = '\0';
-            endIndex++;
-            startIndex = endIndex;
-            argumentIndex++;
-        }
-
+        entry->arguments = ExplodeArguments(joinedArgument, entry->argumentCount);
         free(joinedArgument);
-        entry->arguments = arguments;
 
         list = AppendData(list, entry);
     }

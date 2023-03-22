@@ -19,7 +19,4 @@ Table *UpdateStaff(Table *); // 参数Table* 中要含有 要改变员工的员�
 /*构造员工信息表头Title*/
 Table *CreateStaffTableTitle(void);
 
-/*将数字字符串转化为int型整数*/
-int atoi(const char *ch);
-
 #endif

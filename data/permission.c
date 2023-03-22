@@ -97,6 +97,16 @@ char *PermissionToString(PermissionEntry *entry)
     return permissionString;
 }
 
+int *ParsePermission(const char *permissionString)
+{
+    int *result = malloc(OPERATION_COUNT * sizeof(int));
+    for (int i = 0; i < OPERATION_COUNT; i++)
+    {
+        result[i] = permissionString[i] - '0';
+    }
+    return result;
+}
+
 PermissionEntry *GetPermissionEntryByStaffId(int staffId)
 {
     if (systemList == NULL)
@@ -110,6 +120,7 @@ PermissionEntry *GetPermissionEntryByStaffId(int staffId)
         {
             return entry;
         }
+		now = now->next;
     }
     return NULL;
 }

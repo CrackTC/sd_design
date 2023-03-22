@@ -22,7 +22,7 @@ static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 void SendItemRequest(struct Data *data)
 {
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_READ_ITEM);
+    Judge(data->id, &hasPermission, data->password, OP_READ_ITEM);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
@@ -157,11 +157,12 @@ void ItemDelete(int ok, void *parameter)
     struct Data *data = parameter;
 
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_DELETE_ITEM);
+    Judge(data->id, &hasPermission, data->password, OP_DELETE_ITEM);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：删除商品");
+		return;
     }
 
     LinkedList *now = data->itemCheckList->next;

@@ -31,7 +31,7 @@ void InventoryDelete(int ok, void *parameter)
     struct Data *data = parameter;
 
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_DELETE_INVENTORY);
+    Judge(data->id, &hasPermission, data->password, OP_DELETE_INVENTORY);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
@@ -85,7 +85,7 @@ void InventoryDelete(int ok, void *parameter)
 void SendInventoryRequest(struct Data *data)
 {
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_READ_INVENTORY);
+    Judge(data->id, &hasPermission, data->password, OP_READ_INVENTORY);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;

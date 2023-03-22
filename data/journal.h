@@ -37,6 +37,26 @@ JournalEntry *NewJournalEntry(int staffId, Time *time, Operation operation, cons
 void FreeJournalEntry(JournalEntry *entry);
 
 /*
+ * Name: ExplodeArguments
+ * Description: 将拼接的参数信息分割
+ * Arguments:
+ *     joinedArgument: 拼接的参数信息
+ *     argumentCount: 参数个数
+ * Returns: 分割后的参数信息
+ * */
+char **ExplodeArguments(const char *joinedArgument, int argumentCount);
+
+/*
+ * Name: JoinArguments
+ * Description: 将分割的参数信息拼接
+ * Arguments:
+ *     arguments: 分割的参数信息
+ *     argumentCount: 参数个数
+ * Returns: 拼接后的参数信息
+ * */
+char *JoinArguments(char **arguments, int argumentCount);
+
+/*
  * Name: GetAllJournals
  * Description: 获取所有日志条目
  * Returns: 一个链表，包含所有日志条目

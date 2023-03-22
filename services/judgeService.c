@@ -20,7 +20,7 @@ int HasPermission(int staffId, Operation operation)
         return 0;
 }
 
-Table *judge(int staffId, int *hasPermission, const char *password, Operation operation)
+Table *Judge(int staffId, int *hasPermission, const char *password, Operation operation)
 {
     Staff *staff = GetStaffById(staffId);
     if (staff == NULL) {

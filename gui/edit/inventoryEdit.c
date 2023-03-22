@@ -37,7 +37,7 @@ static void SendRequest(struct Data *data)
 {
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_INVENTORY : OP_ADD_INVENTORY;
-    judge(data->id, &hasPermission, data->password, operation);
+    Judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
         data->messageCallback = FinishCallback;

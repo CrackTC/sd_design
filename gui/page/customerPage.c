@@ -29,7 +29,7 @@ void CustomerDelete(int ok, void *parameter)
     struct Data *data = parameter;
 
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_DELETE_CUSTOMER);
+    Judge(data->id, &hasPermission, data->password, OP_DELETE_CUSTOMER);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
@@ -83,7 +83,7 @@ void CustomerDelete(int ok, void *parameter)
 void SendCustomerRequest(struct Data *data)
 {
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_READ_CUSTOMER);
+    Judge(data->id, &hasPermission, data->password, OP_READ_CUSTOMER);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;

@@ -20,7 +20,7 @@ static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 void SendJournalRequest(struct Data *data)
 {
     int hasPermission;
-    judge(data->id, &hasPermission, data->password, OP_READ_JOURNAL);
+    Judge(data->id, &hasPermission, data->password, OP_READ_JOURNAL);
     if (!hasPermission)
     {
         data->messageCallback = MessageBoxCallBack;
