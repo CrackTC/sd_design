@@ -1,5 +1,5 @@
-#include "config.h"
-#include "layout.h"
+#include "../config.h"
+#include "../layout.h"
 #include <stdlib.h>
 #include <string.h>
 

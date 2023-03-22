@@ -1,10 +1,10 @@
-#include "../data/operation.h"
-#include "../services/journalService.h"
-#include "../services/judgeService.h"
-#include "../services/saleService.h"
-#include "../utils.h"
-#include "config.h"
-#include "layout.h"
+#include "../../data/operation.h"
+#include "../../services/journalService.h"
+#include "../../services/judgeService.h"
+#include "../../services/saleService.h"
+#include "../../utils.h"
+#include "../config.h"
+#include "../layout.h"
 #include <malloc.h>
 #include <string.h>
 

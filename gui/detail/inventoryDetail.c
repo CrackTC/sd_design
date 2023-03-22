@@ -1,53 +1,57 @@
-#include "config.h"
-#include "layout.h"
+#include "../config.h"
+#include "../layout.h"
 #include <stdlib.h>
 #include <string.h>
 
 struct Data
 {
-    struct Table *discount;
+    struct Table *inventory;
 };
 
-void DiscountDetailLayout(struct nk_context *context, Window *window)
+void InventoryDetailLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
-    TableRow *dataRow = GetRowByIndex(data->discount, 1);
+    TableRow *dataRow = GetRowByIndex(data->inventory, 1);
 
     nk_layout_row_dynamic(context, 0, 1);
-    nk_label(context, "折扣详情", NK_TEXT_CENTERED);
+    nk_label(context, "库存详情", NK_TEXT_CENTERED);
 
     nk_style_push_font(context, &fontSmall->handle);
     {
         nk_layout_row_dynamic(context, 0, 1);
         nk_label(context, "id", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->discount, dataRow, "id"), 512, nk_filter_default);
+                                       GetRowItemByColumnName(data->inventory, dataRow, "库存编号"), 512, nk_filter_default);
 
         nk_label(context, "商品编号", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->discount, dataRow, "商品编号"), 512,
+                                       GetRowItemByColumnName(data->inventory, dataRow, "商品编号"), 512,
                                        nk_filter_default);
 
         nk_label(context, "商品名称", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->discount, dataRow, "商品名称"), 512,
+                                       GetRowItemByColumnName(data->inventory, dataRow, "商品名称"), 512,
                                        nk_filter_default);
 
-        nk_label(context, "折扣比率", NK_TEXT_CENTERED);
+        nk_label(context, "数量", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->discount, dataRow, "折扣比率"), 512,
+                                       GetRowItemByColumnName(data->inventory, dataRow, "数量"), 512,
                                        nk_filter_default);
 
-        nk_label(context, "客户等级", NK_TEXT_CENTERED);
+        nk_label(context, "入库时间", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->discount, dataRow, "客户等级"), 512,
+                                       GetRowItemByColumnName(data->inventory, dataRow, "入库时间"), 512,
                                        nk_filter_default);
 
-        nk_label(context, "截止日期", NK_TEXT_CENTERED);
+        nk_label(context, "生产日期", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->discount, dataRow, "截止日期"), 512,
+                                       GetRowItemByColumnName(data->inventory, dataRow, "生产日期"), 512,
                                        nk_filter_default);
 
+        nk_label(context, "购入单价", NK_TEXT_CENTERED);
+        nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
+                                       GetRowItemByColumnName(data->inventory, dataRow, "购入单价"), 512,
+                                       nk_filter_default);
         if (nk_button_label(context, "确定"))
         {
             window->isClosed = 1;
@@ -56,24 +60,24 @@ void DiscountDetailLayout(struct nk_context *context, Window *window)
     }
 }
 
-void FreeDiscountDetail(Window *window)
+void FreeInventoryDetail(Window *window)
 {
     struct Data *data = window->data;
-    FreeTable(data->discount);
+    FreeTable(data->inventory);
     free(window);
 }
 
-Window *NewDiscountDetail(const char *title, const Table *discount)
+Window *NewInventoryDetail(const char *title, const Table *inventory)
 {
     Window *window = malloc(sizeof(Window));
     window->isClosed = 0;
-    window->layoutFunc = DiscountDetailLayout;
-    window->freeFunc = FreeDiscountDetail;
+    window->layoutFunc = InventoryDetailLayout;
+    window->freeFunc = FreeInventoryDetail;
     window->title = title;
 
     struct Data *data = malloc(sizeof(struct Data));
     memset(data, 0, sizeof(struct Data));
-    data->discount = CloneTableBuffered(discount, 512);
+    data->inventory = CloneTableBuffered(inventory, 512);
 
     window->data = data;
     window->next = NULL;

@@ -1,16 +1,16 @@
-#include "../data/operation.h"
-#include "../services/judgeService.h"
-#include "../services/journalService.h"
-#include "../services/staffService.h"
-#include "../utils.h"
-#include "config.h"
-#include "layout.h"
+#include "../../data/operation.h"
+#include "../../services/customerService.h"
+#include "../../services/journalService.h"
+#include "../../services/judgeService.h"
+#include "../../utils.h"
+#include "../config.h"
+#include "../layout.h"
 #include <malloc.h>
 #include <string.h>
 
 struct Data
 {
-    struct Table *staff;
+    struct Table *customer;
     int id;
     const char *password;
     char *message;
@@ -20,7 +20,7 @@ struct Data
 static int SendRequest(struct Data *data)
 {
     int hasPermission;
-    Operation operation = data->modify ? OP_UPDATE_STAFF : OP_ADD_STAFF;
+    Operation operation = data->modify ? OP_UPDATE_CUSTOMER : OP_ADD_CUSTOMER;
     judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
@@ -33,34 +33,32 @@ static int SendRequest(struct Data *data)
     {
         AppendTableRow(row, "id");
     }
-    AppendTableRow(row, "isEnabled");
+    AppendTableRow(row, "level");
     AppendTableRow(row, "name");
     AppendTableRow(row, "contact");
-    AppendTableRow(row, "permission");
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
-    TableRow *sourceRow = GetRowByIndex(data->staff, 1);
+    TableRow *sourceRow = GetRowByIndex(data->customer, 1);
     if (data->modify)
     {
-        AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "id"));
+        AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "id"));
     }
-    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工可用性"));
-    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工姓名"));
-    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工联系方式"));
-    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工权限信息"));
+    AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "客户等级"));
+    AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "客户姓名"));
+    AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "客户联系方式"));
     AppendTable(request, row);
 
     Table *response;
     if (data->modify)
     {
-        AddJournal(request, data->id, OP_UPDATE_STAFF);
-        response = UpdateStaff(request);
+        AddJournal(request, data->id, OP_UPDATE_CUSTOMER);
+        response = UpdateCustomer(request);
     }
     else
     {
         AddJournal(request, data->id, OP_ADD_CUSTOMER);
-        response = AddStaff(request);
+        response = AddCustomer(request);
     }
     FreeTable(request);
 
@@ -88,16 +86,16 @@ static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
     data->message = NULL;
 }
 
-void StaffEditLayout(struct nk_context *context, Window *window)
+void CustomerEditLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
     DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
-    TableRow *dataRow = GetRowByIndex(data->staff, 1);
+    TableRow *dataRow = GetRowByIndex(data->customer, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
     {
         nk_layout_row_dynamic(context, 0, 1);
-        nk_label(context, "员工编辑", NK_TEXT_CENTERED);
+        nk_label(context, "客户编辑", NK_TEXT_CENTERED);
 
         nk_style_pop_font(context);
     }
@@ -108,30 +106,14 @@ void StaffEditLayout(struct nk_context *context, Window *window)
         {
             nk_style_push_font(context, &fontMedium->handle);
             {
-                nk_layout_row_push(context, 200);
-                nk_label(context, "员工密码", NK_TEXT_CENTERED);
-                nk_style_pop_font(context);
-            }
-            nk_layout_row_push(context, 300);
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "员工密码"), 512, nk_filter_default);
-
-            nk_layout_row_end(context);
-        }
-
-        nk_layout_row_begin(context, NK_STATIC, 0, 2);
-        {
-            nk_style_push_font(context, &fontMedium->handle);
-            {
-                nk_layout_row_push(context, 200);
-                nk_label(context, "员工姓名", NK_TEXT_CENTERED);
+                nk_layout_row_push(context, 100);
+                nk_label(context, "客户等级", NK_TEXT_CENTERED);
                 nk_style_pop_font(context);
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "员工姓名"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->customer, dataRow, "客户等级"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -140,14 +122,14 @@ void StaffEditLayout(struct nk_context *context, Window *window)
         {
             nk_style_push_font(context, &fontMedium->handle);
             {
-                nk_layout_row_push(context, 200);
-                nk_label(context, "员工联系方式", NK_TEXT_CENTERED);
+                nk_layout_row_push(context, 100);
+                nk_label(context, "客户姓名", NK_TEXT_CENTERED);
                 nk_style_pop_font(context);
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "员工联系方式"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->customer, dataRow, "客户姓名"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -156,32 +138,14 @@ void StaffEditLayout(struct nk_context *context, Window *window)
         {
             nk_style_push_font(context, &fontMedium->handle);
             {
-                nk_layout_row_push(context, 200);
-                nk_label(context, "已启用", NK_TEXT_CENTERED);
+                nk_layout_row_push(context, 150);
+                nk_label(context, "客户联系方式", NK_TEXT_CENTERED);
                 nk_style_pop_font(context);
             }
-            nk_layout_row_push(context, 100);
-#warning use checkbox
+            nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
                 context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "已启用"), 512, nk_filter_decimal);
-
-            nk_layout_row_end(context);
-        }
-
-        nk_layout_row_begin(context, NK_STATIC, 0, 2);
-        {
-            nk_style_push_font(context, &fontMedium->handle);
-            {
-                nk_layout_row_push(context, 200);
-                nk_label(context, "员工权限", NK_TEXT_CENTERED);
-                nk_style_pop_font(context);
-            }
-            nk_layout_row_push(context, 600);
-#warning use checkbox
-            nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "员工权限"), 512, nk_filter_decimal);
+                GetRowItemByColumnName(data->customer, dataRow, "客户联系方式"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -208,24 +172,24 @@ void StaffEditLayout(struct nk_context *context, Window *window)
     }
 }
 
-void FreeStaffEdit(Window *window)
+void FreeCustomerEdit(Window *window)
 {
     struct Data *data = window->data;
-    FreeTable(data->staff);
+    FreeTable(data->customer);
     free(window);
 }
 
-Window *NewStaffEdit(const char *title, int id, const char *password, Table *staff, int modify)
+Window *NewCustomerEdit(const char *title, int id, const char *password, Table *customer, int modify)
 {
     Window *window = malloc(sizeof(Window));
     window->isClosed = 0;
-    window->layoutFunc = StaffEditLayout;
-    window->freeFunc = FreeStaffEdit;
+    window->layoutFunc = CustomerEditLayout;
+    window->freeFunc = FreeCustomerEdit;
     window->title = title;
 
     struct Data *data = malloc(sizeof(struct Data));
     memset(data, 0, sizeof(struct Data));
-    data->staff = CloneTableBuffered(staff, 512);
+    data->customer = CloneTableBuffered(customer, 512);
     data->id = id;
     data->password = password;
     data->modify = modify;
