@@ -65,7 +65,7 @@ Table *AddStaff(Table *newStaff)
         else
         { // 若追加失败，返回一个空表格，指出添加员工时出错
             TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(blank_row, "There is fault exsiting in adding a new staff!");
+            Table *remark_table = NewTable(blank_row, "添加新员工出错!");
             /*创建一个空表格，只有备注说明添加新员工出错*/
             return remark_table; // 返回空表格
         }
@@ -79,8 +79,7 @@ Table *AddStaff(Table *newStaff)
         else
         { // 若追加失败，返回一个空表格，指出添加员工时出错
             TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table =
-                NewTable(blank_row, "There is fault exsiting in adding a permission of one new staff!");
+            Table *remark_table = NewTable(blank_row, "添加新员工权限出错!");
             /*创建一个空表格，只有备注说明添加新员工权限出错*/
             return remark_table; // 返回空表格
         }
@@ -90,7 +89,7 @@ Table *AddStaff(Table *newStaff)
     else
     {                                        // 若传入的是空表格
         TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-        Table *remark_table = NewTable(blank_row, "There is no provided information ");
+        Table *remark_table = NewTable(blank_row, "您没有给予任何信息 ");
         /*创建一个空表格，只有备注说明 没有给予任何信息*/
         return remark_table; // 返回空表格
     }
@@ -127,7 +126,7 @@ Table *GetItemOfOneStaff(Table *staff)
             else
             {                                        // 若失败，返回空表格，指出出错信息
                 TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-                Table *remark_table = NewTable(blank_row, "There is fault exsiting in reading items of a staff!");
+                Table *remark_table = NewTable(blank_row, "查询员工信息时出错");
                 /*创建一个空表格，只有备注说明查询员工信息时出错*/
                 return remark_table; // 返回空表格
             }
@@ -135,7 +134,7 @@ Table *GetItemOfOneStaff(Table *staff)
         else
         {                                        // 若找不到相应员工
             TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(blank_row, "There is no target-staff !");
+            Table *remark_table = NewTable(blank_row, "没有该员工 !");
             /*创建一个空表格，只有备注说明 没有该员工*/
             return remark_table; // 返回空表格
         }
@@ -144,7 +143,7 @@ Table *GetItemOfOneStaff(Table *staff)
     else
     {                                        // 若传入的staff是空表格
         TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-        Table *remark_table = NewTable(blank_row, "There is no provided information ");
+        Table *remark_table = NewTable(blank_row, "没有给予任何信息 ");
         /*创建一个空表格，只有备注说明 没有给予任何信息*/
         return remark_table; // 返回空表格
     }
@@ -160,7 +159,7 @@ Table *GetItemOfAllStaff(Table *table)
     if (p == NULL)
     {                                        // 如果没有员工
         TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-        Table *remark_table = NewTable(blank_row, "There are no staffs ");
+        Table *remark_table = NewTable(blank_row, "没有任何员工 ");
         /*创建一个空表格，只有备注说明 没有员工*/
         return remark_table; // 返回空表格
     }
@@ -178,7 +177,7 @@ Table *GetItemOfAllStaff(Table *table)
         if (judge != 0)
         {                                        // 若加入失败
             TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(blank_row, "There is fault exsiting in searching for all items of staffs !");
+            Table *remark_table = NewTable(blank_row, "查询所有员工信息时出错 !");
             /*创建一个空表格，只有备注说明查询所有员工信息时出错*/
             return remark_table; // 返回空表格
         }
@@ -197,7 +196,7 @@ Table *UpdateStaff(Table *staff)
     {
         TableRow *titleRow = GetTableTitle(staff);
         LinkedList *title = titleRow->items;
-        const char *oneTitle; // 获取标题名
+        const char *oneTitle = (char *)title->data; // 获取标题名
 
         TableRow *row = GetRowByIndex(staff, 1);                 // 得到这个员工的具体信息所在行
         int id = atoi(GetRowItemByColumnName(staff, row, "id")); // 得到这个员工的工号id
@@ -251,7 +250,7 @@ Table *UpdateStaff(Table *staff)
         else
         {                                        // 若没有这个员工
             TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(blank_row, "There is no target-staff !");
+            Table *remark_table = NewTable(blank_row, "没有该工号的员工!");
             /*创建一个空表格，只有备注说明 没有该员工*/
             return remark_table; // 返回空表格
         }
@@ -259,7 +258,7 @@ Table *UpdateStaff(Table *staff)
     else
     {                                        // 若传入的是一个空表格
         TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-        Table *remark_table = NewTable(blank_row, "There is no provided information ");
+        Table *remark_table = NewTable(blank_row, "没有提供信息 ");
         /*创建一个空表格，只有备注说明 没有给予任何信息*/
         return remark_table; // 返回空表格
     }
@@ -295,7 +294,19 @@ Table *DeleteStaff(Table *staff)
             int judge = AppendTable(oriStaff, oriStaffItem); // 判断是否添加入表格成功
 
             /*释放该员工*/
-            RemoveStaff(objectStaff); // 释放这个员工
+            int judge0 = RemoveStaff(objectStaff); // 释放这个员工
+            if (judge0 == 0)
+                StaffSave(); // 若释放成功，则保存这个更改
+            else
+            {                                        // 若释放失败，返回一个空表格
+                TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
+                Table *remark_table = NewTable(blank_row, "删除该员工时出错 !");
+                /*创建一个空表格，只有备注说明删除员工出错*/
+                return remark_table; // 返回空表格
+            }
+            /*释放该员工的权限*/
+            RemovePermissionEntry(permission);
+            PermissionSave();
 
             /*返回删除的员工信息表格*/
             if (judge == 0)
@@ -303,7 +314,7 @@ Table *DeleteStaff(Table *staff)
             else
             {                                        // 若失败，返回一个空表格
                 TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-                Table *remark_table = NewTable(blank_row, "There is fault exsiting in recording one deleted staff !");
+                Table *remark_table = NewTable(blank_row, "将该员工的信息填入表格是出错 !");
                 /*创建一个空表格，只有备注说明添加员工信息表格出错*/
                 return remark_table; // 返回空表格
             }
@@ -311,7 +322,7 @@ Table *DeleteStaff(Table *staff)
         else
         {                                        // 若没有这个员工
             TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(blank_row, "There is no target-staff !");
+            Table *remark_table = NewTable(blank_row, "没有该员工 !");
             /*创建一个空表格，只有备注说明 没有该员工*/
             return remark_table; // 返回空表格
         }
@@ -319,7 +330,7 @@ Table *DeleteStaff(Table *staff)
     else
     {                                        // 若传入的表格是空表
         TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-        Table *remark_table = NewTable(blank_row, "There is no provided information ");
+        Table *remark_table = NewTable(blank_row, "没有提供任何信息 ");
         /*创建一个空表格，只有备注说明 没有给予任何信息*/
         return remark_table; // 返回空表格
     }
@@ -343,16 +354,15 @@ Table *LogIn(Table *staff)
             AppendTableRow(title, "success"); // 表格头标题为succes
             TableRow *Item = NewTableRow();   // 创建一个表格行
             free(AppendTableRow(Item, LongLongToString(success))); // 表格行保存的信息是：是否密码输入正确
-            Table *match = NewTable(title, "Whether the given password is same to the correct relevant password !");
-            /*创建一个表格保存是否密码输入正确 */
+            Table *match = NewTable(title, "密码是否输入正确 !");
+            /*创建一个表格保存 密码是否输入正确 */
             int judge = AppendTable(match, Item); // judge判断该表格是否添加具体信息没问题
             if (judge == 0)
                 return match; // 若输入正确，返回该表格
             else
             {
                 TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-                Table *remark_table =
-                    NewTable(blank_row, "There is fault exsiting in judging whether the given paassword is correct !");
+                Table *remark_table = NewTable(blank_row, "判断密码是否输入正确的表格出错!");
                 /*创建一个空表格，只有备注说明判断密码输入是否正确时出错*/
                 return remark_table; // 返回空表格
             }
@@ -360,7 +370,7 @@ Table *LogIn(Table *staff)
         else
         {                                        // 若不存在这个员工
             TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-            Table *remark_table = NewTable(blank_row, "There is no target-staff !");
+            Table *remark_table = NewTable(blank_row, "没有该工号对应的员工 !");
             /*创建一个空表格，只有备注说明 没有该员工*/
             return remark_table; // 返回空表格
         }
@@ -368,8 +378,35 @@ Table *LogIn(Table *staff)
     else
     {
         TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-        Table *remark_table = NewTable(blank_row, "There is no provided information ");
+        Table *remark_table = NewTable(blank_row, "没有提供任何信息 ");
         /*创建一个空表格，只有备注说明 没有给予任何信息*/
         return remark_table; // 返回空表格
     }
 }
+
+/*暂时无法获得/修改staff的密码*/
+///*修改密码*/ /*table中包括：要修改密码的员工，要修改的密码 */
+// Table* UpdatePassword(Table* table) {
+//	if (table == NULL) {//传进来的是空表格
+//		TableRow* blank_row = NewTableRow();                   //创建一个空的表格行
+//		Table* remark_table = NewTable(blank_row, "There is no provided information ");
+//		/*创建一个空表格，只有备注说明 没有给予任何信息*/
+//		return remark_table;//返回空表格
+//	}
+//	else {//传入的表格非空
+//		TableRow* row = GetRowByIndex(table, 1);
+//		const char* newPassword = GetRowItemByColumnName(table, row, "password");
+//		int staffid = atoi(GetRowItemByColumnName(table, row, "id"));
+//		Staff* staff=GetStaffById(staffid);
+//		if (staff == NULL) {//若没有找到该员工
+//			TableRow* blank_row = NewTableRow();                   //创建一个空的表格行
+//			Table* remark_table = NewTable(blank_row, "There is no target-staff ! ");
+//			/*创建一个空表格，只有备注说明 没有给予任何信息*/
+//			return remark_table;//返回空表格
+//		}
+//		else {//由目标员工
+//
+//		}
+//
+//	}
+// }
