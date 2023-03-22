@@ -43,10 +43,10 @@ void CustomerDelete(int ok, void *parameter)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->customerTable, rowNow->data, "id");
+            char *id = GetRowItemByColumnName(data->customerTable, rowNow->data, "客户编号");
 
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "客户编号");
             Table *table = NewTable(row, NULL);
 
             row = NewTableRow();
@@ -160,14 +160,14 @@ int CustomerModify(struct Data *data)
         if (*(int *)now->data == 1)
         {
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "客户编号");
             AppendTableRow(row, "客户等级");
             AppendTableRow(row, "客户姓名");
             AppendTableRow(row, "客户联系方式");
             Table *table = NewTable(row, "");
 
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->customerTable, rowNow->data, "id"));
+            AppendTableRow(row, GetRowItemByColumnName(data->customerTable, rowNow->data, "客户编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->customerTable, rowNow->data, "客户等级"));
             AppendTableRow(row, GetRowItemByColumnName(data->customerTable, rowNow->data, "客户姓名"));
             AppendTableRow(row, GetRowItemByColumnName(data->customerTable, rowNow->data, "客户联系方式"));

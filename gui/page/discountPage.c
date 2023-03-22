@@ -44,10 +44,10 @@ void DiscountDelete(int ok, void *parameter)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->discountTable, rowNow->data, "id");
+            char *id = GetRowItemByColumnName(data->discountTable, rowNow->data, "折扣编号");
 
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "折扣编号");
             Table *table = NewTable(row, NULL);
 
             row = NewTableRow();
@@ -186,7 +186,7 @@ int DiscountModify(struct Data *data)
         if (*(int *)now->data == 1)
         {
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "折扣编号");
             AppendTableRow(row, "商品编号");
             AppendTableRow(row, "商品名称");
             AppendTableRow(row, "折扣比率");
@@ -197,10 +197,10 @@ int DiscountModify(struct Data *data)
             AppendTableRow(row, "时");
             AppendTableRow(row, "分");
             AppendTableRow(row, "秒");
-            Table *table = NewTable(row, "");
+            Table *table = NewTable(row, NULL);
 
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "id"));
+            AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "折扣编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "商品编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "商品名称"));
             AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "折扣比率"));

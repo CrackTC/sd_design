@@ -31,18 +31,18 @@ static int SendRequest(struct Data *data)
     TableRow *row = NewTableRow();
     if (data->modify)
     {
-        AppendTableRow(row, "id");
+        AppendTableRow(row, "客户编号");
     }
-    AppendTableRow(row, "level");
-    AppendTableRow(row, "name");
-    AppendTableRow(row, "contact");
+    AppendTableRow(row, "客户等级");
+    AppendTableRow(row, "客户姓名");
+    AppendTableRow(row, "客户联系方式");
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
     TableRow *sourceRow = GetRowByIndex(data->customer, 1);
     if (data->modify)
     {
-        AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "id"));
+        AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "客户编号"));
     }
     AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "客户等级"));
     AppendTableRow(row, GetRowItemByColumnName(data->customer, sourceRow, "客户姓名"));

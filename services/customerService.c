@@ -193,56 +193,53 @@ Table *GetSingleCustomer(Table *a)
 // 获取所有客户信息
 Table *GetAllCustomer(__attribute__((unused)) Table *a)
 {
-    LinkedList *head = GetAllCustomers();
+    LinkedList *customerNow = GetAllCustomers();
+
+	// 数据准备和录入
+	TableRow *row = NewTableRow();
+	AppendTableRow(row, "客户编号");
+	AppendTableRow(row, "客户等级");
+	AppendTableRow(row, "客户姓名");
+	AppendTableRow(row, "客户联系方式");
+	Table *table = NewTable(row, NULL);
 
     // 判断
-    if (head == NULL)
+    if (customerNow == NULL)
     {
-        TableRow *row = NewTableRow();
-        Table *goback = NewTable(row, "无客户记录");
-        return goback;
+		SetTableRemark(table, "无客户记录");
+        return table;
     }
 
-    // 数据准备和录入
-    TableRow *row = NewTableRow();
-    AppendTableRow(row, "id");
-    AppendTableRow(row, "客户等级");
-    AppendTableRow(row, "客户姓名");
-    AppendTableRow(row, "客户联系方式");
-    Table *goback = NewTable(row, NULL);
-
-    LinkedList *customer = head;
-    while (head != NULL)
+    while (customerNow != NULL)
     {
-        Customer *customerinfo = customer->data;
+        Customer *customerInfo = customerNow->data;
         row = NewTableRow();
 
-        int customerid = GetCustomerId(customerinfo);
-        int customerlevel = GetCustomerLevel(customerinfo);
+        int customerId = GetCustomerId(customerInfo);
+        int customerLevel = GetCustomerLevel(customerInfo);
 
-        const char *tempname = GetCustomerName(customerinfo);
-        const char *tempcontact = GetCustomerContact(customerinfo);
-        char *name = CloneString(tempname);
-        char *contact = CloneString(tempcontact);
+        const char *customerName = GetCustomerName(customerInfo);
+        const char *customerContact = GetCustomerContact(customerInfo);
+        char *name = CloneString(customerName);
+        char *contact = CloneString(customerContact);
 
-        char *idstring = LongLongToString(customerid);
-        char *levelstring = LongLongToString(customerlevel);
+        char *idString = LongLongToString(customerId);
+        char *levelString = LongLongToString(customerLevel);
 
-        AppendTableRow(row, idstring);
-        AppendTableRow(row, levelstring);
+        AppendTableRow(row, idString);
+        AppendTableRow(row, levelString);
         AppendTableRow(row, name);
         AppendTableRow(row, contact);
 
-        free(idstring);
-        free(levelstring);
+        free(idString);
+        free(levelString);
         free(name);
         free(contact);
 
-        AppendTable(goback, row);
+        AppendTable(table, row);
 
-        customer = customer->next;
-        head = head->next;
+		customerNow = customerNow->next;
     }
     // 返回值
-    return goback;
+    return table;
 }

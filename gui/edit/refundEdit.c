@@ -30,13 +30,19 @@ static int SendRequest(struct Data *data)
 
     TableRow *row = NewTableRow();
 
-    AppendTableRow(row, "id");
-    AppendTableRow(row, "reason");
-    AppendTableRow(row, "yuan");
-    AppendTableRow(row, "jiao");
-    AppendTableRow(row, "cent");
-    AppendTableRow(row, "number");
-    AppendTableRow(row, "remark");
+    AppendTableRow(row, "订单编号");
+    AppendTableRow(row, "退款原因");
+	AppendTableRow(row, "年");
+	AppendTableRow(row, "月");
+	AppendTableRow(row, "日");
+	AppendTableRow(row, "时");
+	AppendTableRow(row, "分");
+	AppendTableRow(row, "秒");
+    AppendTableRow(row, "元");
+    AppendTableRow(row, "角");
+    AppendTableRow(row, "分");
+    AppendTableRow(row, "退回数目");
+    AppendTableRow(row, "备注");
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
@@ -44,6 +50,12 @@ static int SendRequest(struct Data *data)
 
     AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "订单编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "退款原因"));
+	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "年"));
+	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "月"));
+	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "日"));
+	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "时"));
+	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "分"));
+	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "秒"));
     AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "元"));
     AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "角"));
     AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "分"));

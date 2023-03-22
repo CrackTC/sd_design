@@ -449,81 +449,79 @@ Table *GetAllOrder(Table *a)
     // 标题行
     TableRow *row = NewTableRow();
 
-    AppendTableRow(row, "orderid");
-    AppendTableRow(row, "itemname");
-    AppendTableRow(row, "customerid");
-    AppendTableRow(row, "number");
-    AppendTableRow(row, "yuan");
-    AppendTableRow(row, "jiao");
-    AppendTableRow(row, "cent");
-    AppendTableRow(row, "time");
-    AppendTableRow(row, "inventoryid");
-    Table *goback = NewTable(row, NULL);
+    AppendTableRow(row, "订单编号");
+    AppendTableRow(row, "库存编号");
+	AppendTableRow(row, "商品编号");
+	AppendTableRow(row, "商品名称");
+    AppendTableRow(row, "客户编号");
+	AppendTableRow(row, "客户姓名");
+    AppendTableRow(row, "购买数量");
+	AppendTableRow(row, "购买时间");
+    AppendTableRow(row, "总价");
+    Table *table = NewTable(row, NULL);
 
     // 循环获取数据并写入行
-    LinkedList *totalorder = GetAllOrders();
-    if (totalorder == NULL)
+    LinkedList *orderNow = GetAllOrders();
+    if (orderNow == NULL)
     {
-        TableRow *error = NewTableRow();
-        Table *errorreturn = NewTable(error, "无订单条目");
-        return errorreturn;
+		SetTableRemark(table, "无订单条目");
+        return table;
     }
-    LinkedList *porder = totalorder;
-    while (porder != NULL)
+    while (orderNow != NULL)
     {
-        Order *singleorder = porder->data;
+        Order *order = orderNow->data;
         row = NewTableRow();
 
         // 数据准备
-        int orderid = GetOrderId(singleorder);
-        int customerid = GetOrderCustomerId(singleorder);
-        int number = GetOrderNumber(singleorder);
-        int inventoryid = GetOrderInventoryId(singleorder);
-        InventoryEntry *thisinventory = GetInventoryById(inventoryid);
-        int itemid = GetInventoryEntryItemId(thisinventory);
-        Item *thisitem = GetItemById(itemid);
-        char *itemname = GetItemName(thisitem);
-        Time ordertime = GetOrderTime(singleorder);
-        /**/ TimeInfo ordertimeinfo = GetTimeInfo(&ordertime, 1);
-        Amount price = GetOrderAmount(singleorder);
+        int orderId = GetOrderId(order);
+		int inventoryId = GetOrderInventoryId(order);
 
-        char *orderidstring = LongLongToString(orderid);
-        char *customeridstring = LongLongToString(customerid);
-        char *numberstring = LongLongToString(number);
-        int yuan = GetAmountYuan(&price);
-        int jiao = GetAmountJiao(&price);
-        int cent = GetAmountCent(&price);
-        char *yuanstring = LongLongToString(yuan);
-        char *jiaostring = LongLongToString(jiao);
-        char *centstring = LongLongToString(cent);
-        char *timestring = TimeToString(ordertimeinfo);
-        char *inventoryidstring = LongLongToString(inventoryid);
+		InventoryEntry *entry = GetInventoryById(inventoryId);
+		int itemId = GetInventoryEntryItemId(entry);
+		Item *item = GetItemById(itemId);
+		char *itemName = GetItemName(item);
+
+        int customerId = GetOrderCustomerId(order);
+		Customer *customer = GetCustomerById(customerId);
+		char *customerName = GetCustomerName(customer);
+
+        int number = GetOrderNumber(order);
+        Time orderTime = GetOrderTime(order);
+        TimeInfo orderTimeInfo = GetTimeInfo(&orderTime, 1);
+        Amount amount = GetOrderAmount(order);
+
+        char *orderIdString = LongLongToString(orderId);
+		char *inventoryIdString = LongLongToString(inventoryId);
+		char *itemIdString = LongLongToString(itemId);
+        char *customerIdString = LongLongToString(customerId);
+        char *numberString = LongLongToString(number);
+        char *timeString = TimeToString(orderTimeInfo);
+		char *amountString = AmountToString(&amount);
 
         // 数据添加
-        AppendTableRow(row, orderidstring);
-        AppendTableRow(row, itemname);
-        AppendTableRow(row, customeridstring);
-        AppendTableRow(row, numberstring);
-        AppendTableRow(row, yuanstring);
-        AppendTableRow(row, jiaostring);
-        AppendTableRow(row, centstring);
-        AppendTableRow(row, timestring);
-        AppendTableRow(row, inventoryidstring);
-        AppendTable(goback, row);
+        AppendTableRow(row, orderIdString);
+		AppendTableRow(row, inventoryIdString);
+		AppendTableRow(row, itemIdString);
+        AppendTableRow(row, itemName);
+        AppendTableRow(row, customerIdString);
+		AppendTableRow(row, customerName);
+        AppendTableRow(row, numberString);
+        AppendTableRow(row, timeString);
+		AppendTableRow(row, amountString);
+        AppendTable(table, row);
 
-        free(orderidstring);
-        free(customeridstring);
-        free(numberstring);
-        free(yuanstring);
-        free(jiaostring);
-        free(centstring);
-        free(timestring);
-        free(inventoryidstring);
+        free(orderIdString);
+		free(inventoryIdString);
+		free(itemIdString);
+		free(customerIdString);
+        free(numberString);
+        free(timeString);
+		free(amountString);
 
-        porder = porder->next;
+        orderNow = orderNow->next;
     }
     // 返回值
-    return goback;
+    return table;
 }
 
 // 读取单个订单信息
@@ -750,62 +748,65 @@ Table *GetAllDiscount(Table *a)
 {
     TableRow *row = NewTableRow();
 
-    AppendTableRow(row, "id");
-    AppendTableRow(row, "itemname");
-    AppendTableRow(row, "ratio");
-    AppendTableRow(row, "customerlevel");
-    AppendTableRow(row, "deadline");
-    Table *goback = NewTable(row, NULL);
+    AppendTableRow(row, "折扣编号");
+    AppendTableRow(row, "商品编号");
+	AppendTableRow(row, "商品名称");
+    AppendTableRow(row, "折扣比率");
+    AppendTableRow(row, "客户等级");
+    AppendTableRow(row, "截止时间");
+    Table *table = NewTable(row, NULL);
 
-    LinkedList *alldiscountshead = GetAllBasicDiscounts();
+    LinkedList *discountNow = GetAllBasicDiscounts();
     // 判断
-    if (alldiscountshead == NULL)
+    if (discountNow == NULL)
     {
-        TableRow *error = NewTableRow();
-        Table *errorreturn = NewTable(error, "无折扣");
-        return errorreturn;
+		SetTableRemark(table, "无折扣");
+		return table;
     }
-    LinkedList *discountnode = alldiscountshead;
-    while (discountnode != NULL)
+    while (discountNow != NULL)
     {
-        BasicDiscount *discount = discountnode->data;
+        BasicDiscount *discount = discountNow->data;
         row = NewTableRow();
 
         // 数据准备
-        int discountid = GetBasicDiscountId(discount);
-        char *discountidstring = LongLongToString(discountid);
+        int discountId = GetBasicDiscountId(discount);
+        char *discountIdString = LongLongToString(discountId);
 
-        int itemid = GetBasicDiscountItemId(discount);
-        Item *thisitem = GetItemById(itemid);
-        char *itemname = GetItemName(thisitem);
+        int itemId = GetBasicDiscountItemId(discount);
+		char *itemIdString = LongLongToString(itemId);
 
-        int rate = GetBasicDiscountRatio(discount);
-        char *ratestring = LongLongToString(rate);
+        Item *item = GetItemById(itemId);
+        char *itemName = GetItemName(item);
 
-        int customerlevel = GetBasicDiscountCustomerLevel(discount);
-        char *customerlevelstring = LongLongToString(customerlevel);
+        int ratio = GetBasicDiscountRatio(discount);
+        char *ratioString = LongLongToString(ratio);
+
+        int customerLevel = GetBasicDiscountCustomerLevel(discount);
+        char *customerLevelString = LongLongToString(customerLevel);
 
         Time deadline = GetBasicDiscountDeadline(discount);
-        TimeInfo deadlineinfo = GetTimeInfo(&deadline, 1);
-        char *deadlinestring = TimeToString(deadlineinfo);
+        TimeInfo deadLineInfo = GetTimeInfo(&deadline, 1);
+        char *deadLineString = TimeToString(deadLineInfo);
 
         // 添加数据
-        AppendTableRow(row, discountidstring);
-        AppendTableRow(row, itemname);
-        AppendTableRow(row, ratestring);
-        AppendTableRow(row, customerlevelstring);
-        AppendTableRow(row, deadlinestring);
-        AppendTable(goback, row);
+        AppendTableRow(row, discountIdString);
+		AppendTableRow(row, itemIdString);
+        AppendTableRow(row, itemName);
+        AppendTableRow(row, ratioString);
+        AppendTableRow(row, customerLevelString);
+        AppendTableRow(row, deadLineString);
+        AppendTable(table, row);
 
-        free(discountidstring);
-        free(ratestring);
-        free(customerlevelstring);
-        free(deadlinestring);
+        free(discountIdString);
+		free(itemIdString);
+        free(ratioString);
+        free(customerLevelString);
+        free(deadLineString);
 
-        discountnode = discountnode->next;
+        discountNow = discountNow->next;
     }
     // 返回值
-    return goback;
+    return table;
 }
 
 // 查询单个折扣信息
@@ -1063,77 +1064,66 @@ Table *GetAllRefund(Table *a)
 {
     TableRow *row = NewTableRow();
 
-    AppendTableRow(row, "id");
-    AppendTableRow(row, "reason");
-    AppendTableRow(row, "time");
-    AppendTableRow(row, "yuan");
-    AppendTableRow(row, "jiao");
-    AppendTableRow(row, "cent");
-    AppendTableRow(row, "number");
-    AppendTableRow(row, "remark");
-    Table *goback = NewTable(row, NULL);
+    AppendTableRow(row, "订单编号");
+    AppendTableRow(row, "退款原因");
+    AppendTableRow(row, "退款时间");
+    AppendTableRow(row, "退款金额");
+    AppendTableRow(row, "退回数目");
+    AppendTableRow(row, "备注");
+    Table *table = NewTable(row, NULL);
 
-    LinkedList *totalrefundshead = GetAllRefunds();
-    if (totalrefundshead == NULL)
+    LinkedList *refundNow = GetAllRefunds();
+    if (refundNow == NULL)
     {
-        TableRow *error = NewTableRow();
-        Table *errorreturn = NewTable(error, "无退款条目");
-        return errorreturn;
+		SetTableRemark(table, "无退款条目");
+		return table;
     }
-    LinkedList *refundnode = totalrefundshead;
 
-    while (refundnode != NULL)
+    while (refundNow != NULL)
     {
-        RefundEntry *thisrefund = refundnode->data;
+        RefundEntry *entry = refundNow->data;
         row = NewTableRow();
 
         // 数据准备
-        int orderid = GetRefundEntryOrderId(thisrefund);
-        char *orderidstring = LongLongToString(orderid);
+        int orderId = GetRefundEntryOrderId(entry);
+        char *orderIdString = LongLongToString(orderId);
 
-        const char *tempreason = GetRefundEntryReason(thisrefund);
-        char *reason = CloneString(tempreason);
+        const char *reason = GetRefundEntryReason(entry);
+        char *reasonString = CloneString(reason);
 
-        Time refundtime = GetRefundEntryTime(thisrefund);
-        TimeInfo refundtimeinfo = GetTimeInfo(&refundtime, 1);
-        char *refundtimestring = TimeToString(refundtimeinfo);
+        Time refundTime = GetRefundEntryTime(entry);
+        TimeInfo refundTimeInfo = GetTimeInfo(&refundTime, 1);
+        char *refundTimeString = TimeToString(refundTimeInfo);
 
-        Amount price = GetRefundEntryAmount(thisrefund);
-        int yuan = GetAmountYuan(&price);
-        int jiao = GetAmountJiao(&price);
-        int cent = GetAmountCent(&price);
-        char *yuanstring = LongLongToString(yuan);
-        char *jiaostring = LongLongToString(jiao);
-        char *centstring = LongLongToString(cent);
+        Amount price = GetRefundEntryAmount(entry);
+		char *priceString = AmountToString(&price);
 
-        int number = GetRefundEntryNumber(thisrefund);
-        char *numberstring = LongLongToString(number);
+        int number = GetRefundEntryNumber(entry);
+        char *numberString = LongLongToString(number);
 
-        const char *tempremark = GetRefundEntryRemark(thisrefund);
-        char *remark = CloneString(tempremark);
+        const char *remark = GetRefundEntryRemark(entry);
+        char *remarkString = CloneString(remark);
 
         // 添加数据
-        AppendTableRow(row, orderidstring);
-        AppendTableRow(row, reason);
-        AppendTableRow(row, refundtimestring);
-        AppendTableRow(row, yuanstring);
-        AppendTableRow(row, jiaostring);
-        AppendTableRow(row, centstring);
-        AppendTableRow(row, numberstring);
-        AppendTableRow(row, remark);
-        AppendTable(goback, row);
+        AppendTableRow(row, orderIdString);
+        AppendTableRow(row, reasonString);
+        AppendTableRow(row, refundTimeString);
+        AppendTableRow(row, priceString);
+        AppendTableRow(row, numberString);
+        AppendTableRow(row, remarkString);
+        AppendTable(table, row);
 
-        free(orderidstring);
-        free(refundtimestring);
-        free(yuanstring);
-        free(jiaostring);
-        free(centstring);
-        free(numberstring);
+        free(orderIdString);
+		free(reasonString);
+        free(refundTimeString);
+		free(priceString);
+        free(numberString);
+		free(remarkString);
 
-        refundnode = refundnode->next;
+        refundNow = refundNow->next;
     }
     // 返回值
-    return goback;
+    return table;
 }
 
 // 查询单个退货

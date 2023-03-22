@@ -127,7 +127,7 @@ int OrderModify(struct Data *data)
             TableRow *row = NewTableRow();
 
             {
-                AppendTableRow(row, "id");
+                AppendTableRow(row, "订单编号");
                 AppendTableRow(row, "商品编号");
                 AppendTableRow(row, "商品名称");
                 AppendTableRow(row, "客户编号");
@@ -139,7 +139,7 @@ int OrderModify(struct Data *data)
 
             {
                 row = NewTableRow();
-                AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "id"));
+                AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "订单编号"));
                 AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "商品编号"));
                 AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "商品名称"));
                 AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "客户编号"));
