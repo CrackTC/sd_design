@@ -59,9 +59,9 @@ char *JoinPath(const char *pathA, const char *pathB)
     return result;
 }
 
-int GenerateId(void *systemList, LinkedList *(*initialize)(), int *idCount)
+int GenerateId(void *systemList, LinkedList *(*initialize)(), int *idCount, int fetched)
 {
-    if (systemList == NULL) {
+    if (fetched == 0) {
         initialize();
     }
     return (*idCount)++;

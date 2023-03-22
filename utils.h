@@ -56,8 +56,9 @@ char *JoinPath(const char *pathA, const char *pathB);
  *     systemList: 系统表格，用于判断是否已初始化idCount
  *     initialize: 指向初始化函数的指针
  *     idCount: id计数器
+ *     fetched: 是否已访问过文件
  * Returns: 生成的id
  * */
-int GenerateId(void *systemList, LinkedList *(*initialize)(), int *idCount);
+int GenerateId(void *systemList, LinkedList *(*initialize)(), int *idCount, int fetched);
 
 #endif
