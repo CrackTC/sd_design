@@ -117,6 +117,7 @@ InventoryEntry *NewInventoryEntry(int itemId, int number, const Time *inboundTim
 
     InventoryEntry *entry = malloc(sizeof(InventoryEntry));
     entry->id = GenerateId(systemList, GetAllInventory, &idCount, fetched);
+    entry->itemId = itemId;
     entry->number = number;
     entry->inboundTime = *inboundTime;
     entry->productionTime = *productionTime;

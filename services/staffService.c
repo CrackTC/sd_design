@@ -294,16 +294,9 @@ Table *DeleteStaff(Table *staff)
             int judge = AppendTable(oriStaff, oriStaffItem); // 判断是否添加入表格成功
 
             /*释放该员工*/
-            int judge0 = RemoveStaff(objectStaff); // 释放这个员工
-            if (judge0 == 0)
-                StaffSave(); // 若释放成功，则保存这个更改
-            else
-            {                                        // 若释放失败，返回一个空表格
-                TableRow *blank_row = NewTableRow(); // 创建一个空的表格行
-                Table *remark_table = NewTable(blank_row, "删除该员工时出错 !");
-                /*创建一个空表格，只有备注说明删除员工出错*/
-                return remark_table; // 返回空表格
-            }
+            RemoveStaff(objectStaff); // 释放这个员工
+            StaffSave(); // 若释放成功，则保存这个更改
+
             /*释放该员工的权限*/
             RemovePermissionEntry(permission);
             PermissionSave();

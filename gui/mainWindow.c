@@ -100,7 +100,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
 
     {
         TableRow *row = NewTableRow();
-        AppendTableRow(row, "id");
+        AppendTableRow(row, "库存编号");
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
         AppendTableRow(row, "数量");

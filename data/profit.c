@@ -22,7 +22,7 @@ struct Profit
 
 Profit *NewProfit(Amount *amount, const char *matter, Time *time)
 {
-    if (amount->value < 0 || matter == NULL || time == NULL)
+    if (matter == NULL || time == NULL)
     {
         return NULL;
     }

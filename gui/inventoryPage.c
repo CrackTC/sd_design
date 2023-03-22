@@ -45,10 +45,10 @@ void InventoryDelete(int ok, void *parameter)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->inventoryTable, rowNow->data, "id");
+            char *id = GetRowItemByColumnName(data->inventoryTable, rowNow->data, "库存编号");
 
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "库存编号");
             Table *table = NewTable(row, NULL);
 
             row = NewTableRow();
@@ -223,7 +223,7 @@ int InventoryModify(struct Data *data)
             AppendTableRow(row, "分");
             Table *table = NewTable(row, "");
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "id"));
+            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "库存编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "商品编号"));
             AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "商品名称"));
             AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "数量"));

@@ -31,9 +31,9 @@ Table *GetStatistics(__attribute__((unused)) Table *a)
     int yuan = GetAmountYuan(&totalamount);
     int jiao = GetAmountJiao(&totalamount);
     int cent = GetAmountCent(&totalamount);
-    char *yuanstring = LongLongToString(yuan);
-    char *jiaostring = LongLongToString(jiao);
-    char *centstring = LongLongToString(cent);
+    char *yuanstring = LongLongToString(abs(yuan));
+    char *jiaostring = LongLongToString(abs(jiao));
+    char *centstring = LongLongToString(abs(cent));
 
     // 标题行
     TableRow *row = NewTableRow();

@@ -121,8 +121,11 @@ Table *AddInventory(Table *input)
                     // 将新的profit结构体插入到链表中 并将插入结果返回到result2中
                     int result2 = AppendProfit(profit1);
                     // 储存账目是否添加成功
-                    if (result2 == 1)
-                        table1 = NewTable(NULL, "货存添加成功且账目添加完成"), ProfitSave();
+                    if (result2 == 0)
+                    {
+                        table1 = NewTable(NULL, "货存添加成功且账目添加完成");
+                        ProfitSave();
+                    }
                     else
                         table1 = NewTable(NULL, " 货存添加成功但账目添加失败");
                 }
@@ -334,7 +337,7 @@ Table *DeleteInventoryById(Table *input)
 
     TableRow *row = GetRowByIndex(input, 1);
     // 将Id由字符转为整数类型
-    int id = change(GetRowItemByColumnName(input, row, "id"));
+    int id = change(GetRowItemByColumnName(input, row, "库存编号"));
     // 如果货存Id已经在货损条目里或订单条目里 那就不允许删除
     if (GetOrdersByInventoryId(id) != NULL || GetLossEntriesByInventoryId(id) != NULL)
     {
@@ -569,7 +572,7 @@ Table *ShowInventory(__attribute__((unused)) Table *input)
 
     // 创建货存信息表格的表头
     TableRow *row = NewTableRow();
-    AppendTableRow(row, "ID");
+    AppendTableRow(row, "库存编号");
     AppendTableRow(row, "商品编号");
     AppendTableRow(row, "商品名称");
     AppendTableRow(row, "数量");
