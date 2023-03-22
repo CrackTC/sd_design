@@ -92,12 +92,13 @@ LinkedList *GetAllJournals()
         {
             while (joinedArgument[endIndex] != '\n' && joinedArgument[endIndex] != '\0')
                 endIndex++;
-            int length = endIndex - startIndex + 1;
-            arguments[argumentIndex] = malloc(length * sizeof(char));
+            int length = endIndex - startIndex;
+            arguments[argumentIndex] = malloc((length + 1) * sizeof(char));
             for (int i = 0; i < length; i++)
             {
                 arguments[argumentIndex][i] = joinedArgument[startIndex + i];
             }
+            arguments[argumentIndex][length] = '\0';
             endIndex++;
             startIndex = endIndex;
             argumentIndex++;

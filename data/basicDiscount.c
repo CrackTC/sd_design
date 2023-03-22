@@ -13,6 +13,7 @@ static const char *itemIdRow = "itemId";
 static const char *ratioRow = "ratio";
 static const char *customerLevelRow = "customerLevel";
 static const char *deadlineRow = "deadline";
+static int fetched = 0;
 static LinkedList *systemList = NULL;
 
 struct BasicDiscount
@@ -30,7 +31,7 @@ BasicDiscount *NewBasicDiscount(int itemId, int ratio, int customerLevel, Time *
         return NULL;
 
     BasicDiscount *discount = malloc(sizeof(BasicDiscount));
-    discount->id = GenerateId(systemList, GetAllBasicDiscounts, &idCount);
+    discount->id = GenerateId(systemList, GetAllBasicDiscounts, &idCount, fetched);
     discount->itemId = itemId;
     discount->ratio = ratio;
     discount->customerLevel = customerLevel;
@@ -45,8 +46,10 @@ void FreeBasicDiscount(BasicDiscount *discount)
 
 LinkedList *GetAllBasicDiscounts()
 {
-    if (systemList != NULL)
+    if (fetched == 1)
         return systemList;
+
+    fetched = 1;
 
     Table *table;
     int result = Unserialize(&table, path);
@@ -84,7 +87,7 @@ LinkedList *GetAllBasicDiscounts()
 
 BasicDiscount *GetBasicDiscountById(int id)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
     {
         GetAllBasicDiscounts();
     }
@@ -103,7 +106,7 @@ BasicDiscount *GetBasicDiscountById(int id)
 
 LinkedList *GetBasicDiscountsByItemId(int itemId)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllBasicDiscounts();
 
     LinkedList *list = NULL;
@@ -123,7 +126,7 @@ LinkedList *GetBasicDiscountsByItemId(int itemId)
 
 LinkedList *GetBasicDiscountsByCustomerLevel(int level)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllBasicDiscounts();
 
     LinkedList *list = NULL;
@@ -188,7 +191,7 @@ void SetBasicDiscountDeadline(BasicDiscount *discount, const Time *value)
 
 int AppendBasicDiscount(BasicDiscount *discount)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
     {
         GetAllBasicDiscounts();
     }

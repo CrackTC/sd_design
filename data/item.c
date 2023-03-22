@@ -14,6 +14,7 @@ static const char *idRow = "id";
 static const char *nameRow = "name";
 static const char *priceRow = "price";
 static const char *shelfLifeRow = "shelfLife";
+static int fetched = 0;
 static LinkedList *systemList;
 
 struct Item
@@ -30,7 +31,7 @@ Item *NewItem(const char *name, Amount *price, Time *shelfLife)
         return NULL;
 
     Item *item = malloc(sizeof(Item));
-    item->id = GenerateId(systemList, GetAllItems, &idCount);
+    item->id = GenerateId(systemList, GetAllItems, &idCount, fetched);
     item->name = CloneString(name);
     item->price = *price;
     item->shelfLife = *shelfLife;
@@ -45,8 +46,10 @@ void FreeItem(Item *item)
 
 LinkedList *GetAllItems()
 {
-    if (systemList != NULL)
+    if (fetched == 1)
         return systemList;
+
+    fetched = 1;
 
     Table *table;
     int result = Unserialize(&table, path);
@@ -85,7 +88,7 @@ LinkedList *GetAllItems()
 
 Item *GetItemById(int id)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllItems();
 
     LinkedList *now = systemList;
@@ -103,7 +106,7 @@ Item *GetItemById(int id)
 
 Item *GetItemByName(const char *name)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllItems();
 
     LinkedList *now = systemList;
@@ -157,7 +160,7 @@ void SetItemShelfLife(Item *item, Time *value)
 
 int AppendItem(Item *item)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
     {
         GetAllItems();
     }

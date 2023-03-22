@@ -13,6 +13,7 @@ static const char *inventoryIdRow = "inventoryId";
 static const char *numberRow = "number";
 static const char *reasonRow = "reason";
 static const char *timeRow = "time";
+static int fetched = 0;
 static LinkedList *systemList = NULL;
 
 struct LossEntry
@@ -30,7 +31,7 @@ LossEntry *NewLossEntry(int inventoryId, int number, const char *reason, Time *t
         return NULL;
 
     LossEntry *entry = malloc(sizeof(LossEntry));
-    entry->id = GenerateId(systemList, GetAllLoss, &idCount);
+    entry->id = GenerateId(systemList, GetAllLoss, &idCount, fetched);
     entry->inventoryId = inventoryId;
     entry->number = number;
     entry->reason = CloneString(reason);
@@ -47,8 +48,10 @@ void FreeLossEntry(LossEntry *entry)
 
 LinkedList *GetAllLoss()
 {
-    if (systemList != NULL)
+    if (fetched == 1)
         return systemList;
+
+    fetched = 1;
 
     Table *table;
     int result = Unserialize(&table, path);
@@ -86,7 +89,7 @@ LinkedList *GetAllLoss()
 
 LossEntry *GetLossEntryById(int id)
 {
-    if (systemList == NULL) {
+    if (fetched == 0) {
         GetAllLoss();
     }
 
@@ -103,7 +106,7 @@ LossEntry *GetLossEntryById(int id)
 
 LinkedList *GetLossEntriesByInventoryId(int inventoryId)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllLoss();
 
     LinkedList *list = NULL;
@@ -169,7 +172,7 @@ void SetLossEntryTime(LossEntry *entry, Time *value)
 
 int AppendLossEntry(LossEntry *entry)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
     {
         GetAllLoss();
     }

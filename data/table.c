@@ -61,15 +61,22 @@ TableRow *CloneRow(const TableRow *source)
 
 Table *NewTable(TableRow *title, const char *remark)
 {
-    if (title == NULL || title->columnCount == 0)
+    if (title == NULL && remark == NULL)
     {
         return NULL;
     }
     Table *table = malloc(sizeof(Table));
     table->remark = CloneString(remark);
-    table->rows = malloc(sizeof(LinkedList));
-    table->rows->data = title;
-    table->rows->next = NULL;
+    if (title != NULL)
+    {
+        table->rows = malloc(sizeof(LinkedList));
+        table->rows->data = title;
+        table->rows->next = NULL;
+    }
+    else
+    {
+        table->rows = NULL;
+    }
     return table;
 }
 

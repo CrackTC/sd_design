@@ -14,6 +14,7 @@ static const char *numberRow = "number";
 static const char *inboundTimeRow = "inboundTime";
 static const char *productionTimeRow = "productionTime";
 static const char *inboundUnitPriceRow = "inboundUnitPrice";
+static int fetched = 0;
 static LinkedList *systemList = NULL;
 
 struct InventoryEntry
@@ -28,8 +29,10 @@ struct InventoryEntry
 
 LinkedList *GetAllInventory()
 {
-    if (systemList != NULL)
+    if (fetched == 1)
         return systemList;
+
+    fetched = 1;
 
     Table *table;
     int result = Unserialize(&table, path);
@@ -70,7 +73,7 @@ LinkedList *GetAllInventory()
 
 InventoryEntry *GetInventoryById(int id)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllInventory();
 
     LinkedList *now = systemList;
@@ -88,7 +91,7 @@ InventoryEntry *GetInventoryById(int id)
 
 LinkedList *GetInventoryByItemId(int itemId)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllInventory();
 
     LinkedList *list = NULL;
@@ -113,7 +116,7 @@ InventoryEntry *NewInventoryEntry(int itemId, int number, const Time *inboundTim
         return NULL;
 
     InventoryEntry *entry = malloc(sizeof(InventoryEntry));
-    entry->id = GenerateId(systemList, GetAllInventory, &idCount);
+    entry->id = GenerateId(systemList, GetAllInventory, &idCount, fetched);
     entry->number = number;
     entry->inboundTime = *inboundTime;
     entry->productionTime = *productionTime;
@@ -183,7 +186,7 @@ void SetInventoryEntryInboundUnitPrice(InventoryEntry *entry, const Amount *valu
 
 int AppendInventoryEntry(InventoryEntry *entry)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
     {
         GetAllInventory();
     }

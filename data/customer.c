@@ -13,6 +13,7 @@ static const char *idRow = "id";
 static const char *levelRow = "level";
 static const char *nameRow = "name";
 static const char *contactRow = "contact";
+static int fetched = 0;
 static LinkedList *systemList = NULL;
 
 struct Customer
@@ -29,7 +30,7 @@ Customer *NewCustomer(int level, char *name, char *contact)
         return NULL;
 
     Customer *customer = malloc(sizeof(Customer));
-    customer->id = GenerateId(systemList, GetAllCustomers, &idCount);
+    customer->id = GenerateId(systemList, GetAllCustomers, &idCount, fetched);
     customer->level = level;
     customer->name = CloneString(name);
     customer->contact = CloneString(contact);
@@ -45,8 +46,10 @@ void FreeCustomer(Customer *customer)
 
 LinkedList *GetAllCustomers()
 {
-    if (systemList != NULL)
+    if (fetched == 1)
         return systemList;
+
+    fetched = 1;
 
     Table *table;
     int result = Unserialize(&table, path);
@@ -85,7 +88,7 @@ LinkedList *GetAllCustomers()
 
 Customer *GetCustomerById(int id)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllCustomers();
 
     LinkedList *now = systemList;
@@ -103,7 +106,7 @@ Customer *GetCustomerById(int id)
 
 LinkedList *GetCustomersByLevel(int level)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllCustomers();
 
     LinkedList *list = NULL;
@@ -123,7 +126,7 @@ LinkedList *GetCustomersByLevel(int level)
 
 LinkedList *GetCustomersByName(const char *name)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
     {
         GetAllCustomers();
     }
@@ -182,7 +185,7 @@ void SetCustomerContact(Customer *customer, const char *contact)
 
 int AppendCustomer(Customer *customer)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
     {
         GetAllCustomers();
     }

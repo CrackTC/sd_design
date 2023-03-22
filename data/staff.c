@@ -16,6 +16,7 @@ static const char *enableRow = "enable";
 static const char *nameRow = "name";
 static const char *passwordRow = "password";
 static const char *contactRow = "contact";
+static int fetched = 0;
 static LinkedList *systemList = NULL;
 
 struct Staff {
@@ -32,7 +33,7 @@ Staff *NewStaff(int isEnabled, const char *name, const char *password, const cha
     }
 
     Staff *staff = malloc(sizeof(Staff));
-    staff->id = GenerateId(systemList, GetAllStaff, &idCount);
+    staff->id = GenerateId(systemList, GetAllStaff, &idCount, fetched);
     staff->isEnabled = isEnabled;
     staff->name = CloneString(name);
     staff->password = CloneString(password);
@@ -49,8 +50,10 @@ void FreeStaff(Staff *staff) {
 }
 
 LinkedList *GetAllStaff() {
-    if (systemList != NULL)
+    if (fetched == 1)
         return systemList;
+
+    fetched = 1;
 
     Table *table;
     int result = Unserialize(&table, path);
@@ -105,7 +108,7 @@ LinkedList *GetAllStaff() {
 }
 
 Staff *GetStaffById(int id) {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllStaff();
 
     LinkedList *now = systemList;
@@ -162,7 +165,7 @@ void SetStaffContact(Staff *staff, const char *value) {
 }
 
 int AppendStaff(Staff *staff) {
-    if (systemList == NULL) {
+    if (fetched == 0) {
         GetAllStaff();
     }
     if (staff == NULL) {

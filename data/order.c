@@ -16,6 +16,7 @@ static const char *numberRow = "number";
 static const char *customerIdRow = "customerId";
 static const char *timeRow = "time";
 static const char *amountRow = "amount";
+static int fetched = 0;
 static LinkedList *systemList = NULL;
 
 struct Order
@@ -34,7 +35,7 @@ Order *NewOrder(int inventoryId, int number, int customerId, Time *time, Amount 
         return NULL;
 
     Order *order = malloc(sizeof(Order));
-    order->id = GenerateId(systemList, GetAllOrders, &idCount);
+    order->id = GenerateId(systemList, GetAllOrders, &idCount, fetched);
     order->inventoryId = inventoryId;
     order->number = number;
     order->customerId = customerId;
@@ -50,8 +51,10 @@ void FreeOrder(Order *order)
 
 LinkedList *GetAllOrders()
 {
-    if (systemList != NULL)
+    if (fetched == 1)
         return systemList;
+
+    fetched = 1;
 
     Table *table;
     int result = Unserialize(&table, path);
@@ -92,7 +95,7 @@ LinkedList *GetAllOrders()
 
 Order *GetOrderById(int id)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllOrders();
 
     LinkedList *now = systemList;
@@ -110,7 +113,7 @@ Order *GetOrderById(int id)
 
 LinkedList *GetOrdersByCustomerId(int customerId)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllOrders();
 
     LinkedList *list = NULL;
@@ -130,7 +133,7 @@ LinkedList *GetOrdersByCustomerId(int customerId)
 
 LinkedList *GetOrdersByInventoryId(int inventoryId)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
         GetAllOrders();
 
     LinkedList *list = NULL;
@@ -205,7 +208,7 @@ void SetOrderAmount(Order *order, Amount *value)
 
 int AppendOrder(Order *order)
 {
-    if (systemList == NULL)
+    if (fetched == 0)
     {
         GetAllOrders();
     }
