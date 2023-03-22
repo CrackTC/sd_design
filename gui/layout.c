@@ -63,5 +63,6 @@ LinkedList *NewCheckList()
     LinkedList *result = malloc(sizeof(LinkedList));
     result->data = malloc(sizeof(int));
     *(int *)result->data = 0;
+    result->next = NULL;
     return result;
 }

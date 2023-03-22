@@ -1,11 +1,30 @@
 #include "utils.h"
+#include "data/amount.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
 
+int IntegerStringLength(long long x)
+{
+    return snprintf(NULL, 0, "%lld", x);
+}
+
+char *AmountToString(const Amount *amount)
+{
+    int yuan = GetAmountYuan(amount);
+    int jiao = GetAmountJiao(amount);
+    int cent = GetAmountCent(amount);
+
+    int len = IntegerStringLength(yuan) + strlen(".00元") + 1;
+
+    char *result = malloc(len);
+    sprintf(result, "%d.%1d%1d元", yuan, abs(jiao), abs(cent));
+    return result;
+}
+
 char *LongLongToString(long long x)
 {
-    int length = snprintf(NULL, 0, "%lld", x);
+    int length = IntegerStringLength(x);
     char *str = malloc(length + 1);
     snprintf(str, length + 1, "%lld", x);
     return str;

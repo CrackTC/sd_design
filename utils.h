@@ -8,11 +8,21 @@
 #define UTILS_H
 
 #include "data/linkedList.h"
+#include "data/amount.h"
 #include <stdlib.h>
 #include <string.h>
 
 /*
- * Name: IntToString
+ * Name: IntegerStringLength
+ * Description: 获取整数字符串表示的字符数
+ * Arguments:
+ *     x: 要获取字符数的整数
+ * Returns: 整数的字符串表示的字符数
+ * */
+int IntegerStringLength(long long x);
+
+/*
+ * Name: LongLongToString
  * Description: 将整数转换为对应的字符串表示
  * Arguments:
  *     x: 要转换为字符串的整数
@@ -20,6 +30,16 @@
  * Remarks: 返回的字符串使用完毕后需手动释放空间
  * */
 char *LongLongToString(long long x);
+
+/*
+ * Name: AmountToString
+ * Description: 将金额转换为对应的字符串表示
+ * Arguments:
+ *     amount: 要转换为字符串的金额
+ * Returns: 金额的字符串表示
+ * Remarks: 返回的字符串使用完毕后需手动释放空间
+ * */
+char *AmountToString(const Amount *amount);
 
 /*
  * Name: CloneString

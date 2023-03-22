@@ -20,27 +20,6 @@ int change(const char *q)
     return a;
 }
 
-// 将数据Amount字符化
-void AmountToString(const Amount *amount, char *dest)
-{
-    int yuan = GetAmountYuan(amount);
-    int jiao = GetAmountJiao(amount);
-    int cent = GetAmountCent(amount);
-
-    char *yuanString = LongLongToString(yuan);
-    char *jiaoString = LongLongToString(jiao);
-    char *centString = LongLongToString(cent);
-
-    strcpy(dest, yuanString);
-    strcat(dest, ".");
-    strcat(dest, jiaoString);
-    strcat(dest, centString);
-    strcat(dest, "元");
-    free(yuanString);
-    free(jiaoString);
-    free(centString);
-}
-
 // 从表格中获取货存系统所需要的信息
 void GetInventoryInformationFromTable(Table *input, int *itemId, int *number, int *y1, int *m1, int *d1, int *h1,
                                       int *min1, int *s1, int *y2, int *m2, int *d2, int *h2, int *min2, int *s2,
@@ -614,10 +593,8 @@ Table *ShowInventory(__attribute__((unused)) Table *input)
         free(AppendTableRow(row, TimeToString(GetTimeInfo(&productionTime, 1))));
 
         // 将价格信息字符化
-        Amount unitprice = GetInventoryEntryInboundUnitPrice(entry);
-        char t[30];
-        AmountToString(&unitprice, t);
-        AppendTableRow(row, t);
+        Amount unitPrice = GetInventoryEntryInboundUnitPrice(entry);
+        free(AppendTableRow(row, AmountToString(&unitPrice)));
         AppendTable(table, row);
         head = head->next;
     }
@@ -667,14 +644,12 @@ Table *ShowItem(__attribute__((unused)) Table *input)
         AppendTableRow(row, GetItemName(item));
 
         // 得到商品的售价
-        Amount saleprice = GetItemPrice(item);
-        char t[30];
-        AmountToString(&saleprice, t);
-        AppendTableRow(row, t);
+        Amount salePrice = GetItemPrice(item);
+        free(AppendTableRow(row, AmountToString(&salePrice)));
 
         // 得到商品的保质期
-        Time shelflife = GetItemShelfLife(item);
-        free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelflife, 0))));
+        Time shelfLife = GetItemShelfLife(item);
+        free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelfLife, 0))));
 
         AppendTable(table, row);
         head = head->next;
@@ -771,10 +746,7 @@ TableRow *ShowSingleInventoryByOperation(InventoryEntry *entry)
 
     // 获取该批货物的进价
     Amount unitPrice = GetInventoryEntryInboundUnitPrice(entry);
-    char unitPriceString[15];
-    // 将金钱字符化
-    AmountToString(&unitPrice, unitPriceString);
-    AppendTableRow(row, unitPriceString);
+    free(AppendTableRow(row, AmountToString(&unitPrice)));
 
     return row;
 }
@@ -870,9 +842,7 @@ TableRow *ShowSingleItemByOperation(Item *item)
 
     // 写入商品售价
     Amount price = GetItemPrice(item);
-    char priceString[15];
-    AmountToString(&price, priceString);
-    AppendTableRow(row, priceString);
+    free(AppendTableRow(row, AmountToString(&price)));
 
     // 得到商品的保质期
     Time shelfLife = GetItemShelfLife(item);
