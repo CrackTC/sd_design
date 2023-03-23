@@ -31,7 +31,7 @@ typedef struct RefundEntry RefundEntry;
  *          否则，返回NULL
  * */
 RefundEntry *NewRefundEntry(int orderId, const char *reason, Time *time, Amount *refundAmount, int number,
-                            const char *remark);
+        const char *remark);
 
 /*
  * Name: FreeRefundEntry
@@ -67,10 +67,15 @@ RefundEntry *GetRefundByOrderId(int orderId);
  * Returns: 对应的值
  * */
 int GetRefundEntryOrderId(const RefundEntry *entry);
+
 const char *GetRefundEntryReason(const RefundEntry *entry);
+
 Time GetRefundEntryTime(const RefundEntry *entry);
+
 Amount GetRefundEntryAmount(const RefundEntry *entry);
+
 int GetRefundEntryNumber(const RefundEntry *entry);
+
 const char *GetRefundEntryRemark(const RefundEntry *entry);
 
 /*
@@ -81,10 +86,15 @@ const char *GetRefundEntryRemark(const RefundEntry *entry);
  *     value: 要设置成的值
  * */
 void SetRefundEntryOrderId(RefundEntry *entry, int value);
+
 void SetRefundEntryReason(RefundEntry *entry, const char *value);
+
 void SetRefundEntryTime(RefundEntry *entry, Time *value);
+
 void SetRefundEntryAmount(RefundEntry *entry, Amount *value);
+
 void SetRefundEntryNumber(RefundEntry *entry, int value);
+
 void SetRefundEntryRemark(RefundEntry *entry, const char *remark);
 
 /*

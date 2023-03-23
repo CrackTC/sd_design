@@ -31,18 +31,20 @@ static int SendRequest(struct Data *data)
     TableRow *row = NewTableRow();
     if (data->modify)
     {
-        AppendTableRow(row, "itemid");
+        AppendTableRow(row, "订单编号");
     }
-    AppendTableRow(row, "customerid");
-    AppendTableRow(row, "number");
+    AppendTableRow(row, "商品编号");
+    AppendTableRow(row, "客户编号");
+    AppendTableRow(row, "购买数量");
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
     TableRow *sourceRow = GetRowByIndex(data->order, 1);
     if (data->modify)
     {
-        AppendTableRow(row, GetRowItemByColumnName(data->order, sourceRow, "id"));
+        AppendTableRow(row, GetRowItemByColumnName(data->order, sourceRow, "订单编号"));
     }
+    AppendTableRow(row, GetRowItemByColumnName(data->order, sourceRow, "商品编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->order, sourceRow, "客户编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->order, sourceRow, "购买数量"));
     AppendTable(request, row);
@@ -77,7 +79,7 @@ static int SendRequest(struct Data *data)
     return 1;
 }
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -110,8 +112,8 @@ void OrderEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->order, dataRow, "商品编号"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->order, dataRow, "商品编号"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -126,8 +128,8 @@ void OrderEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->order, dataRow, "商品名称"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->order, dataRow, "商品名称"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -142,8 +144,8 @@ void OrderEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->order, dataRow, "客户编号"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->order, dataRow, "客户编号"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -158,8 +160,8 @@ void OrderEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->order, dataRow, "客户姓名"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->order, dataRow, "客户姓名"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -174,8 +176,8 @@ void OrderEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->order, dataRow, "购买数量"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->order, dataRow, "购买数量"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }

@@ -53,7 +53,9 @@ LinkedList *GetAllProfits();
  * Returns: 对应的值
  * */
 Amount GetProfitAmount(const Profit *profit);
+
 const char *GetProfitMatter(const Profit *profit);
+
 Time GetProfitTime(const Profit *profit);
 
 /*
@@ -64,7 +66,9 @@ Time GetProfitTime(const Profit *profit);
  *     value: 要设置成的值
  * */
 void SetProfitAmount(Profit *profit, Amount *value);
+
 void SetProfitMatter(Profit *profit, const char *value);
+
 void SetProfitTime(Profit *profit, Time *value);
 
 /*

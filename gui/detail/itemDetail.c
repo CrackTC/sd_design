@@ -21,11 +21,11 @@ void ItemDetailLayout(struct nk_context *context, Window *window)
         nk_layout_row_dynamic(context, 0, 1);
         nk_label(context, "商品编号", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->item, dataRow, "商品编号"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->item, dataRow, "商品编号"), 512, nk_filter_default);
 
         nk_label(context, "商品名称", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->item, dataRow, "商品名称"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->item, dataRow, "商品名称"), 512, nk_filter_default);
 
 //        nk_layout_row_dynamic(context, 0, 1);
 //        nk_label(context, "数量", NK_TEXT_CENTERED);
@@ -34,11 +34,11 @@ void ItemDetailLayout(struct nk_context *context, Window *window)
 
         nk_label(context, "保质期", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->item, dataRow, "保质期"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->item, dataRow, "保质期"), 512, nk_filter_default);
 
         nk_label(context, "售价", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->item, dataRow, "售价"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->item, dataRow, "售价"), 512, nk_filter_default);
 
         if (nk_button_label(context, "确定"))
         {

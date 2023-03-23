@@ -76,7 +76,7 @@ void ItemAdd(struct Data *data)
 {
     TableRow *row = NewTableRow();
     AppendTableRow(row, "商品名称");
-    AppendTableRow(row, "日");
+    AppendTableRow(row, "天");
     AppendTableRow(row, "时");
     AppendTableRow(row, "元");
     AppendTableRow(row, "角");
@@ -107,9 +107,9 @@ int ItemModify(struct Data *data)
             TableRow *row = NewTableRow();
 
             {
-                AppendTableRow(row, "id");
+                AppendTableRow(row, "商品编号");
                 AppendTableRow(row, "商品名称");
-                AppendTableRow(row, "日");
+                AppendTableRow(row, "天");
                 AppendTableRow(row, "时");
                 AppendTableRow(row, "元");
                 AppendTableRow(row, "角");
@@ -162,7 +162,7 @@ void ItemDelete(int ok, void *parameter)
     {
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：删除商品");
-		return;
+        return;
     }
 
     LinkedList *now = data->itemCheckList->next;
@@ -254,7 +254,7 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
             if (nk_style_push_font(context, &fontSmall->handle))
             {
                 nk_combobox(context, data->itemProperties, columnCount + 1, &data->itemPropertySelected, 35,
-                            nk_vec2(200, 400));
+                        nk_vec2(200, 400));
                 nk_style_pop_font(context);
             }
         }
@@ -267,8 +267,8 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
         nk_layout_row_push(context, 200);
         {
             nk_edit_string_zero_terminated(context,
-                                           (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
-                                           data->itemValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
+                    (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
+                    data->itemValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
         }
 
         nk_layout_row_push(context, 100);
@@ -365,7 +365,7 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
         nk_widget(&space, context);
         struct nk_command_buffer *canvas = nk_window_get_canvas(context);
         nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                       nk_rgb(100, 100, 100));
+                nk_rgb(100, 100, 100));
     }
 
     nk_layout_row_dynamic(context, nk_window_get_height(context) - 285, 1);
@@ -375,8 +375,8 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
             if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
             {
                 TableLayout(context, data->itemTable, data->itemCheckList,
-                            data->itemPropertySelected == 0 ? NULL : data->itemProperties[data->itemPropertySelected],
-                            data->itemValueBuffer);
+                        data->itemPropertySelected == 0 ? NULL : data->itemProperties[data->itemPropertySelected],
+                        data->itemValueBuffer);
                 nk_group_end(context);
             }
 

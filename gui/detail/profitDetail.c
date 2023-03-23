@@ -22,18 +22,18 @@ void ProfitDetailLayout(struct nk_context *context, Window *window)
 
         nk_label(context, "收支", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->profit, dataRow, "收支"), 512,
-                                       nk_filter_default);
+                GetRowItemByColumnName(data->profit, dataRow, "收支"), 512,
+                nk_filter_default);
 
         nk_label(context, "事项", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->profit, dataRow, "事项"), 512,
-                                       nk_filter_default);
+                GetRowItemByColumnName(data->profit, dataRow, "事项"), 512,
+                nk_filter_default);
 
         nk_label(context, "时间", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->profit, dataRow, "时间"), 512,
-                                       nk_filter_default);
+                GetRowItemByColumnName(data->profit, dataRow, "时间"), 512,
+                nk_filter_default);
 
         if (nk_button_label(context, "确定"))
         {

@@ -89,14 +89,17 @@ LinkedList *GetAllLoss()
 
 LossEntry *GetLossEntryById(int id)
 {
-    if (fetched == 0) {
+    if (fetched == 0)
+    {
         GetAllLoss();
     }
 
     LinkedList *now = systemList;
-    while (now != NULL) {
+    while (now != NULL)
+    {
         LossEntry *entry = now->data;
-        if (entry->id == id) {
+        if (entry->id == id)
+        {
             return entry;
         }
         now = now->next;

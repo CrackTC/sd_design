@@ -16,7 +16,8 @@ struct Data
     char *message;
     int modify;
     Window *window;
-    void (*messageCallback)(int, void*);
+
+    void (*messageCallback)(int, void *);
 };
 
 static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
@@ -48,27 +49,27 @@ static void SendRequest(struct Data *data)
     TableRow *row = NewTableRow();
     if (data->modify)
     {
-        AppendTableRow(row, "id");
+        AppendTableRow(row, "商品编号");
     }
-    AppendTableRow(row, "name");
-    AppendTableRow(row, "yuan");
-    AppendTableRow(row, "jiao");
-    AppendTableRow(row, "cent");
-    AppendTableRow(row, "d1");
-    AppendTableRow(row, "h1");
+    AppendTableRow(row, "商品名称");
+    AppendTableRow(row, "元");
+    AppendTableRow(row, "角");
+    AppendTableRow(row, "分");
+    AppendTableRow(row, "天");
+    AppendTableRow(row, "时");
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
     TableRow *sourceRow = GetRowByIndex(data->item, 1);
     if (data->modify)
     {
-        AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "id"));
+        AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "商品编号"));
     }
     AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "商品名称"));
     AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "元"));
     AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "角"));
     AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "分"));
-    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "日"));
+    AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "天"));
     AppendTableRow(row, GetRowItemByColumnName(data->item, sourceRow, "时"));
     AppendTable(request, row);
 
@@ -128,8 +129,8 @@ void ItemEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "商品名称"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->item, dataRow, "商品名称"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -145,15 +146,15 @@ void ItemEditLayout(struct nk_context *context, Window *window)
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "日"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->item, dataRow, "天"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "天", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "时"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->item, dataRow, "时"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "时", NK_TEXT_CENTERED);
 
@@ -171,22 +172,22 @@ void ItemEditLayout(struct nk_context *context, Window *window)
 
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "元"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->item, dataRow, "元"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "元", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "角"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->item, dataRow, "角"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "角", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->item, dataRow, "分"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->item, dataRow, "分"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "分", NK_TEXT_CENTERED);
 

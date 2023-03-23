@@ -79,6 +79,7 @@ int *ParsePermission(const char *permissionString);
  * Returns: 对应的值
  * */
 int GetPermissionEntryStaffId(const PermissionEntry *entry);
+
 const int *GetPermissionEntryPermissions(const PermissionEntry *entry);
 
 /*

@@ -21,6 +21,7 @@ static void error_callback(int e, const char *d)
 }
 
 LinkedList *windows;
+
 int ShouldExit(struct nk_context *context)
 {
     LinkedList *now = windows;
@@ -61,7 +62,7 @@ struct nk_font *fontLarge;
 struct nk_font *fontMedium;
 struct nk_font *fontSmall;
 
-int main(int argc, char **argv)
+int main(__attribute__((unused)) int argc, char **argv)
 {
     char *path = GetDirectory(argv[0]);
     executablePath = path;
@@ -69,7 +70,7 @@ int main(int argc, char **argv)
     int window_width = 1920;
     int window_height = 1080;
 
-    struct nk_glfw glfw = {0};
+    struct nk_glfw glfw = { 0 };
     static GLFWwindow *window;
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
@@ -168,8 +169,8 @@ int main(int argc, char **argv)
             else
             {
                 if (nk_begin(context, ((Window *)now->data)->title, nk_rect(0, 0, 1000, 800),
-                             NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | NK_WINDOW_MOVABLE |
-                                 NK_WINDOW_SCALABLE))
+                        NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | NK_WINDOW_MOVABLE |
+                        NK_WINDOW_SCALABLE))
                 {
                     ((Window *)now->data)->layoutFunc(context, now->data);
                 }

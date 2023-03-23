@@ -73,8 +73,11 @@ Item *GetItemByName(const char *name);
  * Returns: 对应的值
  * */
 int GetItemId(const Item *item);
+
 char *GetItemName(const Item *item);
+
 Amount GetItemPrice(const Item *item);
+
 Time GetItemShelfLife(const Item *item);
 
 /*
@@ -85,7 +88,9 @@ Time GetItemShelfLife(const Item *item);
  *     value: 要设置成的值
  * */
 void SetItemName(Item *item, const char *value);
+
 void SetItemPrice(Item *item, Amount *value);
+
 void SetItemShelfLife(Item *item, Time *value);
 
 /*

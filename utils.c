@@ -32,7 +32,8 @@ char *LongLongToString(long long x)
 
 char *CloneString(const char *str)
 {
-    if (str == NULL) {
+    if (str == NULL)
+    {
         return NULL;
     }
     int length = strlen(str);
@@ -80,7 +81,8 @@ char *JoinPath(const char *pathA, const char *pathB)
 
 int GenerateId(void *systemList, LinkedList *(*initialize)(), int *idCount, int fetched)
 {
-    if (fetched == 0) {
+    if (fetched == 0)
+    {
         initialize();
     }
     return (*idCount)++;

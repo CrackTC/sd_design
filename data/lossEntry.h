@@ -71,9 +71,13 @@ LinkedList *GetLossEntriesByInventoryId(int inventoryId);
  * Returns: 对应的值
  * */
 int GetLossEntryId(const LossEntry *entry);
+
 int GetLossEntryInventoryId(const LossEntry *entry);
+
 int GetLossEntryNumber(const LossEntry *entry);
+
 char *GetLossEntryReason(const LossEntry *entry);
+
 Time GetLossEntryTime(const LossEntry *entry);
 
 /*
@@ -84,8 +88,11 @@ Time GetLossEntryTime(const LossEntry *entry);
  *     value: 要设置成的值
  * */
 void SetLossEntryInventoryId(LossEntry *entry, int value);
+
 void SetLossEntryNumber(LossEntry *entry, int value);
+
 void SetLossEntryReason(LossEntry *entry, char *value);
+
 void SetLossEntryTime(LossEntry *entry, Time *value);
 
 /*

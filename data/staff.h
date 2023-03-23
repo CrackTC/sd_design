@@ -12,6 +12,7 @@
  * Description: 表示一个员工
  * */
 #include "linkedList.h"
+
 typedef struct Staff Staff;
 
 /*
@@ -61,8 +62,11 @@ Staff *GetStaffById(int id);
  * Returns: 对应的信息
  * */
 int GetStaffId(const Staff *staff);
+
 int GetStaffAvailability(const Staff *staff);
+
 const char *GetStaffName(const Staff *staff);
+
 const char *GetStaffContact(const Staff *staff);
 
 /*
@@ -84,8 +88,11 @@ int VerifyStaffPassword(const Staff *staff, const char *givenPassword);
  *     value: 要设置成的值
  * */
 void SetStaffAvailability(Staff *staff, int value);
+
 void SetStaffName(Staff *staff, const char *value);
+
 void SetStaffPassword(Staff *staff, const char *value);
+
 void SetStaffContact(Staff *staff, const char *value);
 
 /*

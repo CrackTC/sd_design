@@ -1,5 +1,6 @@
 #ifndef INVENTORY_SERVICE_H
 #define INVENTORY_SERVICE_H
+
 #include "../data/table.h"
 
 /*
@@ -136,6 +137,6 @@ Table *ShowItem(__attribute__((unused)) Table *input);
  * input：NULL
  * return:全部货损信息的表格
  **/
-Table *ShowLossInventory(Table *input); // 展示所有的货损信息
+Table *ShowLossInventory(__attribute__((unused)) Table *input); // 展示所有的货损信息
 
 #endif

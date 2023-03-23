@@ -22,29 +22,29 @@ void RefundDetailLayout(struct nk_context *context, Window *window)
 
         nk_label(context, "订单编号", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->refund, dataRow, "订单编号"), 512,
-                                       nk_filter_default);
+                GetRowItemByColumnName(data->refund, dataRow, "订单编号"), 512,
+                nk_filter_default);
 
         nk_label(context, "退款原因", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->refund, dataRow, "退款原因"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->refund, dataRow, "退款原因"), 512, nk_filter_default);
 
         nk_label(context, "时间", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->refund, dataRow, "时间"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->refund, dataRow, "时间"), 512, nk_filter_default);
 
         nk_label(context, "退款", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->refund, dataRow, "退款"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->refund, dataRow, "退款"), 512, nk_filter_default);
 
         nk_label(context, "退回数目", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->refund, dataRow, "退回数目"), 512,
-                                       nk_filter_default);
+                GetRowItemByColumnName(data->refund, dataRow, "退回数目"), 512,
+                nk_filter_default);
 
         nk_label(context, "备注", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->refund, dataRow, "备注"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->refund, dataRow, "备注"), 512, nk_filter_default);
 
         if (nk_button_label(context, "确定"))
         {

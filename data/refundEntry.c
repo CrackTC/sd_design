@@ -26,7 +26,7 @@ struct RefundEntry
 };
 
 RefundEntry *NewRefundEntry(int orderId, const char *reason, Time *time, Amount *refundAmount, int number,
-                            const char *remark)
+        const char *remark)
 {
     if (orderId < 0 || reason == NULL || time == NULL || refundAmount == NULL || refundAmount->value < 0 ||
         number < 0 || remark == NULL)
@@ -128,6 +128,7 @@ Time GetRefundEntryTime(const RefundEntry *entry)
 {
     return entry->time;
 }
+
 Amount GetRefundEntryAmount(const RefundEntry *entry)
 {
     return entry->refundAmount;

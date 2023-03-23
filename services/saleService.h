@@ -50,7 +50,8 @@ Table *UpdateRefund(Table *a);
  *      有退款条目：   id   reason   time   yuan   jiao   cent   number   remark
  *      无退款条目：备注返回“无退款条目”
  * * * * * */
-Table *GetAllRefund(Table *a);
+Table *GetAllRefund(__attribute__((unused)) Table *a);
+
 /*  订单id    id
  *
  *  返回值:
@@ -67,7 +68,8 @@ Table *GetSingleRefund(Table *a);
  *      有订单条目：   orderid   itemname   customerid   number   yuan   jiao   cent   time   inventoryid
  *      无订单条目：备注返回“无订单条目”
  * * * * * */
-Table *GetAllOrder(Table *a);
+Table *GetAllOrder(__attribute__((unused)) Table *a);
+
 /*  订单id    id
  *
  *  返回值：
@@ -127,7 +129,7 @@ Table *UpdateDiscount(Table *a);
  *
  *  无输出
  * * * * * */
-Table *ClearOutdateDiscount(Table *a);
+Table *ClearOutdateDiscount(__attribute__((unused)) Table *a);
 
 //查询折扣
 
@@ -137,7 +139,8 @@ Table *ClearOutdateDiscount(Table *a);
  *      有折扣：   id   itemname  ratio   customerlevel   deadline
  *      无折扣：备注返回“无折扣”
  */
-Table *GetAllDiscount(Table *a);
+Table *GetAllDiscount(__attribute__((unused)) Table *a);
+
 /*  折扣id    id
  *
  *  返回值：
@@ -157,6 +160,7 @@ Table *GetSingleDiscount(Table *a);
  *      失败：备注返回“不存在该客户” 或 “不存在该商品"
  */
 Table *AddOrder(Table *a);
+
 /*  商品id    itemid
  *  客户id    customerid
  *  商品数量  number

@@ -120,7 +120,7 @@ PermissionEntry *GetPermissionEntryByStaffId(int staffId)
         {
             return entry;
         }
-		now = now->next;
+        now = now->next;
     }
     return NULL;
 }
@@ -137,7 +137,7 @@ const int *GetPermissionEntryPermissions(const PermissionEntry *entry)
 
 void SetPermissionEntryPermissions(PermissionEntry *entry, Operation operation, int allow)
 {
-    if ((allow == 0 || allow == 1) && operation >= 0 && operation < OPERATION_COUNT)
+    if ((allow == 0 || allow == 1) && operation < OPERATION_COUNT)
     {
         entry->hasPermission[operation] = allow;
     }

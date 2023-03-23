@@ -31,24 +31,24 @@ static int SendRequest(struct Data *data)
     TableRow *row = NewTableRow();
     if (data->modify)
     {
-        AppendTableRow(row, "discountid");
+        AppendTableRow(row, "折扣编号");
     }
-    AppendTableRow(row, "itemid");
-    AppendTableRow(row, "ratio");
-    AppendTableRow(row, "level");
-    AppendTableRow(row, "year");
-    AppendTableRow(row, "month");
-    AppendTableRow(row, "day");
-    AppendTableRow(row, "hour");
-    AppendTableRow(row, "minute");
-    AppendTableRow(row, "second");
+    AppendTableRow(row, "商品编号");
+    AppendTableRow(row, "折扣比率");
+    AppendTableRow(row, "客户等级");
+    AppendTableRow(row, "年");
+    AppendTableRow(row, "月");
+    AppendTableRow(row, "日");
+    AppendTableRow(row, "时");
+    AppendTableRow(row, "分");
+    AppendTableRow(row, "秒");
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
     TableRow *sourceRow = GetRowByIndex(data->discount, 1);
     if (data->modify)
     {
-        AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "id"));
+        AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "折扣编号"));
     }
     AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "商品编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->discount, sourceRow, "折扣比率"));
@@ -70,7 +70,7 @@ static int SendRequest(struct Data *data)
     else
     {
         AddJournal(request, data->id, OP_ADD_DISCOUNT);
-        response = UpdateDiscount(request);
+        response = AddDiscount(request);
     }
     FreeTable(request);
 
@@ -124,8 +124,8 @@ void DiscountEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->discount, dataRow, "商品编号"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->discount, dataRow, "商品编号"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -140,8 +140,8 @@ void DiscountEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->discount, dataRow, "商品名称"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->discount, dataRow, "商品名称"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -156,8 +156,8 @@ void DiscountEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->discount, dataRow, "折扣比率"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->discount, dataRow, "折扣比率"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -172,8 +172,8 @@ void DiscountEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->discount, dataRow, "客户等级"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->discount, dataRow, "客户等级"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -189,43 +189,43 @@ void DiscountEditLayout(struct nk_context *context, Window *window)
 
             nk_layout_row_push(context, 70);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->discount, dataRow, "年"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->discount, dataRow, "年"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "年", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->discount, dataRow, "月"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->discount, dataRow, "月"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "月", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->discount, dataRow, "日"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->discount, dataRow, "日"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "日", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->discount, dataRow, "时"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->discount, dataRow, "时"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "时", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->discount, dataRow, "分"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->discount, dataRow, "分"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "分", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->discount, dataRow, "秒"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->discount, dataRow, "秒"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "秒", NK_TEXT_CENTERED);
 

@@ -80,8 +80,11 @@ LinkedList *GetCustomersByName(const char *name);
  * Returns: 对应的值
  * */
 int GetCustomerId(const Customer *customer);
+
 int GetCustomerLevel(const Customer *customer);
+
 const char *GetCustomerName(const Customer *customer);
+
 const char *GetCustomerContact(const Customer *customer);
 
 /*
@@ -92,7 +95,9 @@ const char *GetCustomerContact(const Customer *customer);
  *     value: 要设置成的值
  * */
 void SetCustomerLevel(Customer *customer, int value);
+
 void SetCustomerName(Customer *customer, const char *name);
+
 void SetCustomerContact(Customer *customer, const char *contact);
 
 /*

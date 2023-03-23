@@ -87,7 +87,6 @@ int Unserialize(Table **destination, const char *path)
     Skip(filePointer, strlen("\nrows:"));
 
     TableRow *row = NewTableRow();
-    char *item;
     unsigned long itemLength;
 
     Skip(filePointer, strlen("\n    row:"));
@@ -97,7 +96,7 @@ int Unserialize(Table **destination, const char *path)
         Skip(filePointer, strlen("\n        len: "));
         fscanf(filePointer, "%lu", &itemLength);
 
-        item = malloc((itemLength + 1) * sizeof(char));
+        char *item = malloc((itemLength + 1) * sizeof(char));
 
         Skip(filePointer, strlen("\n        val: "));
         fgets(item, itemLength + 1, filePointer);
@@ -123,7 +122,7 @@ int Unserialize(Table **destination, const char *path)
             Skip(filePointer, strlen("\n        len: "));
             fscanf(filePointer, "%lu", &itemLength);
 
-            item = malloc((itemLength + 1) * sizeof(char));
+            char *item = malloc((itemLength + 1) * sizeof(char));
 
             Skip(filePointer, strlen("\n        val: "));
             fread(item, sizeof(char), itemLength, filePointer);

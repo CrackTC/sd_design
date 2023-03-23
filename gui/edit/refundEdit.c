@@ -32,12 +32,6 @@ static int SendRequest(struct Data *data)
 
     AppendTableRow(row, "订单编号");
     AppendTableRow(row, "退款原因");
-	AppendTableRow(row, "年");
-	AppendTableRow(row, "月");
-	AppendTableRow(row, "日");
-	AppendTableRow(row, "时");
-	AppendTableRow(row, "分");
-	AppendTableRow(row, "秒");
     AppendTableRow(row, "元");
     AppendTableRow(row, "角");
     AppendTableRow(row, "分");
@@ -50,12 +44,6 @@ static int SendRequest(struct Data *data)
 
     AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "订单编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "退款原因"));
-	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "年"));
-	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "月"));
-	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "日"));
-	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "时"));
-	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "分"));
-	AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "秒"));
     AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "元"));
     AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "角"));
     AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "分"));
@@ -93,7 +81,7 @@ static int SendRequest(struct Data *data)
     return 1;
 }
 
-static void MessageBoxCallBack(int ok, void *parameter)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
@@ -126,8 +114,8 @@ void RefundEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->refund, dataRow, "订单编号"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->refund, dataRow, "订单编号"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -142,8 +130,8 @@ void RefundEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->refund, dataRow, "退款原因"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->refund, dataRow, "退款原因"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -158,8 +146,8 @@ void RefundEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->refund, dataRow, "退回数目"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->refund, dataRow, "退回数目"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -175,22 +163,22 @@ void RefundEditLayout(struct nk_context *context, Window *window)
 
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->refund, dataRow, "元"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->refund, dataRow, "元"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "元", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->refund, dataRow, "角"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->refund, dataRow, "角"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "角", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->refund, dataRow, "分"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->refund, dataRow, "分"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "分", NK_TEXT_CENTERED);
 

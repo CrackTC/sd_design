@@ -55,13 +55,14 @@ Table *AddJournal(Table *table, int staffId, Operation operation)
     }
 
     JournalEntry *newJournal =
-        NewJournalEntry(staffId, &time, operation, arguments, argumentCount); // 开创新日志条目
-                                                                                             //
+            NewJournalEntry(staffId, &time, operation, arguments, argumentCount); // 开创新日志条目
+    //
     for (int i = 0; i < argumentCount; i++)
     {
         free(arguments[i]);
     }
-    if (arguments != NULL) {
+    if (arguments != NULL)
+    {
         free(arguments);
     }
 

@@ -58,7 +58,7 @@ LinkedList *GetInventoryByItemId(int itemId);
  *          否则，返回NULL
  * */
 InventoryEntry *NewInventoryEntry(int itemId, int number, const Time *inboundTime, const Time *productionTime,
-                                  const Amount *inboundUnitPrice);
+        const Amount *inboundUnitPrice);
 
 /*
  * Name: FreeInventoryEntry
@@ -76,10 +76,15 @@ void FreeInventoryEntry(InventoryEntry *entry);
  * Returns: 对应的值
  * */
 int GetInventoryEntryId(const InventoryEntry *entry);
+
 int GetInventoryEntryItemId(const InventoryEntry *entry);
+
 int GetInventoryEntryNumber(const InventoryEntry *entry);
+
 Time GetInventoryEntryInboundTime(const InventoryEntry *entry);
+
 Time GetInventoryEntryProductionTime(const InventoryEntry *entry);
+
 Amount GetInventoryEntryInboundUnitPrice(const InventoryEntry *entry);
 
 /*
@@ -90,9 +95,13 @@ Amount GetInventoryEntryInboundUnitPrice(const InventoryEntry *entry);
  *     value: 要设置成的值
  * */
 void SetInventoryEntryItemId(InventoryEntry *entry, int value);
+
 void SetInventoryEntryNumber(InventoryEntry *entry, int value);
+
 void SetInventoryEntryInboundTime(InventoryEntry *entry, const Time *value);
+
 void SetInventoryEntryProductionTime(InventoryEntry *entry, const Time *value);
+
 void SetInventoryEntryInboundUnitPrice(InventoryEntry *entry, const Amount *value);
 
 /*

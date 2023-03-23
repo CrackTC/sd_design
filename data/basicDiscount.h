@@ -82,9 +82,13 @@ LinkedList *GetBasicDiscountsByCustomerLevel(int level);
  * Returns: 对应的值
  * */
 int GetBasicDiscountId(const BasicDiscount *discount);
+
 int GetBasicDiscountItemId(const BasicDiscount *discount);
+
 int GetBasicDiscountRatio(const BasicDiscount *discount);
+
 int GetBasicDiscountCustomerLevel(const BasicDiscount *discount);
+
 Time GetBasicDiscountDeadline(const BasicDiscount *discount);
 
 /*
@@ -95,8 +99,11 @@ Time GetBasicDiscountDeadline(const BasicDiscount *discount);
  *     value: 要设置成的值
  * */
 void SetBasicDiscountItemId(BasicDiscount *discount, int value);
+
 void SetBasicDiscountRatio(BasicDiscount *discount, int value);
+
 void SetBasicDiscountCustomerLevel(BasicDiscount *discount, int value);
+
 void SetBasicDiscountDeadline(BasicDiscount *discount, const Time *value);
 
 /*

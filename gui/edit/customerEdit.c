@@ -15,17 +15,35 @@ struct Data
     const char *password;
     char *message;
     int modify;
+    Window *window;
+
+    void (*messageCallback)(int, void *);
 };
 
-static int SendRequest(struct Data *data)
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
+{
+    struct Data *data = parameter;
+    free(data->message);
+    data->message = NULL;
+}
+
+static void FinishCallback(__attribute__((unused)) int ok, void *parameter)
+{
+    MessageBoxCallBack(ok, parameter);
+    struct Data *data = parameter;
+    data->window->isClosed = 1;
+}
+
+static void SendRequest(struct Data *data)
 {
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_CUSTOMER : OP_ADD_CUSTOMER;
     Judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString("没有权限");
-        return 0;
+        return;
     }
 
     TableRow *row = NewTableRow();
@@ -64,10 +82,12 @@ static int SendRequest(struct Data *data)
 
     if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
     {
+        data->messageCallback = MessageBoxCallBack;
         data->message = CloneString(response->remark);
     }
     else
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString("操作成功完成");
     }
 
@@ -75,21 +95,12 @@ static int SendRequest(struct Data *data)
     {
         FreeTable(response);
     }
-
-    return 1;
-}
-
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
 }
 
 void CustomerEditLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
     TableRow *dataRow = GetRowByIndex(data->customer, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
@@ -112,8 +123,8 @@ void CustomerEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->customer, dataRow, "客户等级"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->customer, dataRow, "客户等级"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -128,8 +139,8 @@ void CustomerEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->customer, dataRow, "客户姓名"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->customer, dataRow, "客户姓名"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -144,8 +155,8 @@ void CustomerEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->customer, dataRow, "客户联系方式"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->customer, dataRow, "客户联系方式"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -156,10 +167,7 @@ void CustomerEditLayout(struct nk_context *context, Window *window)
             PlaceNothing(context);
             if (nk_button_label(context, "确定"))
             {
-                if (SendRequest(data))
-                {
-                    window->isClosed = 1;
-                }
+                SendRequest(data);
             }
             PlaceNothing(context);
             if (nk_button_label(context, "取消"))
@@ -193,6 +201,7 @@ Window *NewCustomerEdit(const char *title, int id, const char *password, Table *
     data->id = id;
     data->password = password;
     data->modify = modify;
+    data->window = window;
 
     window->data = data;
     window->next = NULL;

@@ -8,92 +8,92 @@
 #include <limits.h>
 #include <stdio.h>
 
-static const Amount zero = {0};
+static const Amount zero = { 0 };
 
 int GetAmountYuan(const Amount *amount)
 {
-    return amount->value / 100;
+	return amount->value / 100;
 }
 
 int GetAmountJiao(const Amount *amount)
 {
-    return (amount->value % 100) / 10;
+	return (amount->value % 100) / 10;
 }
 
 int GetAmountCent(const Amount *amount)
 {
-    return amount->value % 10;
+	return amount->value % 10;
 }
 
 Amount ParseAmount(const char *amount)
 {
-    int yuan, jiao, cent;
-    printf("amountParse: %s\n", amount);
-    sscanf(amount, "%d.%1d%1d", &yuan, &jiao, &cent);
-    Amount result = NewAmount(yuan, jiao, cent);
-    return result;
+	int yuan, jiao, cent;
+	printf("amountParse: %s\n", amount);
+	sscanf(amount, "%d.%1d%1d", &yuan, &jiao, &cent);
+	Amount result = NewAmount(yuan, jiao, cent);
+	return result;
 }
 
 // 判断value是否可无溢出地被int表示
 int IsValueValid(long long value)
 {
-    return value >= INT_MIN && value <= INT_MAX;
+	return value >= INT_MIN && value <= INT_MAX;
 }
 
 Amount AmountAdd(const Amount *amountA, const Amount *amountB)
 {
-    long long resultValue = amountA->value + amountB->value;
-    if (IsValueValid(resultValue / 100))
-    {
-        Amount amount = {resultValue};
-        return amount;
-    }
-    return zero;
+	long long resultValue = amountA->value + amountB->value;
+	if (IsValueValid(resultValue / 100))
+	{
+		Amount amount = { resultValue };
+		return amount;
+	}
+	return zero;
 }
 
 Amount AmountMultiply(const Amount *amount, int multiple)
 {
-    long long resultValue = amount->value * multiple;
-    if (IsValueValid(resultValue / 100))
-    {
-        Amount result = {resultValue};
-        return result;
-    }
-    return zero;
+	long long resultValue = amount->value * multiple;
+	if (IsValueValid(resultValue / 100))
+	{
+		Amount result = { resultValue };
+		return result;
+	}
+	return zero;
 }
 
 Amount AmountMultiplyRatio(const Amount *amount, int ratio)
 {
-    if (ratio > 100 || ratio < 0)
-        return zero;
-    long long resultMul100 = amount->value * ratio;
+	if (ratio > 100 || ratio < 0)
+		return zero;
+	long long resultMul100 = amount->value * ratio;
 
-    // 舍入判断指标
-    int bias = (resultMul100 % 100) / 10;
-    long long result = resultMul100 / 100;
-    Amount resultAmount;
-    if (-4 <= bias && bias <= 4)
-    {
-        resultAmount.value = result;
-        return resultAmount;
-    }
-    else
-    {
-        resultAmount.value = bias > 0 ? result + 1 : result - 1;
-        return resultAmount;
-    }
+	// 舍入判断指标
+	int bias = (resultMul100 % 100) / 10;
+	long long result = resultMul100 / 100;
+	Amount resultAmount;
+	if (-4 <= bias && bias <= 4)
+	{
+		resultAmount.value = result;
+		return resultAmount;
+	}
+	else
+	{
+		resultAmount.value = bias > 0 ? result + 1 : result - 1;
+		return resultAmount;
+	}
 }
 
 Amount NewAmount(int yuan, int jiao, int cent)
 {
-    if ((yuan >= 0 && jiao >= 0 && cent >= 0) || (yuan <= 0 && jiao <= 0 && cent <= 0))
-    {
-        if (jiao < -9 || jiao > 9)
-            return zero;
-        if (cent < -9 || cent > 9)
-            return zero;
-        Amount result = {yuan * 100 + jiao * 10 + cent};
-        return result;
-    }
-    return zero;
+	if ((yuan >= 0 && jiao >= 0 && cent >= 0) || (yuan <= 0 && jiao <= 0 && cent <= 0))
+	{
+		if (jiao < -9 || jiao > 9)
+			return zero;
+		if (cent < -9 || cent > 9)
+			return zero;
+		Amount result = { yuan * 100 + jiao * 10 + cent };
+		return result;
+	}
+	return zero;
 }

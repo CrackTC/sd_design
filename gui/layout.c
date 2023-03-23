@@ -2,7 +2,7 @@
 #include <malloc.h>
 #include <stddef.h>
 
-static struct nk_rect none = {0, 0, 0, 0};
+static struct nk_rect none = { 0, 0, 0, 0 };
 
 void PlaceNothing(struct nk_context *context)
 {
@@ -22,7 +22,7 @@ void EnsureWindowSize(struct nk_context *context, Window *window, float width, f
 }
 
 void DrawMessageBox(struct nk_context *context, const char *title, int draw, const char *message,
-                    void (*callback)(int, void *), void *parameter)
+        void (*callback)(int, void *), void *parameter)
 {
     if (draw)
     {

@@ -15,22 +15,23 @@ struct Data
     const char *password;
     char *message;
     int modify;
-	Window *window;
-	void (*messageCallback)(int, void*);
+    Window *window;
+
+    void (*messageCallback)(int, void *);
 };
 
 static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
 {
-	struct Data *data = parameter;
-	free(data->message);
-	data->message = NULL;
+    struct Data *data = parameter;
+    free(data->message);
+    data->message = NULL;
 }
 
 static void FinishCallback(__attribute__((unused)) int ok, void *parameter)
 {
-	MessageBoxCallBack(ok, parameter);
-	struct Data *data = parameter;
-	data->window->isClosed = 1;
+    MessageBoxCallBack(ok, parameter);
+    struct Data *data = parameter;
+    data->window->isClosed = 1;
 }
 
 static void SendRequest(struct Data *data)
@@ -40,7 +41,7 @@ static void SendRequest(struct Data *data)
     Judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
-		data->messageCallback = FinishCallback;
+        data->messageCallback = FinishCallback;
         data->message = CloneString("没有权限");
         return;
     }
@@ -51,7 +52,7 @@ static void SendRequest(struct Data *data)
         AppendTableRow(row, "员工编号");
     }
     AppendTableRow(row, "员工可用性");
-	AppendTableRow(row, "员工密码");
+    AppendTableRow(row, "员工密码");
     AppendTableRow(row, "员工姓名");
     AppendTableRow(row, "员工联系方式");
     AppendTableRow(row, "员工权限");
@@ -64,7 +65,7 @@ static void SendRequest(struct Data *data)
         AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工编号"));
     }
     AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工可用性"));
-	AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工密码"));
+    AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工密码"));
     AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工姓名"));
     AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工联系方式"));
     AppendTableRow(row, GetRowItemByColumnName(data->staff, sourceRow, "员工权限"));
@@ -85,12 +86,12 @@ static void SendRequest(struct Data *data)
 
     if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
     {
-		data->messageCallback = FinishCallback;
+        data->messageCallback = FinishCallback;
         data->message = CloneString(response->remark);
     }
     else
     {
-		data->messageCallback = FinishCallback;
+        data->messageCallback = FinishCallback;
         data->message = CloneString("操作成功完成");
     }
 
@@ -126,8 +127,8 @@ void StaffEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "员工密码"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->staff, dataRow, "员工密码"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -142,8 +143,8 @@ void StaffEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "员工姓名"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->staff, dataRow, "员工姓名"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -158,8 +159,8 @@ void StaffEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "员工联系方式"), 512, nk_filter_default);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->staff, dataRow, "员工联系方式"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -175,8 +176,8 @@ void StaffEditLayout(struct nk_context *context, Window *window)
             nk_layout_row_push(context, 100);
 #warning use checkbox
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "员工可用性"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->staff, dataRow, "员工可用性"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -192,8 +193,8 @@ void StaffEditLayout(struct nk_context *context, Window *window)
             nk_layout_row_push(context, 600);
 #warning use checkbox
             nk_edit_string_zero_terminated(
-                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                GetRowItemByColumnName(data->staff, dataRow, "员工权限"), 512, nk_filter_decimal);
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->staff, dataRow, "员工权限"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -238,7 +239,7 @@ Window *NewStaffEdit(const char *title, int id, const char *password, Table *sta
     data->id = id;
     data->password = password;
     data->modify = modify;
-	data->window = window;
+    data->window = window;
 
     window->data = data;
     window->next = NULL;

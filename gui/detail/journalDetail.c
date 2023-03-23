@@ -21,23 +21,24 @@ void JournalDetailLayout(struct nk_context *context, Window *window)
         nk_layout_row_dynamic(context, 0, 1);
         nk_label(context, "员工编号", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->journal, dataRow, "员工编号"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->journal, dataRow, "员工编号"), 512, nk_filter_default);
 
         nk_label(context, "时间", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->journal, dataRow, "时间"), 512,
-                                       nk_filter_default);
+                GetRowItemByColumnName(data->journal, dataRow, "时间"), 512,
+                nk_filter_default);
 
         nk_label(context, "操作", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->journal, dataRow, "操作"), 512,
-                                       nk_filter_default);
+                GetRowItemByColumnName(data->journal, dataRow, "操作"), 512,
+                nk_filter_default);
 
         nk_layout_row_dynamic(context, 100, 1);
         nk_label(context, "参数", NK_TEXT_CENTERED);
-        nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD | NK_EDIT_MULTILINE,
-                                       GetRowItemByColumnName(data->journal, dataRow, "参数"), 512,
-                                       nk_filter_default);
+        nk_edit_string_zero_terminated(context,
+                NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD | NK_EDIT_MULTILINE,
+                GetRowItemByColumnName(data->journal, dataRow, "参数"), 512,
+                nk_filter_default);
 
         if (nk_button_label(context, "确定"))
         {

@@ -52,23 +52,23 @@ void SendOrderRequest(struct Data *data)
 
 int OrderLookup(struct Data *data)
 {
-	LinkedList *now = data->orderCheckList->next;
-	LinkedList *rowNow = data->orderTable->rows->next;
-	while (now != NULL)
-	{
-		if (*(int *)now->data == 1)
-		{
-			TableRow *titleRow = CloneRow(GetTableTitle(data->orderTable));
-			Table *table = NewTable(titleRow, "");
-			AppendTable(table, CloneRow(rowNow->data));
-			PushWindow(NewOrderDetail("订单详情", table));
-			FreeTable(table);
-			return 1;
-		}
-		now = now->next;
-		rowNow = rowNow->next;
-	}
-	return 0;
+    LinkedList *now = data->orderCheckList->next;
+    LinkedList *rowNow = data->orderTable->rows->next;
+    while (now != NULL)
+    {
+        if (*(int *)now->data == 1)
+        {
+            TableRow *titleRow = CloneRow(GetTableTitle(data->orderTable));
+            Table *table = NewTable(titleRow, "");
+            AppendTable(table, CloneRow(rowNow->data));
+            PushWindow(NewOrderDetail("订单详情", table));
+            FreeTable(table);
+            return 1;
+        }
+        now = now->next;
+        rowNow = rowNow->next;
+    }
+    return 0;
 }
 
 int OrderAdd(struct Data *data)
@@ -80,7 +80,7 @@ int OrderAdd(struct Data *data)
         if (*(int *)itemCheckNow->data == 1)
         {
             LinkedList *customerCheckNow = data->customerCheckList->next;
-            LinkedList *customerRowNow = data->customerCheckList->next;
+            LinkedList *customerRowNow = data->customerTable->rows->next;
             while (customerCheckNow != NULL)
             {
                 if (*(int *)customerCheckNow->data == 1)
@@ -174,7 +174,7 @@ void OrderDelete(int ok, void *parameter)
     {
         data->messageCallback = MessageBoxCallBack;
         data->message = CloneString("缺少权限：删除订单");
-		return;
+        return;
     }
 
     LinkedList *now = data->orderCheckList->next;
@@ -266,7 +266,7 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
             if (nk_style_push_font(context, &fontSmall->handle))
             {
                 nk_combobox(context, data->orderProperties, columnCount + 1, &data->orderPropertySelected, 35,
-                            nk_vec2(200, 400));
+                        nk_vec2(200, 400));
                 nk_style_pop_font(context);
             }
         }
@@ -279,8 +279,8 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
         nk_layout_row_push(context, 200);
         {
             nk_edit_string_zero_terminated(context,
-                                           (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
-                                           data->orderValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
+                    (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
+                    data->orderValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
         }
 
         nk_layout_row_push(context, 100);
@@ -314,11 +314,11 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
             {
                 if (nk_button_label(context, "查看"))
                 {
-					if (!OrderLookup(data))
-					{
-						data->messageCallback = MessageBoxCallBack;
-						data->message = CloneString("请选择一个订单");
-					}
+                    if (!OrderLookup(data))
+                    {
+                        data->messageCallback = MessageBoxCallBack;
+                        data->message = CloneString("请选择一个订单");
+                    }
                 }
             }
 
@@ -381,7 +381,7 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
         nk_widget(&space, context);
         struct nk_command_buffer *canvas = nk_window_get_canvas(context);
         nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                       nk_rgb(100, 100, 100));
+                nk_rgb(100, 100, 100));
     }
 
     nk_layout_row_dynamic(context, nk_window_get_height(context) - 285, 1);
@@ -391,9 +391,9 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
             if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
             {
                 TableLayout(context, data->orderTable, data->orderCheckList,
-                            data->orderPropertySelected == 0 ? NULL
-                                                             : data->orderProperties[data->orderPropertySelected],
-                            data->orderValueBuffer);
+                        data->orderPropertySelected == 0 ? NULL
+                                                         : data->orderProperties[data->orderPropertySelected],
+                        data->orderValueBuffer);
                 nk_group_end(context);
             }
 

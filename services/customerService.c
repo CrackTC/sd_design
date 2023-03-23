@@ -12,9 +12,9 @@ Table *AddCustomer(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int level = atoi(GetRowItemByColumnName(a, information, "level"));
-    const char *name = GetRowItemByColumnName(a, information, "name");
-    const char *contact = GetRowItemByColumnName(a, information, "contact");
+    int level = atoi(GetRowItemByColumnName(a, information, "客户等级"));
+    const char *name = GetRowItemByColumnName(a, information, "客户姓名");
+    const char *contact = GetRowItemByColumnName(a, information, "客户联系方式");
     // 判断客户是否存在
     LinkedList *customerhead = GetCustomersByName(name);
     if (customerhead != NULL)
@@ -63,9 +63,7 @@ Table *AddCustomer(Table *a)
     free(newname);
     free(newcontact);
 
-    TableRow *row = NewTableRow();
-    Table *goback = NewTable(row, NULL);
-    return goback;
+    return NULL;
 }
 
 // 删除客户
@@ -73,7 +71,7 @@ Table *DeleteCustomer(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int id = atoi(GetRowItemByColumnName(a, information, "id"));
+    int id = atoi(GetRowItemByColumnName(a, information, "客户编号"));
     // 查找客户判断是否存在
     Customer *del = GetCustomerById(id);
     if (del == NULL)
@@ -119,10 +117,10 @@ Table *UpdateCustomer(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int id = atoi(GetRowItemByColumnName(a, information, "id"));
-    int level = atoi(GetRowItemByColumnName(a, information, "level"));
-    const char *name = GetRowItemByColumnName(a, information, "name");
-    const char *contact = GetRowItemByColumnName(a, information, "contact");
+    int id = atoi(GetRowItemByColumnName(a, information, "客户编号"));
+    int level = atoi(GetRowItemByColumnName(a, information, "客户等级"));
+    const char *name = GetRowItemByColumnName(a, information, "客户姓名");
+    const char *contact = GetRowItemByColumnName(a, information, "客户联系方式");
     // 修改数据
     Customer *re = GetCustomerById(id);
     if (re == NULL)
@@ -146,7 +144,7 @@ Table *GetSingleCustomer(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int id = atoi(GetRowItemByColumnName(a, information, "id"));
+    int id = atoi(GetRowItemByColumnName(a, information, "客户编号"));
 
     // 获取信息
     Customer *info = GetCustomerById(id);
@@ -168,10 +166,10 @@ Table *GetSingleCustomer(Table *a)
     char *levelstring = LongLongToString(level);
 
     TableRow *row = NewTableRow();
-    AppendTableRow(row, "id");
-    AppendTableRow(row, "level");
-    AppendTableRow(row, "name");
-    AppendTableRow(row, "contact");
+    AppendTableRow(row, "客户编号");
+    AppendTableRow(row, "客户等级");
+    AppendTableRow(row, "客户姓名");
+    AppendTableRow(row, "客户联系方式");
     Table *goback = NewTable(row, NULL);
 
     row = NewTableRow();
@@ -195,18 +193,18 @@ Table *GetAllCustomer(__attribute__((unused)) Table *a)
 {
     LinkedList *customerNow = GetAllCustomers();
 
-	// 数据准备和录入
-	TableRow *row = NewTableRow();
-	AppendTableRow(row, "客户编号");
-	AppendTableRow(row, "客户等级");
-	AppendTableRow(row, "客户姓名");
-	AppendTableRow(row, "客户联系方式");
-	Table *table = NewTable(row, NULL);
+    // 数据准备和录入
+    TableRow *row = NewTableRow();
+    AppendTableRow(row, "客户编号");
+    AppendTableRow(row, "客户等级");
+    AppendTableRow(row, "客户姓名");
+    AppendTableRow(row, "客户联系方式");
+    Table *table = NewTable(row, NULL);
 
     // 判断
     if (customerNow == NULL)
     {
-		SetTableRemark(table, "无客户记录");
+        SetTableRemark(table, "无客户记录");
         return table;
     }
 
@@ -238,7 +236,7 @@ Table *GetAllCustomer(__attribute__((unused)) Table *a)
 
         AppendTable(table, row);
 
-		customerNow = customerNow->next;
+        customerNow = customerNow->next;
     }
     // 返回值
     return table;

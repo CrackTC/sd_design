@@ -44,6 +44,7 @@ Table *UpdateCustomer(Table *a);
  *      无客户记录：备注返回“无客户记录”
  * * * * * */
 Table *GetAllCustomer(__attribute__((unused)) Table *a);
+
 /*  客户id        id
  *
  *  返回值：

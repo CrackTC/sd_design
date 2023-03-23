@@ -19,24 +19,24 @@ void CustomerDetailLayout(struct nk_context *context, Window *window)
     nk_style_push_font(context, &fontSmall->handle);
     {
         nk_layout_row_dynamic(context, 0, 1);
-        nk_label(context, "id", NK_TEXT_CENTERED);
+        nk_label(context, "客户编号", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->customer, dataRow, "id"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->customer, dataRow, "客户编号"), 512, nk_filter_default);
 
         nk_label(context, "客户等级", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->customer, dataRow, "客户等级"), 512,
-                                       nk_filter_default);
+                GetRowItemByColumnName(data->customer, dataRow, "客户等级"), 512,
+                nk_filter_default);
 
         nk_label(context, "客户姓名", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->customer, dataRow, "客户姓名"), 512,
-                                       nk_filter_default);
+                GetRowItemByColumnName(data->customer, dataRow, "客户姓名"), 512,
+                nk_filter_default);
 
         nk_label(context, "客户联系方式", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                                       GetRowItemByColumnName(data->customer, dataRow, "客户联系方式"), 512,
-                                       nk_filter_default);
+                GetRowItemByColumnName(data->customer, dataRow, "客户联系方式"), 512,
+                nk_filter_default);
 
         if (nk_button_label(context, "确定"))
         {

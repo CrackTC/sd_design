@@ -23,7 +23,8 @@ int HasPermission(int staffId, Operation operation)
 Table *Judge(int staffId, int *hasPermission, const char *password, Operation operation)
 {
     Staff *staff = GetStaffById(staffId);
-    if (staff == NULL) {
+    if (staff == NULL)
+    {
         *hasPermission = 0;
         return NULL;
     }

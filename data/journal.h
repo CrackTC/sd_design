@@ -92,9 +92,13 @@ LinkedList *GetJournalsByOperation(Operation operation);
  * Returns: 对应的值
  * */
 int GetJournalEntryStaffId(const JournalEntry *entry);
+
 Time GetJournalEntryTime(const JournalEntry *entry);
+
 Operation GetJournalEntryOperation(const JournalEntry *entry);
+
 char **GetJournalEntryArguments(const JournalEntry *entry);
+
 int GetJournalEntryArgumentCount(const JournalEntry *entry);
 
 /*

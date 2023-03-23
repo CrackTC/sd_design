@@ -62,11 +62,12 @@ void loginWindowLayout(struct nk_context *context, Window *window)
             nk_label(context, "工号", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 0.75f);
-            if (nk_edit_string_zero_terminated(context, NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD | NK_EDIT_SIG_ENTER, data->id,
-                                           sizeof(data->id), nk_filter_decimal) & NK_EDIT_COMMITED)
-			{
-				LoginButtonEventHandler(data, window);
-			}
+            if (nk_edit_string_zero_terminated(context,
+                    NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD | NK_EDIT_SIG_ENTER, data->id,
+                    sizeof(data->id), nk_filter_decimal) & NK_EDIT_COMMITED)
+            {
+                LoginButtonEventHandler(data, window);
+            }
         }
         nk_layout_row_end(context);
     }
@@ -79,8 +80,8 @@ void loginWindowLayout(struct nk_context *context, Window *window)
 
             nk_layout_row_push(context, 0.75f);
             if (nk_edit_string_zero_terminated(context,
-                                           (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD | NK_EDIT_SIG_ENTER) & ~NK_EDIT_MULTILINE,
-                                           data->password, sizeof(data->password), nk_filter_ascii) & NK_EDIT_COMMITED)
+                    (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD | NK_EDIT_SIG_ENTER) & ~NK_EDIT_MULTILINE,
+                    data->password, sizeof(data->password), nk_filter_ascii) & NK_EDIT_COMMITED)
             {
                 LoginButtonEventHandler(data, window);
             }

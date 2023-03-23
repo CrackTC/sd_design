@@ -16,9 +16,9 @@ Table *AddOrder(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int itemid = atoi(GetRowItemByColumnName(a, information, "itemid"));
-    int customerid = atoi(GetRowItemByColumnName(a, information, "customerid"));
-    int number = atoi(GetRowItemByColumnName(a, information, "number"));
+    int itemid = atoi(GetRowItemByColumnName(a, information, "商品编号"));
+    int customerid = atoi(GetRowItemByColumnName(a, information, "客户编号"));
+    int number = atoi(GetRowItemByColumnName(a, information, "购买数量"));
     // 确认客户等级和所需金额
     Customer *cus = GetCustomerById(customerid);
     if (cus == NULL)
@@ -444,19 +444,19 @@ Table *UpdateOrder(Table *a)
 }
 
 // 读取订单
-Table *GetAllOrder(Table *a)
+Table *GetAllOrder(__attribute__((unused)) Table *a)
 {
     // 标题行
     TableRow *row = NewTableRow();
 
     AppendTableRow(row, "订单编号");
     AppendTableRow(row, "库存编号");
-	AppendTableRow(row, "商品编号");
-	AppendTableRow(row, "商品名称");
+    AppendTableRow(row, "商品编号");
+    AppendTableRow(row, "商品名称");
     AppendTableRow(row, "客户编号");
-	AppendTableRow(row, "客户姓名");
+    AppendTableRow(row, "客户姓名");
     AppendTableRow(row, "购买数量");
-	AppendTableRow(row, "购买时间");
+    AppendTableRow(row, "购买时间");
     AppendTableRow(row, "总价");
     Table *table = NewTable(row, NULL);
 
@@ -464,7 +464,7 @@ Table *GetAllOrder(Table *a)
     LinkedList *orderNow = GetAllOrders();
     if (orderNow == NULL)
     {
-		SetTableRemark(table, "无订单条目");
+        SetTableRemark(table, "无订单条目");
         return table;
     }
     while (orderNow != NULL)
@@ -474,16 +474,16 @@ Table *GetAllOrder(Table *a)
 
         // 数据准备
         int orderId = GetOrderId(order);
-		int inventoryId = GetOrderInventoryId(order);
+        int inventoryId = GetOrderInventoryId(order);
 
-		InventoryEntry *entry = GetInventoryById(inventoryId);
-		int itemId = GetInventoryEntryItemId(entry);
-		Item *item = GetItemById(itemId);
-		char *itemName = GetItemName(item);
+        InventoryEntry *entry = GetInventoryById(inventoryId);
+        int itemId = GetInventoryEntryItemId(entry);
+        Item *item = GetItemById(itemId);
+        const char *itemName = GetItemName(item);
 
         int customerId = GetOrderCustomerId(order);
-		Customer *customer = GetCustomerById(customerId);
-		char *customerName = GetCustomerName(customer);
+        Customer *customer = GetCustomerById(customerId);
+        const char *customerName = GetCustomerName(customer);
 
         int number = GetOrderNumber(order);
         Time orderTime = GetOrderTime(order);
@@ -491,32 +491,36 @@ Table *GetAllOrder(Table *a)
         Amount amount = GetOrderAmount(order);
 
         char *orderIdString = LongLongToString(orderId);
-		char *inventoryIdString = LongLongToString(inventoryId);
-		char *itemIdString = LongLongToString(itemId);
+        char *inventoryIdString = LongLongToString(inventoryId);
+        char *itemIdString = LongLongToString(itemId);
+        char *itemNameString = CloneString(itemName);
         char *customerIdString = LongLongToString(customerId);
+        char *customerNameString = CloneString(customerName);
         char *numberString = LongLongToString(number);
         char *timeString = TimeToString(orderTimeInfo);
-		char *amountString = AmountToString(&amount);
+        char *amountString = AmountToString(&amount);
 
         // 数据添加
         AppendTableRow(row, orderIdString);
-		AppendTableRow(row, inventoryIdString);
-		AppendTableRow(row, itemIdString);
-        AppendTableRow(row, itemName);
+        AppendTableRow(row, inventoryIdString);
+        AppendTableRow(row, itemIdString);
+        AppendTableRow(row, itemNameString);
         AppendTableRow(row, customerIdString);
-		AppendTableRow(row, customerName);
+        AppendTableRow(row, customerNameString);
         AppendTableRow(row, numberString);
         AppendTableRow(row, timeString);
-		AppendTableRow(row, amountString);
+        AppendTableRow(row, amountString);
         AppendTable(table, row);
 
         free(orderIdString);
-		free(inventoryIdString);
-		free(itemIdString);
-		free(customerIdString);
+        free(inventoryIdString);
+        free(itemIdString);
+        free(itemNameString);
+        free(customerIdString);
+        free(customerNameString);
         free(numberString);
         free(timeString);
-		free(amountString);
+        free(amountString);
 
         orderNow = orderNow->next;
     }
@@ -608,16 +612,17 @@ Table *AddDiscount(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int itemid = atoi(GetRowItemByColumnName(a, information, "id"));
-    int rate = atoi(GetRowItemByColumnName(a, information, "ratio"));
-    int customerlevel = atoi(GetRowItemByColumnName(a, information, "level"));
-    int year = atoi(GetRowItemByColumnName(a, information, "year"));
-    int month = atoi(GetRowItemByColumnName(a, information, "month"));
-    int day = atoi(GetRowItemByColumnName(a, information, "day"));
-    int hour = atoi(GetRowItemByColumnName(a, information, "hour"));
-    int minute = atoi(GetRowItemByColumnName(a, information, "minute"));
+    int itemid = atoi(GetRowItemByColumnName(a, information, "商品编号"));
+    int rate = atoi(GetRowItemByColumnName(a, information, "折扣比率"));
+    int customerLevel = atoi(GetRowItemByColumnName(a, information, "客户等级"));
+    int year = atoi(GetRowItemByColumnName(a, information, "年"));
+    int month = atoi(GetRowItemByColumnName(a, information, "月"));
+    int day = atoi(GetRowItemByColumnName(a, information, "日"));
+    int hour = atoi(GetRowItemByColumnName(a, information, "时"));
+    int minute = atoi(GetRowItemByColumnName(a, information, "分"));
+    int second = atoi(GetRowItemByColumnName(a, information, "秒"));
 
-    Time create = NewDateTime(year, month, day, hour, minute, 0);
+    Time create = NewDateTime(year, month, day, hour, minute, second);
     // 时间信息有误
     if (create.value < 0)
     {
@@ -626,7 +631,7 @@ Table *AddDiscount(Table *a)
         return goback;
     }
     // 创建折扣并判断是否失败
-    BasicDiscount *newdiscount = NewBasicDiscount(itemid, rate, customerlevel, &create);
+    BasicDiscount *newdiscount = NewBasicDiscount(itemid, rate, customerLevel, &create);
     if (newdiscount == NULL)
     {
         FreeBasicDiscount(newdiscount);
@@ -676,16 +681,16 @@ Table *UpdateDiscount(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int discountid = atoi(GetRowItemByColumnName(a, information, "discountid"));
-    int itemid = atoi(GetRowItemByColumnName(a, information, "itemid"));
-    int rate = atoi(GetRowItemByColumnName(a, information, "ratio"));
-    int customerlevel = atoi(GetRowItemByColumnName(a, information, "level"));
-    int year = atoi(GetRowItemByColumnName(a, information, "year"));
-    int month = atoi(GetRowItemByColumnName(a, information, "month"));
-    int day = atoi(GetRowItemByColumnName(a, information, "day"));
-    int hour = atoi(GetRowItemByColumnName(a, information, "hour"));
-    int minute = atoi(GetRowItemByColumnName(a, information, "minute"));
-    int second = atoi(GetRowItemByColumnName(a, information, "second"));
+    int discountid = atoi(GetRowItemByColumnName(a, information, "折扣编号"));
+    int itemid = atoi(GetRowItemByColumnName(a, information, "商品编号"));
+    int rate = atoi(GetRowItemByColumnName(a, information, "折扣比率"));
+    int customerlevel = atoi(GetRowItemByColumnName(a, information, "客户等级"));
+    int year = atoi(GetRowItemByColumnName(a, information, "年"));
+    int month = atoi(GetRowItemByColumnName(a, information, "月"));
+    int day = atoi(GetRowItemByColumnName(a, information, "日"));
+    int hour = atoi(GetRowItemByColumnName(a, information, "时"));
+    int minute = atoi(GetRowItemByColumnName(a, information, "分"));
+    int second = atoi(GetRowItemByColumnName(a, information, "秒"));
 
     BasicDiscount *discount = GetBasicDiscountById(discountid);
     if (discount == NULL)
@@ -717,7 +722,7 @@ Table *UpdateDiscount(Table *a)
 }
 
 // 清理过期折扣
-Table *ClearOutdateDiscount(Table *a)
+Table *ClearOutdateDiscount(__attribute__((unused)) Table *a)
 {
     LinkedList *alldiscountshead = GetAllBasicDiscounts();
     LinkedList *discountnode = alldiscountshead;
@@ -744,13 +749,13 @@ Table *ClearOutdateDiscount(Table *a)
 }
 
 // 查询折扣
-Table *GetAllDiscount(Table *a)
+Table *GetAllDiscount(__attribute__((unused)) Table *a)
 {
     TableRow *row = NewTableRow();
 
     AppendTableRow(row, "折扣编号");
     AppendTableRow(row, "商品编号");
-	AppendTableRow(row, "商品名称");
+    AppendTableRow(row, "商品名称");
     AppendTableRow(row, "折扣比率");
     AppendTableRow(row, "客户等级");
     AppendTableRow(row, "截止时间");
@@ -760,8 +765,8 @@ Table *GetAllDiscount(Table *a)
     // 判断
     if (discountNow == NULL)
     {
-		SetTableRemark(table, "无折扣");
-		return table;
+        SetTableRemark(table, "无折扣");
+        return table;
     }
     while (discountNow != NULL)
     {
@@ -773,7 +778,7 @@ Table *GetAllDiscount(Table *a)
         char *discountIdString = LongLongToString(discountId);
 
         int itemId = GetBasicDiscountItemId(discount);
-		char *itemIdString = LongLongToString(itemId);
+        char *itemIdString = LongLongToString(itemId);
 
         Item *item = GetItemById(itemId);
         char *itemName = GetItemName(item);
@@ -790,7 +795,7 @@ Table *GetAllDiscount(Table *a)
 
         // 添加数据
         AppendTableRow(row, discountIdString);
-		AppendTableRow(row, itemIdString);
+        AppendTableRow(row, itemIdString);
         AppendTableRow(row, itemName);
         AppendTableRow(row, ratioString);
         AppendTableRow(row, customerLevelString);
@@ -798,7 +803,7 @@ Table *GetAllDiscount(Table *a)
         AppendTable(table, row);
 
         free(discountIdString);
-		free(itemIdString);
+        free(itemIdString);
         free(ratioString);
         free(customerLevelString);
         free(deadLineString);
@@ -875,13 +880,13 @@ Table *AddRefund(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int orderid = atoi(GetRowItemByColumnName(a, information, "id"));
-    char *reason = GetRowItemByColumnName(a, information, "reason");
-    int yuan = atoi(GetRowItemByColumnName(a, information, "yuan"));
-    int jiao = atoi(GetRowItemByColumnName(a, information, "jiao"));
-    int cent = atoi(GetRowItemByColumnName(a, information, "cent"));
-    int number = atoi(GetRowItemByColumnName(a, information, "number"));
-    char *remark = GetRowItemByColumnName(a, information, "remark");
+    int orderId = atoi(GetRowItemByColumnName(a, information, "订单编号"));
+    char *reason = GetRowItemByColumnName(a, information, "退款原因");
+    int yuan = atoi(GetRowItemByColumnName(a, information, "元"));
+    int jiao = atoi(GetRowItemByColumnName(a, information, "角"));
+    int cent = atoi(GetRowItemByColumnName(a, information, "分"));
+    int number = atoi(GetRowItemByColumnName(a, information, "退回数目"));
+    char *remark = GetRowItemByColumnName(a, information, "备注");
 
     // 判断是否可以退货（只能退货一次）
     LinkedList *totalrefundhead = GetAllRefunds();
@@ -890,7 +895,7 @@ Table *AddRefund(Table *a)
     {
         RefundEntry *temprefund = refundnode->data;
         int temporderid = GetRefundEntryOrderId(temprefund);
-        if (temporderid == orderid)
+        if (temporderid == orderId)
         {
             TableRow *row = NewTableRow();
             Table *goback = NewTable(row, "超过退货限制次数(1次)");
@@ -899,17 +904,16 @@ Table *AddRefund(Table *a)
     }
 
     // 数据准备
-    Order *thisorder = GetOrderById(orderid);
+    Order *thisorder = GetOrderById(orderId);
     int inventoryid = GetOrderInventoryId(thisorder);
     InventoryEntry *thisinventory = GetInventoryById(inventoryid);
 
     Amount giveback = NewAmount(yuan, jiao, cent);
-    giveback = AmountMultiply(&giveback, -1);
 
     Time present = GetSystemTime();
 
     // 添加退货
-    RefundEntry *newrefund = NewRefundEntry(orderid, reason, &present, &giveback, number, remark);
+    RefundEntry *newrefund = NewRefundEntry(orderId, reason, &present, &giveback, number, remark);
     if (newrefund == NULL)
     {
         TableRow *row = NewTableRow();
@@ -929,7 +933,9 @@ Table *AddRefund(Table *a)
     int presentnumber = GetInventoryEntryNumber(thisinventory);
     SetInventoryEntryNumber(thisinventory, presentnumber + number);
     InventorySave();
+
     // 添加收支
+    giveback = AmountMultiply(&giveback, -1);
     Profit *newprofit = NewProfit(&giveback, "退货", &present);
     AppendProfit(newprofit);
     ProfitSave();
@@ -945,7 +951,7 @@ Table *RemoveRefund(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int orderid = atoi(GetRowItemByColumnName(a, information, "id"));
+    int orderid = atoi(GetRowItemByColumnName(a, information, "订单编号"));
 
     RefundEntry *thisrefund = GetRefundByOrderId(orderid);
     if (thisrefund == NULL)
@@ -994,73 +1000,67 @@ Table *UpdateRefund(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int orderid = atoi(GetRowItemByColumnName(a, information, "id"));
-    const char *reason = GetRowItemByColumnName(a, information, "reason");
-    int yuan = atoi(GetRowItemByColumnName(a, information, "yuan"));
-    int jiao = atoi(GetRowItemByColumnName(a, information, "jiao"));
-    int cent = atoi(GetRowItemByColumnName(a, information, "cent"));
-    int number = atoi(GetRowItemByColumnName(a, information, "number"));
-    const char *remark = GetRowItemByColumnName(a, information, "remark");
+    int orderId = atoi(GetRowItemByColumnName(a, information, "订单编号"));
+    const char *reason = GetRowItemByColumnName(a, information, "退款原因");
+    int yuan = atoi(GetRowItemByColumnName(a, information, "元"));
+    int jiao = atoi(GetRowItemByColumnName(a, information, "角"));
+    int cent = atoi(GetRowItemByColumnName(a, information, "分"));
+    int number = atoi(GetRowItemByColumnName(a, information, "退回数目"));
+    const char *remark = GetRowItemByColumnName(a, information, "备注");
 
-    RefundEntry *thisrefund = GetRefundByOrderId(orderid);
-    if (thisrefund == NULL)
+    RefundEntry *refund = GetRefundByOrderId(orderId);
+    if (refund == NULL)
     {
-        TableRow *error = NewTableRow();
-        Table *errorreturn = NewTable(error, "不存在符合条件的退款条目");
-        return errorreturn;
+        return NewTable(NULL, "不存在符合条件的退款条目");
     }
 
-    Time presenttime = GetSystemTime();
-    Order *thisorder = GetOrderById(orderid);
+    Time timeNow = GetSystemTime();
+    Order *order = GetOrderById(orderId);
 
     // 操作金额和收支
-    Amount reamount = NewAmount(yuan, jiao, cent);
-    Amount beforeamount = GetRefundEntryAmount(thisrefund);
-    beforeamount = AmountMultiply(&beforeamount, -1);
-    Amount gapamount = AmountAdd(&beforeamount, &reamount);
-    gapamount = AmountMultiply(&gapamount, -1);
+    Amount newAmount = NewAmount(yuan, jiao, cent);
+    Amount oldAmount = GetRefundEntryAmount(refund);
+    oldAmount = AmountMultiply(&oldAmount, -1);
+    Amount deltaAmount = AmountAdd(&oldAmount, &newAmount);
 
-    Profit *gapprofit = NewProfit(&gapamount, "修改退货信息", &presenttime);
-    int judge = AppendProfit(gapprofit);
+    Profit *profit = NewProfit(&deltaAmount, "修改退货信息", &timeNow);
+    int judge = AppendProfit(profit);
     if (judge)
     {
-        TableRow *error = NewTableRow();
-        Table *errorreturn = NewTable(error, "修改退货失败");
-        return errorreturn;
+        return NewTable(NULL, "修改退货失败: 未能写入收支");
     }
     ProfitSave();
 
-    SetRefundEntryAmount(thisrefund, &reamount);
+    SetRefundEntryAmount(refund, &newAmount);
 
     // 操作数量和库存
-    SetRefundEntryNumber(thisrefund, number);
+    SetRefundEntryNumber(refund, number);
 
-    int beforenumber = GetRefundEntryNumber(thisrefund);
-    int plusnumber = beforenumber - number;
-    int inventoryid = GetOrderInventoryId(thisorder);
-    InventoryEntry *thisinventory = GetInventoryById(inventoryid);
-    int inventorynumber = GetInventoryEntryNumber(thisinventory);
-    SetInventoryEntryNumber(thisinventory, inventorynumber - plusnumber);
+    int oldNumber = GetRefundEntryNumber(refund);
+    int deltaNumber = number - oldNumber;
+
+    int inventoryId = GetOrderInventoryId(order);
+    InventoryEntry *inventory = GetInventoryById(inventoryId);
+    int inventoryNumber = GetInventoryEntryNumber(inventory);
+    SetInventoryEntryNumber(inventory, inventoryNumber + deltaNumber);
     InventorySave();
 
     // 操作时间
-    SetRefundEntryTime(thisrefund, &presenttime);
+    SetRefundEntryTime(refund, &timeNow);
     // 操作原因
-    SetRefundEntryReason(thisrefund, reason);
+    SetRefundEntryReason(refund, reason);
     // 操作备注
-    SetRefundEntryRemark(thisrefund, remark);
+    SetRefundEntryRemark(refund, remark);
 
     // 保存
     RefundEntrySave();
 
     // 返回值
-    TableRow *row = NewTableRow();
-    Table *goback = NewTable(row, NULL);
-    return goback;
+    return NULL;
 }
 
 // 查询所有退货
-Table *GetAllRefund(Table *a)
+Table *GetAllRefund(__attribute__((unused)) Table *a)
 {
     TableRow *row = NewTableRow();
 
@@ -1075,8 +1075,8 @@ Table *GetAllRefund(Table *a)
     LinkedList *refundNow = GetAllRefunds();
     if (refundNow == NULL)
     {
-		SetTableRemark(table, "无退款条目");
-		return table;
+        SetTableRemark(table, "无退款条目");
+        return table;
     }
 
     while (refundNow != NULL)
@@ -1096,7 +1096,7 @@ Table *GetAllRefund(Table *a)
         char *refundTimeString = TimeToString(refundTimeInfo);
 
         Amount price = GetRefundEntryAmount(entry);
-		char *priceString = AmountToString(&price);
+        char *priceString = AmountToString(&price);
 
         int number = GetRefundEntryNumber(entry);
         char *numberString = LongLongToString(number);
@@ -1114,11 +1114,11 @@ Table *GetAllRefund(Table *a)
         AppendTable(table, row);
 
         free(orderIdString);
-		free(reasonString);
+        free(reasonString);
         free(refundTimeString);
-		free(priceString);
+        free(priceString);
         free(numberString);
-		free(remarkString);
+        free(remarkString);
 
         refundNow = refundNow->next;
     }
@@ -1132,72 +1132,61 @@ Table *GetSingleRefund(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int orderid = atoi(GetRowItemByColumnName(a, information, "id"));
+    int orderId = atoi(GetRowItemByColumnName(a, information, "订单编号"));
 
     // 标题行
     TableRow *row = NewTableRow();
 
-    AppendTableRow(row, "id");
-    AppendTableRow(row, "reason");
-    AppendTableRow(row, "time");
-    AppendTableRow(row, "yuan");
-    AppendTableRow(row, "jiao");
-    AppendTableRow(row, "cent");
-    AppendTableRow(row, "number");
-    AppendTableRow(row, "remark");
-    Table *goback = NewTable(row, NULL);
+    AppendTableRow(row, "订单编号");
+    AppendTableRow(row, "退款原因");
+    AppendTableRow(row, "退款时间");
+    AppendTableRow(row, "退款金额");
+    AppendTableRow(row, "退回数目");
+    AppendTableRow(row, "备注");
+    Table *table = NewTable(row, NULL);
 
     // 数据准备
-    RefundEntry *thisrefund = GetRefundByOrderId(orderid);
-    if (thisrefund == NULL)
+    RefundEntry *entry = GetRefundByOrderId(orderId);
+    if (entry == NULL)
     {
-        TableRow *error = NewTableRow();
-        Table *errorreturn = NewTable(error, "不存在符合条件的退款条目");
-        return errorreturn;
+        SetTableRemark(table, "不存在符合条件的退款条目");
+        return table;
     }
 
-    char *orderidstring = LongLongToString(orderid);
+    char *orderIdString = LongLongToString(orderId);
 
-    const char *tempreason = GetRefundEntryReason(thisrefund);
-    char *reason = CloneString(tempreason);
+    const char *reason = GetRefundEntryReason(entry);
+    char *reasonString = CloneString(reason);
 
-    Time refundtime = GetRefundEntryTime(thisrefund);
-    TimeInfo refundtimeinfo = GetTimeInfo(&refundtime, 1);
-    char *refundtimestring = TimeToString(refundtimeinfo);
+    Time refundTime = GetRefundEntryTime(entry);
+    char *refundTimeString = TimeToString(GetTimeInfo(&refundTime, 1));
 
-    Amount price = GetRefundEntryAmount(thisrefund);
-    int yuan = GetAmountYuan(&price);
-    int jiao = GetAmountJiao(&price);
-    int cent = GetAmountCent(&price);
-    char *yuanstring = LongLongToString(yuan);
-    char *jiaostring = LongLongToString(jiao);
-    char *centstring = LongLongToString(cent);
+    Amount amount = GetRefundEntryAmount(entry);
+    char *amountString = AmountToString(&amount);
 
-    int number = GetRefundEntryNumber(thisrefund);
-    char *numberstring = LongLongToString(number);
+    int number = GetRefundEntryNumber(entry);
+    char *numberString = LongLongToString(number);
 
-    const char *tempremark = GetRefundEntryRemark(thisrefund);
-    char *remark = CloneString(tempremark);
+    const char *remark = GetRefundEntryRemark(entry);
+    char *remarkString = CloneString(remark);
 
     // 添加数据
     row = NewTableRow();
-    AppendTableRow(row, orderidstring);
-    AppendTableRow(row, reason);
-    AppendTableRow(row, refundtimestring);
-    AppendTableRow(row, yuanstring);
-    AppendTableRow(row, jiaostring);
-    AppendTableRow(row, centstring);
-    AppendTableRow(row, numberstring);
-    AppendTableRow(row, remark);
-    AppendTable(goback, row);
+    AppendTableRow(row, orderIdString);
+    AppendTableRow(row, reasonString);
+    AppendTableRow(row, refundTimeString);
+    AppendTableRow(row, amountString);
+    AppendTableRow(row, numberString);
+    AppendTableRow(row, remarkString);
+    AppendTable(table, row);
 
-    free(orderidstring);
-    free(refundtimestring);
-    free(yuanstring);
-    free(jiaostring);
-    free(centstring);
-    free(numberstring);
+    free(orderIdString);
+    free(reasonString);
+    free(refundTimeString);
+    free(amountString);
+    free(numberString);
+    free(remarkString);
 
     // 返回值
-    return goback;
+    return table;
 }

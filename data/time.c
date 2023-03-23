@@ -5,7 +5,7 @@
 
 Time AddTime(const Time *baseTime, const Time *timeSpan)
 {
-    Time result = {baseTime->value + timeSpan->value};
+    Time result = { baseTime->value + timeSpan->value };
     return result;
 }
 
@@ -39,7 +39,7 @@ char *TimeToString(const TimeInfo info)
 
 TimeInfo ParseTime(const char *time, int isSpan)
 {
-    TimeInfo info = {0};
+    TimeInfo info = { 0 };
     if (isSpan)
     {
         sscanf(time, "%02d天%02d小时", &info.day, &info.hour);
@@ -47,7 +47,7 @@ TimeInfo ParseTime(const char *time, int isSpan)
     else
     {
         sscanf(time, "%04d-%02d-%02d %02d:%02d:%02d", &info.year, &info.month, &info.day, &info.hour, &info.minute,
-               &info.second);
+                &info.second);
     }
     return info;
 }
@@ -63,7 +63,7 @@ Time NewDateTime(int year, int month, int day, int hour, int minute, int second)
     info.tm_sec = second;
     info.tm_isdst = -1;
 
-    Time result = {mktime(&info)};
+    Time result = { mktime(&info) };
     return result;
 }
 
@@ -73,7 +73,7 @@ Time NewTimeSpan(int day, int hour)
     result += day * 24 * 3600;
     result += hour * 3600;
 
-    Time time = {result};
+    Time time = { result };
     return time;
 }
 
@@ -83,12 +83,12 @@ TimeInfo GetTimeInfo(const Time *time, int isDateTime)
     {
         struct tm *info = localtime(&time->value);
         TimeInfo result = {
-            info->tm_year + 1900, info->tm_mon + 1, info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec, 0};
+                info->tm_year + 1900, info->tm_mon + 1, info->tm_mday, info->tm_hour, info->tm_min, info->tm_sec, 0 };
         return result;
     }
     else
     {
-        TimeInfo result = {0, 0, time->value / 3600 / 24, (time->value % (24 * 3600)) / 3600, 0, 0, 1};
+        TimeInfo result = { 0, 0, time->value / 3600 / 24, (time->value % (24 * 3600)) / 3600, 0, 0, 1 };
         return result;
     }
 }
@@ -97,6 +97,6 @@ Time GetSystemTime()
 {
     time_t value;
     time(&value);
-    Time result = {value};
+    Time result = { value };
     return result;
 }

@@ -110,7 +110,7 @@ LinkedList *GetInventoryByItemId(int itemId)
 }
 
 InventoryEntry *NewInventoryEntry(int itemId, int number, const Time *inboundTime, const Time *productionTime,
-                                  const Amount *inboundUnitPrice)
+        const Amount *inboundUnitPrice)
 {
     if (itemId < 0 || number < 0 || inboundUnitPrice < 0)
         return NULL;

@@ -1,7 +1,9 @@
 #ifndef JUDGE_H
 #define JUDGE_H
+
 #include "../data/operation.h"
 #include "../data/table.h"
+
 /*
  *鉴权函数
  *函数参数:
@@ -23,4 +25,5 @@ Table *Judge(int staffId, int *hasPermission, const char *password, Operation op
  *返回值:写日志函数返回的表格
  **/
 Table *AddJournalResult(int staffId, int *hasPermission, Operation operation, Table *inpuit);
+
 #endif
