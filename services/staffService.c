@@ -247,6 +247,7 @@ Table *DeleteStaff(Table *staff)
 //		/*创建一个空表格，只有备注说明 没有给予任何信息*/
 //		return remark_table; // 返回空表格
     }
+    return NewTable(NULL, "删除失败: 员工为NULL");
 }
 
 /*暂时无法获得/修改staff的密码*/

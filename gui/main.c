@@ -55,6 +55,7 @@ void InitWindows()
 {
     windows = malloc(sizeof(LinkedList));
     windows->data = NewLoginWindow("login");
+    windows->next = NULL;
 }
 
 const char *executablePath;
@@ -71,7 +72,7 @@ int main(int argc, char **argv)
     int window_width = 1920;
     int window_height = 1080;
 
-    struct nk_glfw glfw = { 0 };
+    struct nk_glfw glfw = {0};
     static GLFWwindow *window;
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
@@ -83,13 +84,13 @@ int main(int argc, char **argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_DECORATED, GL_FALSE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
     window = glfwCreateWindow(window_width, window_height, "Demo", NULL, NULL);
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -147,7 +148,6 @@ int main(int argc, char **argv)
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
-        nk_glfw3_new_frame(&glfw);
 
         LinkedList *now = windows;
         while (now != NULL)
@@ -156,8 +156,8 @@ int main(int argc, char **argv)
             {
                 nk_window_close(context, ((Window *)now->data)->title);
                 Window *tmp = now->data;
-                tmp->freeFunc(tmp);
                 now->data = ((Window *)now->data)->next;
+                tmp->freeFunc(tmp);
             }
             if (((Window *)now->data)->isClosed == 1)
             {
@@ -175,8 +175,8 @@ int main(int argc, char **argv)
             else
             {
                 if (nk_begin(context, ((Window *)now->data)->title, nk_rect(0, 0, 1000, 800),
-                        NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | NK_WINDOW_MOVABLE |
-                        NK_WINDOW_SCALABLE))
+                             NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | NK_WINDOW_MOVABLE |
+                                 NK_WINDOW_SCALABLE))
                 {
                     ((Window *)now->data)->layoutFunc(context, now->data);
                 }
@@ -185,6 +185,8 @@ int main(int argc, char **argv)
                 now = now->next;
             }
         }
+
+        nk_glfw3_new_frame(&glfw);
 
         glViewport(0, 0, window_width, window_height);
         glClear(GL_COLOR_BUFFER_BIT);
