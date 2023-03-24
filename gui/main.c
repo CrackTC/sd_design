@@ -1,8 +1,8 @@
 #include "../utils.h"
-#include "config.h"
+#include "../config.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,8 +62,9 @@ struct nk_font *fontLarge;
 struct nk_font *fontMedium;
 struct nk_font *fontSmall;
 
-int main(__attribute__((unused)) int argc, char **argv)
+int main(int argc, char **argv)
 {
+    printf("separator: " PATH_SEPARATOR_STRING "\n");
     char *path = GetDirectory(argv[0]);
     executablePath = path;
     printf("%s\n", path);
@@ -90,12 +91,17 @@ int main(__attribute__((unused)) int argc, char **argv)
     window = glfwCreateWindow(window_width, window_height, "Demo", NULL, NULL);
     glfwMakeContextCurrent(window);
 
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK)
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        printf("[GLEW] failed to setup glew\n");
+        printf("[GLAD] failed to setup glad\n");
         return -1;
     }
+    // glewExperimental = GL_TRUE;
+    // if (glewInit() != GLEW_OK)
+    // {
+    //     printf("[GLEW] failed to setup glew\n");
+    //     return -1;
+    // }
 
     struct nk_context *context = nk_glfw3_init(&glfw, window, NK_GLFW3_INSTALL_CALLBACKS);
 

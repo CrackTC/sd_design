@@ -1,11 +1,23 @@
+ifeq ($(OS),Windows_NT)
+    MKDIR := mkdir
+	CP := copy
+	RM := rd /s /q
+	SEP := \\
+else
+    MKDIR := mkdir -p
+	CP := cp
+	RM := rm -rf
+	SEP := /
+endif
+
 build:
-	mkdir -p ../bin
-	clang -std=c99 -Wall -lm -lGLEW -lGL -lglfw *.c ../utils.c ../data/*.c ../services/*.c ./*/*.c -o ../bin/gui
-	mkdir -p ../bin/resources
-	cp resources/*.tt[cf] ../bin/resources/
+	$(MKDIR) ..$(SEP)bin
+	gcc -std=c99 -Wall -I ../include -L ../lib ./*.c ../utils.c ../data/*.c ../services/*.c ./edit/*.c ./page/*.c ./detail/*.c -o ../bin/gui -lm -lglfw3 -lgdi32
+	$(MKDIR) ..$(SEP)bin$(SEP)resources
+	$(CP) resources$(SEP)* ..$(SEP)bin$(SEP)resources$(SEP)
 
 run:
-	../bin/gui
+	..$(SEP)bin$(SEP)gui
 
 clean:
-	rm -rf ../bin
+	$(RM) ..$(SEP)bin

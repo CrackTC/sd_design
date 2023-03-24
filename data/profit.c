@@ -1,13 +1,14 @@
 #include "profit.h"
 #include "../utils.h"
 #include "amount.h"
+#include "../config.h"
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
 #include <malloc.h>
 #include <stdio.h>
 
-static const char *path = "data/profit.txt";
+static const char *fileName = "data" PATH_SEPARATOR_STRING "profit.txt";
 static const char *amountRow = "amount";
 static const char *matterRow = "matter";
 static const char *timeRow = "time";

@@ -5,7 +5,7 @@
 #include <malloc.h>
 
 // 读取所有的收支条目并计算总金额、输出总金额
-Table *GetStatistics(__attribute__((unused)) Table *a)
+Table *GetStatistics(Table *a)
 {
     // 判断并计算总金额
     LinkedList *profitHead = GetAllProfits();

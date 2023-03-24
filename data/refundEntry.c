@@ -1,12 +1,13 @@
 #include "refundEntry.h"
 #include "../utils.h"
+#include "../config.h"
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-static const char *path = "data/refundEntry.txt";
+static const char *fileName = "data" PATH_SEPARATOR_STRING "refundEntry.txt";
 static const char *orderIdRow = "orderId";
 static const char *reasonRow = "reason";
 static const char *timeRow = "time";

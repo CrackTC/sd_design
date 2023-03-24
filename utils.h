@@ -7,10 +7,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "data/linkedList.h"
 #include "data/amount.h"
-#include <stdlib.h>
-#include <string.h>
+#include "data/linkedList.h"
 
 /*
  * Name: IntegerStringLength

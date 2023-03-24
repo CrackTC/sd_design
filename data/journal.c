@@ -1,4 +1,5 @@
 #include "journal.h"
+#include "../config.h"
 #include "../utils.h"
 #include "linkedList.h"
 #include "serialization.h"
@@ -7,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static const char *path = "data/journal.txt";
+static const char *fileName = "data" PATH_SEPARATOR_STRING "journal.txt";
 static const char *staffIdRow = "staffId";
 static const char *timeRow = "time";
 static const char *operationRow = "operation";

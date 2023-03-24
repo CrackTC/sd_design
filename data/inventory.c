@@ -1,5 +1,6 @@
 #include "inventory.h"
 #include "../utils.h"
+#include "../config.h"
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
@@ -7,7 +8,7 @@
 #include <stdio.h>
 
 static int idCount = 0;
-static const char *path = "data/inventory.txt";
+static const char *fileName = "data" PATH_SEPARATOR_STRING "inventory.txt";
 static const char *idRow = "id";
 static const char *itemIdRow = "itemId";
 static const char *numberRow = "number";

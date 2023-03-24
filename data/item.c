@@ -1,5 +1,6 @@
 #include "item.h"
 #include "../utils.h"
+#include "../config.h"
 #include "amount.h"
 #include "linkedList.h"
 #include "serialization.h"
@@ -9,7 +10,7 @@
 #include <string.h>
 
 static int idCount = 0;
-static const char *path = "data/item.txt";
+static const char *fileName = "data" PATH_SEPARATOR_STRING "item.txt";
 static const char *idRow = "id";
 static const char *nameRow = "name";
 static const char *priceRow = "price";

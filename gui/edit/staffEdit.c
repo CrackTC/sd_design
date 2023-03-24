@@ -20,14 +20,14 @@ struct Data
     void (*messageCallback)(int, void *);
 };
 
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
+static void MessageBoxCallBack(int ok, void *parameter)
 {
     struct Data *data = parameter;
     free(data->message);
     data->message = NULL;
 }
 
-static void FinishCallback(__attribute__((unused)) int ok, void *parameter)
+static void FinishCallback(int ok, void *parameter)
 {
     MessageBoxCallBack(ok, parameter);
     struct Data *data = parameter;

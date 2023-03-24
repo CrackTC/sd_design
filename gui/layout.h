@@ -12,6 +12,7 @@
 
 #include "../data/linkedList.h"
 #include "../data/table.h"
+#include "glad/glad.h"
 #include "nuklear/nuklear.h"
 #include "nuklear/nuklear_glfw_gl3.h"
 

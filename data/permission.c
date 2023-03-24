@@ -1,5 +1,6 @@
 #include "permission.h"
 #include "../utils.h"
+#include "../config.h"
 #include "linkedList.h"
 #include "operation.h"
 #include "serialization.h"
@@ -9,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static const char *path = "data/permission.txt";
+static const char *fileName = "data" PATH_SEPARATOR_STRING "permission.txt";
 static const char *staffIdRow = "staffId";
 static const char *permissionRow = "permission";
 static LinkedList *systemList = NULL;

@@ -3,6 +3,9 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
+#include "../utils.h"
+
+extern const char *executablePath;
 
 int Serialize(const Table *table, const char *path)
 {
@@ -11,7 +14,9 @@ int Serialize(const Table *table, const char *path)
         return -1;
     }
 
-    FILE *filePointer = fopen(path, "w");
+    char *fullPath = JoinPath(executablePath, path);
+    FILE *filePointer = fopen(fullPath, "wb");
+    free(fullPath);
 
     if (filePointer == NULL)
     {
@@ -19,7 +24,7 @@ int Serialize(const Table *table, const char *path)
     }
 
     fprintf(filePointer, "remark:");
-    fprintf(filePointer, "\n    len: %lu", table->remark == NULL ? 0 : strlen(table->remark));
+    fprintf(filePointer, "\n    len: %llu", table->remark == NULL ? 0 : strlen(table->remark));
     fprintf(filePointer, "\n    val: %s", table->remark == NULL ? "" : table->remark);
     fprintf(filePointer, "\ncolumnCount: %d", ((TableRow *)table->rows->data)->columnCount);
     fprintf(filePointer, "\nrows:");
@@ -33,7 +38,7 @@ int Serialize(const Table *table, const char *path)
         LinkedList *itemNow = row->items;
         while (itemNow != NULL)
         {
-            fprintf(filePointer, "\n        len: %lu", strlen(itemNow->data));
+            fprintf(filePointer, "\n        len: %llu", strlen(itemNow->data));
             fprintf(filePointer, "\n        val: %s", (char *)itemNow->data);
             itemNow = itemNow->next;
         }
@@ -62,7 +67,10 @@ int Unserialize(Table **destination, const char *path)
         return -1;
     }
 
-    FILE *filePointer = fopen(path, "r");
+    char *fullPath = JoinPath(executablePath, path);
+    FILE *filePointer = fopen(fullPath, "rb");
+    free(fullPath);
+
     if (filePointer == NULL)
     {
         return 1;

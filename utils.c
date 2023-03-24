@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "data/amount.h"
+#include "config.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
@@ -51,10 +52,11 @@ char *GetDirectory(const char *path)
     int length = strlen(path);
     for (int i = length - 1; i >= 0; i--)
     {
-        if (path[i] == '/')
+        if (path[i] == PATH_SEPARATOR)
         {
-            char *result = malloc(i * sizeof(char));
+            char *result = malloc(i * sizeof(char) + 1);
             strncpy(result, path, i * sizeof(char));
+            result[i * sizeof(char)] = '\0';
             return result;
         }
     }
@@ -73,7 +75,7 @@ char *JoinPath(const char *pathA, const char *pathB)
 
     char *result = malloc((lenA + 1 + lenB + 1) * sizeof(char));
     strcpy(result, pathA);
-    result[lenA] = '/';
+    result[lenA] = PATH_SEPARATOR;
     strcpy(result + lenA + 1, pathB);
 
     return result;
