@@ -3,6 +3,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 /*读取=之前的字符*/
 char *getStringBefore(char *ch, char *string)
@@ -55,7 +56,7 @@ Table *AddJournal(Table *table, int staffId, Operation operation)
     }
 
     JournalEntry *newJournal =
-            NewJournalEntry(staffId, &time, operation, arguments, argumentCount); // 开创新日志条目
+            NewJournalEntry(staffId, &time, operation, (const char **)arguments, argumentCount); // 开创新日志条目
     //
     for (int i = 0; i < argumentCount; i++)
     {
@@ -481,7 +482,7 @@ Table *GetAllJournalOfOneStaff(Table *staff)
 }
 
 /*读取全部日志*/
-Table *GetAllJournal(__attribute__((unused)) Table *table)
+Table *GetAllJournal(Table *table)
 {
     LinkedList *journalNow = GetAllJournals(); // 获取某个操作的链表
     if (journalNow == NULL)

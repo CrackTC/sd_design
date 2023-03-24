@@ -53,7 +53,7 @@ LinkedList *GetAllCustomers()
     fetched = 1;
 
     Table *table;
-    int result = Unserialize(&table, path);
+    int result = Unserialize(&table, fileName);
     if (result == 1)
     {
         CustomerSave();
@@ -235,6 +235,6 @@ void CustomerSave()
         now = now->next;
     }
 
-    Serialize(table, path);
+    Serialize(table, fileName);
     FreeTable(table);
 }

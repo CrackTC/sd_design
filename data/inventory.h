@@ -7,8 +7,8 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
-#include "amount.h"
 #include "linkedList.h"
+#include "amount.h"
 #include "time.h"
 
 /*

@@ -5,6 +5,7 @@
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
+#include "time.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
@@ -53,7 +54,7 @@ LinkedList *GetAllItems()
     fetched = 1;
 
     Table *table;
-    int result = Unserialize(&table, path);
+    int result = Unserialize(&table, fileName);
     if (result == 1)
     {
         ItemsSave();
@@ -76,7 +77,7 @@ LinkedList *GetAllItems()
         sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &item->id);
         item->name = CloneString(GetRowItemByColumnName(table, row, nameRow));
         sscanf(GetRowItemByColumnName(table, row, priceRow), "%lld", &item->price.value);
-        sscanf(GetRowItemByColumnName(table, row, shelfLifeRow), "%ld", &item->shelfLife.value);
+        sscanf(GetRowItemByColumnName(table, row, shelfLifeRow), "%lld", &item->shelfLife.value);
 
         list = AppendData(list, item);
     }
@@ -114,7 +115,7 @@ Item *GetItemByName(const char *name)
     while (now != NULL)
     {
         Item *item = now->data;
-        if (strcmp(name, item->name) != 0 == 0)
+        if (strcmp(name, item->name) == 0)
         {
             return item;
         }
@@ -210,6 +211,6 @@ void ItemsSave()
         now = now->next;
     }
 
-    Serialize(table, path);
+    Serialize(table, fileName);
     FreeTable(table);
 }

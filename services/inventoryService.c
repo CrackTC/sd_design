@@ -7,6 +7,7 @@
 #include "../data/order.h"
 #include "../data/profit.h"
 #include "../utils.h"
+#include <malloc.h>
 #include <string.h>
 
 // 转换函数 将字符1到9  转换为数字1到9
@@ -123,7 +124,7 @@ Table *AddInventory(Table *input)
 }
 
 // 更新货存链表 并将过期的货物放入货损链表中
-Table *UpdateInventory(__attribute__((unused)) Table *input)
+Table *UpdateInventory(Table *input)
 {
     // 获取货存管理中的全部链表
     LinkedList *head = GetAllInventory();
@@ -208,7 +209,7 @@ Table *UpdateInventory(__attribute__((unused)) Table *input)
 }
 
 // 展示所有的缺货状态的货物
-Table *ShowLackInventory(__attribute__((unused)) Table *input)
+Table *ShowLackInventory(Table *input)
 {
     // 创建表格 该表格用于有货存过少时使用
     Table *tableLack;
@@ -552,7 +553,7 @@ Table *DeleteItemById(Table *input)
 }
 
 // 展示货存系统中的全部信息
-Table *ShowInventory(__attribute__((unused)) Table *input)
+Table *ShowInventory(Table *input)
 {
     // 用于记录一共有多少批货物
     int inventoryCount = 0;
@@ -619,7 +620,7 @@ Table *ShowInventory(__attribute__((unused)) Table *input)
 }
 
 // 展示商品系统中的全部信息
-Table *ShowItem(__attribute__((unused)) Table *input)
+Table *ShowItem(Table *input)
 {
     // 用于记录一共有多少中商品
     int itemCount = 0;
@@ -674,7 +675,7 @@ Table *ShowItem(__attribute__((unused)) Table *input)
     return table;
 }
 
-Table *ShowLossInventory(__attribute__((unused)) Table *input)
+Table *ShowLossInventory(Table *input)
 {
     // 获取所有的货损信息
     LinkedList *head = GetAllLoss();

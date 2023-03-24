@@ -7,7 +7,6 @@
 #ifndef TIME_H
 #define TIME_H
 
-#include <stddef.h>
 #include <time.h>
 
 /*

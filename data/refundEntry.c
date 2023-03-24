@@ -61,7 +61,7 @@ LinkedList *GetAllRefunds()
     }
 
     Table *table;
-    int result = Unserialize(&table, path);
+    int result = Unserialize(&table, fileName);
     if (result == 1)
     {
         RefundEntrySave();
@@ -81,7 +81,7 @@ LinkedList *GetAllRefunds()
 
         sscanf(GetRowItemByColumnName(table, row, orderIdRow), "%d", &entry->orderId);
         entry->reason = CloneString(GetRowItemByColumnName(table, row, reasonRow));
-        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &entry->time.value);
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%lld", &entry->time.value);
         sscanf(GetRowItemByColumnName(table, row, refundAmountRow), "%lld", &entry->refundAmount.value);
         sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &entry->number);
         entry->remark = CloneString(GetRowItemByColumnName(table, row, remarkRow));
@@ -228,6 +228,6 @@ void RefundEntrySave()
         now = now->next;
     }
 
-    Serialize(table, path);
+    Serialize(table, fileName);
     FreeTable(table);
 }

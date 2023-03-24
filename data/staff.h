@@ -7,12 +7,12 @@
 #ifndef STAFF_H
 #define STAFF_H
 
+#include "linkedList.h"
+
 /*
  * Name: Staff
  * Description: 表示一个员工
  * */
-#include "linkedList.h"
-
 typedef struct Staff Staff;
 
 /*

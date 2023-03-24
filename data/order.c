@@ -58,7 +58,7 @@ LinkedList *GetAllOrders()
     fetched = 1;
 
     Table *table;
-    int result = Unserialize(&table, path);
+    int result = Unserialize(&table, fileName);
     if (result == 1)
     {
         OrderSave();
@@ -82,7 +82,7 @@ LinkedList *GetAllOrders()
         sscanf(GetRowItemByColumnName(table, row, inventoryIdRow), "%d", &order->inventoryId);
         sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &order->number);
         sscanf(GetRowItemByColumnName(table, row, customerIdRow), "%d", &order->customerId);
-        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &order->time.value);
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%lld", &order->time.value);
         sscanf(GetRowItemByColumnName(table, row, amountRow), "%lld", &order->amount.value);
 
         list = AppendData(list, order);
@@ -262,6 +262,6 @@ void OrderSave()
         now = now->next;
     }
 
-    Serialize(table, path);
+    Serialize(table, fileName);
     FreeTable(table);
 }

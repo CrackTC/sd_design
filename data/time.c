@@ -2,6 +2,7 @@
 #include "../utils.h"
 #include <stdio.h>
 #include <time.h>
+#include <malloc.h>
 
 Time AddTime(const Time *baseTime, const Time *timeSpan)
 {

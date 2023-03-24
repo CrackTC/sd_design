@@ -55,7 +55,7 @@ LinkedList *GetAllPermissionEntry()
         return systemList;
 
     Table *table;
-    int result = Unserialize(&table, path);
+    int result = Unserialize(&table, fileName);
     if (result == 1)
     {
         PermissionSave();
@@ -194,6 +194,6 @@ void PermissionSave()
         now = now->next;
     }
 
-    Serialize(table, path);
+    Serialize(table, fileName);
     FreeTable(table);
 }

@@ -8,8 +8,8 @@
 #define PROFIT_H
 
 #include "amount.h"
-#include "linkedList.h"
 #include "time.h"
+#include "linkedList.h"
 
 /*
  * Name: Profit

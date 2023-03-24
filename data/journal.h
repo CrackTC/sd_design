@@ -8,8 +8,8 @@
 #define JOURNAL_H
 
 #include "linkedList.h"
-#include "operation.h"
 #include "time.h"
+#include "operation.h"
 
 /*
  * Name: JournalEntry

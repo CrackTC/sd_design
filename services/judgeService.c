@@ -4,6 +4,7 @@
 #include "../data/staff.h"
 #include "../utils.h"
 #include "journalService.h"
+#include <malloc.h>
 
 /*
  * 用于判断是否有相应的权限

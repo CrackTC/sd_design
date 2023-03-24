@@ -2,6 +2,8 @@
 #include "../data/amount.h"
 #include "../data/profit.h"
 #include "../utils.h"
+#include <string.h>
+#include <stdio.h>
 #include <malloc.h>
 
 // 读取所有的收支条目并计算总金额、输出总金额

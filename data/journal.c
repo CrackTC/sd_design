@@ -4,6 +4,8 @@
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
+#include "time.h"
+#include "operation.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
@@ -84,7 +86,7 @@ LinkedList *GetAllJournals()
         return systemList;
 
     Table *table;
-    int result = Unserialize(&table, path);
+    int result = Unserialize(&table, fileName);
     if (result == 1)
     {
         JournalSave();
@@ -103,8 +105,8 @@ LinkedList *GetAllJournals()
         JournalEntry *entry = malloc(sizeof(JournalEntry));
 
         sscanf(GetRowItemByColumnName(table, row, staffIdRow), "%d", &entry->staffId);
-        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &entry->time.value);
-        sscanf(GetRowItemByColumnName(table, row, operationRow), "%d", &entry->operation);
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%lld", &entry->time.value);
+        sscanf(GetRowItemByColumnName(table, row, operationRow), "%d", (int *)&entry->operation);
         char *joinedArgument = CloneString(GetRowItemByColumnName(table, row, argumentsRow));
         sscanf(GetRowItemByColumnName(table, row, argumentCountRow), "%d", &entry->argumentCount);
 
@@ -256,6 +258,6 @@ void JournalSave()
         now = now->next;
     }
 
-    Serialize(table, path);
+    Serialize(table, fileName);
     FreeTable(table);
 }

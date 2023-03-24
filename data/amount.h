@@ -7,8 +7,6 @@
 #ifndef AMOUNT_H
 #define AMOUNT_H
 
-#include <stddef.h>
-
 /*
  * Name: Amount
  * Description: 表示一个特定的金额

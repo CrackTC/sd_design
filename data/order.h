@@ -7,9 +7,9 @@
 #ifndef ORDER_H
 #define ORDER_H
 
-#include "amount.h"
 #include "linkedList.h"
 #include "time.h"
+#include "amount.h"
 
 /*
  * Name: Order

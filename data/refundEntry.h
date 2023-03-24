@@ -7,9 +7,9 @@
 #ifndef REFUND_ENTRY_H
 #define REFUND_ENTRY_H
 
+#include "time.h"
 #include "amount.h"
 #include "linkedList.h"
-#include "time.h"
 
 /*
  * Name: RefundEntry

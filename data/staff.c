@@ -1,16 +1,18 @@
 #include "staff.h"
 #include "permission.h"
 #include "../utils.h"
+#include "../config.h"
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
+#include "operation.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 static int idCount = 1;
-static const char *path = "data/staff.txt";
+static const char *fileName = "data" PATH_SEPARATOR_STRING "staff.txt";
 static const char *idRow = "id";
 static const char *enableRow = "enable";
 static const char *nameRow = "name";
@@ -61,7 +63,7 @@ LinkedList *GetAllStaff()
     fetched = 1;
 
     Table *table;
-    int result = Unserialize(&table, path);
+    int result = Unserialize(&table, fileName);
     if (result == 1)
     {
         // 添加一个默认管理员账户
@@ -240,6 +242,6 @@ void StaffSave()
         now = now->next;
     }
 
-    Serialize(table, path);
+    Serialize(table, fileName);
     FreeTable(table);
 }

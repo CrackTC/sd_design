@@ -53,7 +53,7 @@ LinkedList *GetAllBasicDiscounts()
     fetched = 1;
 
     Table *table;
-    int result = Unserialize(&table, path);
+    int result = Unserialize(&table, fileName);
     if (result == 1)
     {
         BasicDiscountSave();
@@ -237,6 +237,6 @@ void BasicDiscountSave()
         now = now->next;
     }
 
-    Serialize(table, path);
+    Serialize(table, fileName);
     FreeTable(table);
 }

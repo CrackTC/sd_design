@@ -4,6 +4,8 @@
 #include "linkedList.h"
 #include "serialization.h"
 #include "table.h"
+#include "amount.h"
+#include "time.h"
 #include <malloc.h>
 #include <stdio.h>
 
@@ -36,7 +38,7 @@ LinkedList *GetAllInventory()
     fetched = 1;
 
     Table *table;
-    int result = Unserialize(&table, path);
+    int result = Unserialize(&table, fileName);
     if (result == 1)
     {
         InventorySave();
@@ -59,8 +61,8 @@ LinkedList *GetAllInventory()
         sscanf(GetRowItemByColumnName(table, row, idRow), "%d", &entry->id);
         sscanf(GetRowItemByColumnName(table, row, itemIdRow), "%d", &entry->itemId);
         sscanf(GetRowItemByColumnName(table, row, numberRow), "%d", &entry->number);
-        sscanf(GetRowItemByColumnName(table, row, inboundTimeRow), "%ld", &entry->inboundTime.value);
-        sscanf(GetRowItemByColumnName(table, row, productionTimeRow), "%ld", &entry->productionTime.value);
+        sscanf(GetRowItemByColumnName(table, row, inboundTimeRow), "%lld", &entry->inboundTime.value);
+        sscanf(GetRowItemByColumnName(table, row, productionTimeRow), "%lld", &entry->productionTime.value);
         sscanf(GetRowItemByColumnName(table, row, inboundUnitPriceRow), "%lld", &entry->inboundUnitPrice.value);
 
         list = AppendData(list, entry);
@@ -245,6 +247,6 @@ void InventorySave()
         now = now->next;
     }
 
-    Serialize(table, path);
+    Serialize(table, fileName);
     FreeTable(table);
 }

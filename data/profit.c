@@ -48,7 +48,7 @@ LinkedList *GetAllProfits()
         return systemList;
 
     Table *table;
-    int result = Unserialize(&table, path);
+    int result = Unserialize(&table, fileName);
     if (result == 1)
     {
         ProfitSave();
@@ -68,7 +68,7 @@ LinkedList *GetAllProfits()
 
         sscanf(GetRowItemByColumnName(table, row, amountRow), "%lld", &profit->amount.value);
         profit->matter = CloneString(GetRowItemByColumnName(table, row, matterRow));
-        sscanf(GetRowItemByColumnName(table, row, timeRow), "%ld", &profit->time.value);
+        sscanf(GetRowItemByColumnName(table, row, timeRow), "%lld", &profit->time.value);
 
         list = AppendData(list, profit);
     }
@@ -156,6 +156,6 @@ void ProfitSave()
         now = now->next;
     }
 
-    Serialize(table, path);
+    Serialize(table, fileName);
     FreeTable(table);
 }
