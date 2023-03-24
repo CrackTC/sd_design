@@ -1,0 +1,43 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc.exe 生成活动文件",
+            "command": "C:\\Users\\Chen\\Desktop\\mingw64\\bin\\gcc.exe",
+            "args": [
+                "-std=c99",
+                "-Wall",
+                "-I",
+                "./include",
+                "-L",
+                "./lib",
+                "-g",
+                "./gui/*.c",
+                "utils.c",
+                "./data/*.c",
+                "./services/*.c",
+                "./gui/edit/*.c",
+                "./gui/page/*.c",
+                "./gui/detail/*.c",
+                "-fdiagnostics-color=always",
+                "-o",
+                "./bin/gui",
+                "-lm",
+                "-lglfw3",
+                "-lgdi32",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "调试器生成的任务。"
+        }
+    ],
+    "version": "2.0.0"
+}
