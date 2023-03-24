@@ -65,6 +65,10 @@ struct nk_font *fontSmall;
 
 int main(int argc, char **argv)
 {
+#ifdef _WIN32
+    printf("system: Windows\n");
+    system("chcp 65001");
+#endif
     printf("separator: " PATH_SEPARATOR_STRING "\n");
     char *path = GetDirectory(argv[0]);
     executablePath = path;
