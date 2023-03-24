@@ -1,5 +1,5 @@
-#include "journalService.h"
-#include "../utils.h"
+#include "design/journalService.h"
+#include "design/utils.h"
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>

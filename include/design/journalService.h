@@ -1,9 +1,9 @@
 #ifndef JOURNALH
 #define JOURNALH
 
-#include "../data/journal.h"
-#include "../data/linkedList.h"
-#include "../data/table.h"
+#include "journal.h"
+#include "linkedList.h"
+#include "table.h"
 
 // LinkedList* GetOneJournalInLinkedList(int staffid, Operation operation, Time time);
 

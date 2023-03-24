@@ -1,8 +1,8 @@
-#include "../data/table.h"
-#include "../services/judgeService.h"
-#include "../utils.h"
-#include "layout.h"
-#include "../services/journalService.h"
+#include "design/table.h"
+#include "design/judgeService.h"
+#include "design/utils.h"
+#include "design/layout.h"
+#include "design/journalService.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>

@@ -1,6 +1,6 @@
-#include "../data/linkedList.h"
-#include "../data/table.h"
-#include "layout.h"
+#include "design/linkedList.h"
+#include "design/table.h"
+#include "design/layout.h"
 #include <stdlib.h>
 #include <string.h>
 

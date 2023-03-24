@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../data/customer.h"
-#include "../data/order.h"
-#include "../data/table.h"
-#include "../utils.h"
-#include "customerService.h"
+#include "design/customer.h"
+#include "design/order.h"
+#include "design/table.h"
+#include "design/utils.h"
+#include "design/customerService.h"
 
 // 添加客户
 Table *AddCustomer(Table *a)

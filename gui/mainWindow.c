@@ -1,6 +1,6 @@
-#include "mainWindow.h"
-#include "../utils.h"
-#include "layout.h"
+#include "design/mainWindow.h"
+#include "design/utils.h"
+#include "design/layout.h"
 #include <malloc.h>
 #include <stddef.h>
 #include <stdio.h>

@@ -1,10 +1,10 @@
-#include "lossEntry.h"
-#include "../utils.h"
+#include "design/lossEntry.h"
+#include "design/utils.h"
 #include "../config.h"
-#include "linkedList.h"
-#include "serialization.h"
-#include "table.h"
-#include "time.h"
+#include "design/linkedList.h"
+#include "design/serialization.h"
+#include "design/table.h"
+#include "design/time.h"
 #include <malloc.h>
 #include <stdio.h>
 

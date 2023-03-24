@@ -1,10 +1,10 @@
-#include "permission.h"
-#include "../utils.h"
+#include "design/permission.h"
+#include "design/utils.h"
 #include "../config.h"
-#include "linkedList.h"
-#include "operation.h"
-#include "serialization.h"
-#include "table.h"
+#include "design/linkedList.h"
+#include "design/operation.h"
+#include "design/serialization.h"
+#include "design/table.h"
 #include <malloc.h>
 #include <stddef.h>
 #include <stdio.h>

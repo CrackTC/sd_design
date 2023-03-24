@@ -1,7 +1,7 @@
-#include "statisticService.h"
-#include "../data/amount.h"
-#include "../data/profit.h"
-#include "../utils.h"
+#include "design/statisticService.h"
+#include "design/amount.h"
+#include "design/profit.h"
+#include "design/utils.h"
 #include <string.h>
 #include <stdio.h>
 #include <malloc.h>

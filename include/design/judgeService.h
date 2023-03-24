@@ -1,8 +1,8 @@
 #ifndef JUDGE_H
 #define JUDGE_H
 
-#include "../data/operation.h"
-#include "../data/table.h"
+#include "operation.h"
+#include "table.h"
 
 /*
  *鉴权函数

@@ -1,7 +1,7 @@
 #ifndef INVENTORY_SERVICE_H
 #define INVENTORY_SERVICE_H
 
-#include "../data/table.h"
+#include "table.h"
 
 /*
  *role:查验货存系统中的货物是否过期并将过期的货物放入货损系统中

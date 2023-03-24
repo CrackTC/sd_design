@@ -1,4 +1,4 @@
-#include "linkedList.h"
+#include "design/linkedList.h"
 #include <stddef.h>
 #include <stdlib.h>
 

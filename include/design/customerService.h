@@ -1,7 +1,7 @@
 #ifndef CUSTOMERCONTROL_H
 #define CUSTOMERCONTROL_H
 
-#include "../data/table.h"
+#include "table.h"
 
 // 添加客户
 

@@ -1,9 +1,9 @@
 #ifndef STAFFH
 #define STAFFH
 
-#include "../data/linkedList.h"
-#include "../data/staff.h"
-#include "../data/table.h"
+#include "linkedList.h"
+#include "staff.h"
+#include "table.h"
 
 /* 加入一个员工 */
 Table *AddStaff(Table *);

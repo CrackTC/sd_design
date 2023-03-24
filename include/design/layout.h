@@ -10,8 +10,8 @@
 #define NK_INCLUDE_DEFAULT_FONT
 #define NK_KEYSTATE_BASED_INPUT
 
-#include "../data/linkedList.h"
-#include "../data/table.h"
+#include "linkedList.h"
+#include "table.h"
 #include "glad/glad.h"
 #include "nuklear/nuklear.h"
 #include "nuklear/nuklear_glfw_gl3.h"

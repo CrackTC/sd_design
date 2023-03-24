@@ -1,15 +1,15 @@
-#include "../../data/linkedList.h"
-#include "../../data/operation.h"
-#include "../../data/table.h"
-#include "../../data/time.h"
-#include "../../services/inventoryService.h"
-#include "../../services/journalService.h"
-#include "../../services/judgeService.h"
-#include "../../utils.h"
-#include "../config.h"
-#include "../layout.h"
-#include "../mainWindow.h"
-#include "stddef.h"
+#include "design/linkedList.h"
+#include "design/operation.h"
+#include "design/table.h"
+#include "design/time.h"
+#include "design/inventoryService.h"
+#include "design/journalService.h"
+#include "design/judgeService.h"
+#include "design/utils.h"
+#include "../../config.h"
+#include "design/layout.h"
+#include "design/mainWindow.h"
+#include <stddef.h>
 #include <malloc.h>
 
 static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)

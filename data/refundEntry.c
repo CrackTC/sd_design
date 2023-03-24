@@ -1,9 +1,9 @@
-#include "refundEntry.h"
-#include "../utils.h"
+#include "design/refundEntry.h"
+#include "design/utils.h"
 #include "../config.h"
-#include "linkedList.h"
-#include "serialization.h"
-#include "table.h"
+#include "design/linkedList.h"
+#include "design/serialization.h"
+#include "design/table.h"
 #include <stdio.h>
 #include <stdlib.h>
 

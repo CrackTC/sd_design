@@ -1,6 +1,6 @@
-#include "table.h"
-#include "../utils.h"
-#include "linkedList.h"
+#include "design/table.h"
+#include "design/utils.h"
+#include "design/linkedList.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>

@@ -1,7 +1,7 @@
 #ifndef SALE_H
 #define SALE_H
 
-#include "../data/table.h"
+#include "table.h"
 
 //添加退货
 

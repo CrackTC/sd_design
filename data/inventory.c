@@ -1,11 +1,11 @@
-#include "inventory.h"
-#include "../utils.h"
+#include "design/inventory.h"
+#include "design/utils.h"
 #include "../config.h"
-#include "linkedList.h"
-#include "serialization.h"
-#include "table.h"
-#include "amount.h"
-#include "time.h"
+#include "design/linkedList.h"
+#include "design/serialization.h"
+#include "design/table.h"
+#include "design/amount.h"
+#include "design/time.h"
 #include <malloc.h>
 #include <stdio.h>
 

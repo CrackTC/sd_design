@@ -1,9 +1,9 @@
-#include "basicDiscount.h"
-#include "../utils.h"
+#include "design/basicDiscount.h"
+#include "design/utils.h"
 #include "../config.h"
-#include "linkedList.h"
-#include "serialization.h"
-#include "table.h"
+#include "design/linkedList.h"
+#include "design/serialization.h"
+#include "design/table.h"
 #include <malloc.h>
 #include <stdio.h>
 

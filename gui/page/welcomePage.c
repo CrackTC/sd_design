@@ -1,7 +1,7 @@
-#include "../../utils.h"
-#include "../config.h"
-#include "../layout.h"
-#include "../mainWindow.h"
+#include "design/utils.h"
+#include "../../config.h"
+#include "design/layout.h"
+#include "design/mainWindow.h"
 
 void WelcomePageLayout(struct nk_context *context, struct Window *window)
 {

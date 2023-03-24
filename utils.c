@@ -1,5 +1,5 @@
-#include "utils.h"
-#include "data/amount.h"
+#include "design/utils.h"
+#include "design/amount.h"
 #include "config.h"
 #include <malloc.h>
 #include <stdio.h>

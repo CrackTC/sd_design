@@ -4,7 +4,7 @@
  * Description: 包含与金额相关的数据表示和操作的实现
  * */
 
-#include "amount.h"
+#include "design/amount.h"
 #include <limits.h>
 #include <stdio.h>
 

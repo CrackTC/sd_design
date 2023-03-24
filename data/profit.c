@@ -1,10 +1,10 @@
-#include "profit.h"
-#include "../utils.h"
-#include "amount.h"
+#include "design/profit.h"
+#include "design/utils.h"
+#include "design/amount.h"
 #include "../config.h"
-#include "linkedList.h"
-#include "serialization.h"
-#include "table.h"
+#include "design/linkedList.h"
+#include "design/serialization.h"
+#include "design/table.h"
 #include <malloc.h>
 #include <stdio.h>
 

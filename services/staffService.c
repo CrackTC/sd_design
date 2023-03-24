@@ -1,6 +1,6 @@
-#include "staffService.h"
-#include "../data/permission.h"
-#include "../utils.h"
+#include "design/staffService.h"
+#include "design/permission.h"
+#include "design/utils.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

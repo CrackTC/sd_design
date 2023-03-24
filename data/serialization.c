@@ -1,9 +1,9 @@
-#include "serialization.h"
-#include "table.h"
+#include "design/serialization.h"
+#include "design/table.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
-#include "../utils.h"
+#include "design/utils.h"
 
 extern const char *executablePath;
 

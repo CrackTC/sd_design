@@ -1,4 +1,4 @@
-#include "../utils.h"
+#include "design/utils.h"
 #include "../config.h"
 
 #include "glad/glad.h"
@@ -13,7 +13,7 @@
 #define NK_IMPLEMENTATION
 #define NK_GLFW_GL3_IMPLEMENTATION
 
-#include "layout.h"
+#include "design/layout.h"
 
 static void error_callback(int e, const char *d)
 {

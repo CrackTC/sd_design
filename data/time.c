@@ -1,5 +1,5 @@
-#include "time.h"
-#include "../utils.h"
+#include "design/time.h"
+#include "design/utils.h"
 #include <stdio.h>
 #include <time.h>
 #include <malloc.h>

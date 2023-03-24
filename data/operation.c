@@ -1,4 +1,4 @@
-#include "operation.h"
+#include "design/operation.h"
 #include <string.h>
 
 static const char *operationStrings[] = {

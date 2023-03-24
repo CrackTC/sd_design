@@ -1,9 +1,9 @@
-#include "judgeService.h"
-#include "../data/amount.h"
-#include "../data/permission.h"
-#include "../data/staff.h"
-#include "../utils.h"
-#include "journalService.h"
+#include "design/judgeService.h"
+#include "design/amount.h"
+#include "design/permission.h"
+#include "design/staff.h"
+#include "design/utils.h"
+#include "design/journalService.h"
 #include <malloc.h>
 
 /*

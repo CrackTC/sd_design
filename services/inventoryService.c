@@ -1,12 +1,12 @@
-#include "inventoryService.h"
-#include "../data/amount.h"
-#include "../data/basicDiscount.h"
-#include "../data/inventory.h"
-#include "../data/item.h"
-#include "../data/lossEntry.h"
-#include "../data/order.h"
-#include "../data/profit.h"
-#include "../utils.h"
+#include "design/inventoryService.h"
+#include "design/amount.h"
+#include "design/basicDiscount.h"
+#include "design/inventory.h"
+#include "design/item.h"
+#include "design/lossEntry.h"
+#include "design/order.h"
+#include "design/profit.h"
+#include "design/utils.h"
 #include <malloc.h>
 #include <string.h>
 

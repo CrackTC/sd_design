@@ -1,13 +1,13 @@
-#include "saleService.h"
-#include "../data/amount.h"
-#include "../data/basicDiscount.h"
-#include "../data/customer.h"
-#include "../data/inventory.h"
-#include "../data/item.h"
-#include "../data/order.h"
-#include "../data/profit.h"
-#include "../data/refundEntry.h"
-#include "../utils.h"
+#include "design/saleService.h"
+#include "design/amount.h"
+#include "design/basicDiscount.h"
+#include "design/customer.h"
+#include "design/inventory.h"
+#include "design/item.h"
+#include "design/order.h"
+#include "design/profit.h"
+#include "design/refundEntry.h"
+#include "design/utils.h"
 
 #include <stdlib.h>
 
