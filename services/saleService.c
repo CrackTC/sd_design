@@ -643,10 +643,7 @@ Table *AddDiscount(Table *a)
     AppendBasicDiscount(newdiscount);
     BasicDiscountSave();
 
-    // 返回值
-    TableRow *row = NewTableRow();
-    Table *goback = NewTable(row, NULL);
-    return goback;
+    return NULL;
 }
 
 // 删除折扣
@@ -749,7 +746,7 @@ Table *ClearOutdateDiscount(__attribute__((unused)) Table *a)
 }
 
 // 查询折扣
-Table *GetAllDiscount(__attribute__((unused)) Table *a)
+Table *GetAllDiscount(Table *a)
 {
     TableRow *row = NewTableRow();
 
@@ -768,10 +765,14 @@ Table *GetAllDiscount(__attribute__((unused)) Table *a)
         SetTableRemark(table, "无折扣");
         return table;
     }
+
+    int count = 0;
+
     while (discountNow != NULL)
     {
         BasicDiscount *discount = discountNow->data;
         row = NewTableRow();
+        count++;
 
         // 数据准备
         int discountId = GetBasicDiscountId(discount);
@@ -810,6 +811,13 @@ Table *GetAllDiscount(__attribute__((unused)) Table *a)
 
         discountNow = discountNow->next;
     }
+
+    size_t len = strlen("查询到") + IntegerStringLength(count) + strlen("条信息") + 1;
+    char *remark = malloc(len);
+    sprintf(remark, "查询到%d条信息", count);
+    SetTableRemark(table, remark);
+    free(remark);
+
     // 返回值
     return table;
 }

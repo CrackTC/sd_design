@@ -208,10 +208,13 @@ Table *GetAllCustomer(__attribute__((unused)) Table *a)
         return table;
     }
 
+    int count = 0;
+
     while (customerNow != NULL)
     {
         Customer *customerInfo = customerNow->data;
         row = NewTableRow();
+        count++;
 
         int customerId = GetCustomerId(customerInfo);
         int customerLevel = GetCustomerLevel(customerInfo);
@@ -238,6 +241,13 @@ Table *GetAllCustomer(__attribute__((unused)) Table *a)
 
         customerNow = customerNow->next;
     }
+
+    size_t len = strlen("查询到") + IntegerStringLength(count) + strlen("条信息") + 1;
+    char *remark = malloc(len);
+    sprintf(remark, "查询到%d条信息", count);
+    SetTableRemark(table, remark);
+    free(remark);
+
     // 返回值
     return table;
 }
