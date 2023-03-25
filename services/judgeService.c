@@ -38,6 +38,7 @@ Table *Judge(int staffId, int *hasPermission, const char *password, Operation op
             // 判断是否 登录成功 如成功 返回员工姓名的表格
             if (VerifyStaffPassword(staff, password))
             {
+                *hasPermission = 1;
                 // 用于存放结果的表格
                 Table *table;
                 // 创建好表格的表头

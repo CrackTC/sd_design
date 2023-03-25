@@ -13,6 +13,7 @@
 static int idCount = 0;
 static const char *fileName = "data" PATH_SEPARATOR_STRING "item.txt";
 static const char *idRow = "id";
+static const char *enableRow = "enable";
 static const char *nameRow = "name";
 static const char *priceRow = "price";
 static const char *shelfLifeRow = "shelfLife";
@@ -25,6 +26,7 @@ struct Item
     char *name;
     Amount price;
     Time shelfLife;
+    int isEnabled;
 };
 
 Item *NewItem(const char *name, Amount *price, Time *shelfLife)
@@ -37,6 +39,7 @@ Item *NewItem(const char *name, Amount *price, Time *shelfLife)
     item->name = CloneString(name);
     item->price = *price;
     item->shelfLife = *shelfLife;
+    item->isEnabled = 1;
     return item;
 }
 
@@ -181,7 +184,7 @@ int AppendItem(Item *item)
 
 void RemoveItem(Item *item)
 {
-    systemList = RemoveNode(systemList, item);
+    item->isEnabled = 0;
 }
 
 void ItemsSave()
@@ -191,6 +194,7 @@ void ItemsSave()
     free(AppendTableRow(row, CloneString(nameRow)));
     free(AppendTableRow(row, CloneString(priceRow)));
     free(AppendTableRow(row, CloneString(shelfLifeRow)));
+    free(AppendTableRow(row, CloneString(enableRow)));
 
     char *remark = LongLongToString(idCount);
     Table *table = NewTable(row, remark);
@@ -206,6 +210,7 @@ void ItemsSave()
         AppendTableRow(row, item->name);
         free(AppendTableRow(row, LongLongToString(item->price.value)));
         free(AppendTableRow(row, LongLongToString(item->shelfLife.value)));
+        free(AppendTableRow(row, LongLongToString(item->isEnabled)));
 
         AppendTable(table, row);
         now = now->next;
