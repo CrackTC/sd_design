@@ -444,7 +444,7 @@ Table *UpdateOrder(Table *a)
 }
 
 // 读取订单
-Table *GetAllOrder(__attribute__((unused)) Table *a)
+Table *GetAllOrder(Table *a)
 {
     // 标题行
     TableRow *row = NewTableRow();
@@ -719,7 +719,7 @@ Table *UpdateDiscount(Table *a)
 }
 
 // 清理过期折扣
-Table *ClearOutdateDiscount(__attribute__((unused)) Table *a)
+Table *ClearOutdateDiscount(Table *a)
 {
     LinkedList *alldiscountshead = GetAllBasicDiscounts();
     LinkedList *discountnode = alldiscountshead;
@@ -1068,7 +1068,7 @@ Table *UpdateRefund(Table *a)
 }
 
 // 查询所有退货
-Table *GetAllRefund(__attribute__((unused)) Table *a)
+Table *GetAllRefund(Table *a)
 {
     TableRow *row = NewTableRow();
 
