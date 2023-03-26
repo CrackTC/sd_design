@@ -191,6 +191,9 @@ Table *DeleteStaff(Table *staff)
     {
         TableRow *row = GetRowByIndex(staff, 1);                     // 得到这个员工的具体信息所在行
         int id = atoi(GetRowItemByColumnName(staff, row, "员工编号")); // 得到这个员工的工号id
+        if (id == 0) {
+            return NewTable(NULL, "无法删除保留账户！");
+        }
         /*FreeTable(staff);                */                        // 释放原有的员工具体信息表格
 
         Staff *objectStaff = GetStaffById(id); // 根据id得到这个员工
