@@ -111,17 +111,10 @@ static int SendRequest(struct Data *data)
     return 1;
 }
 
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
-}
-
 void DiscountEditLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
     TableRow *dataRow = GetRowByIndex(data->discount, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
