@@ -147,6 +147,16 @@ Time GetItemShelfLife(const Item *item)
     return item->shelfLife;
 }
 
+int GetItemIsEnabled(const Item *item)
+{
+    return item->isEnabled;
+}
+
+void SetItemIsEnabled(Item *item, int value)
+{
+    item->isEnabled = value;
+}
+
 void SetItemName(Item *item, const char *value)
 {
     free(item->name);

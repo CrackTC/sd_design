@@ -80,6 +80,8 @@ Amount GetItemPrice(const Item *item);
 
 Time GetItemShelfLife(const Item *item);
 
+int GetItemIsEnabled(const Item *item);
+
 /*
  * Name: SetItemXXX
  * Description: 设置商品的某个成员
@@ -92,6 +94,8 @@ void SetItemName(Item *item, const char *value);
 void SetItemPrice(Item *item, Amount *value);
 
 void SetItemShelfLife(Item *item, Time *value);
+
+void SetItemIsEnabled(Item *item, int value);
 
 /*
  * Name: AppendItem

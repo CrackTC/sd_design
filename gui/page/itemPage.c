@@ -38,6 +38,7 @@ void SendItemRequest(struct Data *data)
         {
             data->messageCallback = MessageBoxCallBack;
             data->message = CloneString(response->remark);
+            return;
         }
 
         FreeList(data->itemCheckList);
