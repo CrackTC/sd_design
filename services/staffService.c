@@ -31,6 +31,10 @@ Table *AddStaff(Table *newStaff)
     int isEnabled = atoi(GetRowItemByColumnName(newStaff, row, "员工可用性"));
     const char *permissionString = GetRowItemByColumnName(newStaff, row, "员工权限");
 
+    if (isEnabled != 0 && isEnabled != 1) {
+        return NewTable(NULL, "员工可用性需要为0或1");
+    }
+
     Staff *staff;
     staff = NewStaff(isEnabled, name, password, contact); // 新建一个具有上述信息的员工
 
@@ -166,6 +170,21 @@ Table *UpdateStaff(Table *staff)
 
     if (objectStaff == NULL)
         return NewTable(NULL, "没有该工号的员工!");
+
+    if (id == 0) {
+        int isEnable = atoi(GetRowItemByColumnName(staff, row, "员工可用性"));
+        if (isEnable != 1) {
+            return NewTable(NULL, "无法修改保留用户的可用性");
+        }
+        int *permission = ParsePermission(GetRowItemByColumnName(staff, row, "员工权限"));
+        for (int i = 0; i < OPERATION_COUNT; i++)
+        {
+            if (permission[i] != 1)
+            {
+                return NewTable(NULL, "无法修改保留用户的权限信息");
+            }
+        }
+    }
 
     SetStaffName(objectStaff, GetRowItemByColumnName(staff, row, "员工姓名"));
     SetStaffAvailability(objectStaff, atoi(GetRowItemByColumnName(staff, row, "员工可用性")));
