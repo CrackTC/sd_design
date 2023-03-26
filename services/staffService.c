@@ -189,12 +189,8 @@ Table *DeleteStaff(Table *staff)
 {
     if (staff != NULL)
     {
-        TableRow *titleRow = GetTableTitle(staff);
-        LinkedList *title = titleRow->items;
-        const char *oneTitle = (char *)title->data; // 获取标题名
-
         TableRow *row = GetRowByIndex(staff, 1);                     // 得到这个员工的具体信息所在行
-        int id = atoi(GetRowItemByColumnName(staff, row, oneTitle)); // 得到这个员工的工号id
+        int id = atoi(GetRowItemByColumnName(staff, row, "员工编号")); // 得到这个员工的工号id
         /*FreeTable(staff);                */                        // 释放原有的员工具体信息表格
 
         Staff *objectStaff = GetStaffById(id); // 根据id得到这个员工

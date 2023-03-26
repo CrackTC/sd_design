@@ -43,10 +43,10 @@ void StaffDelete(int ok, void *parameter)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->staffTable, rowNow->data, "id");
+            char *id = GetRowItemByColumnName(data->staffTable, rowNow->data, "员工编号");
 
             TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
+            AppendTableRow(row, "员工编号");
             Table *table = NewTable(row, NULL);
             row = NewTableRow();
             AppendTableRow(row, id);
