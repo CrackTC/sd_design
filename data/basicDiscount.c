@@ -75,7 +75,7 @@ LinkedList *GetAllBasicDiscounts()
         sscanf(GetRowItemByColumnName(table, row, itemIdRow), "%d", &discount->itemId);
         sscanf(GetRowItemByColumnName(table, row, ratioRow), "%d", &discount->ratio);
         sscanf(GetRowItemByColumnName(table, row, customerLevelRow), "%d", &discount->customerLevel);
-        sscanf("%d", GetRowItemByColumnName(table, row, deadlineRow), &discount->deadline.value);
+        sscanf(GetRowItemByColumnName(table, row, deadlineRow), "%lld", &discount->deadline.value);
 
         list = AppendData(list, discount);
     }
