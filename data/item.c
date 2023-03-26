@@ -81,6 +81,7 @@ LinkedList *GetAllItems()
         item->name = CloneString(GetRowItemByColumnName(table, row, nameRow));
         sscanf(GetRowItemByColumnName(table, row, priceRow), "%lld", &item->price.value);
         sscanf(GetRowItemByColumnName(table, row, shelfLifeRow), "%lld", &item->shelfLife.value);
+        sscanf(GetRowItemByColumnName(table, row, enableRow), "%d", &item->isEnabled);
 
         list = AppendData(list, item);
     }

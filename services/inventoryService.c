@@ -163,11 +163,8 @@ Table *UpdateInventory(Table *input)
     // 用于判断是否发现货损
     int hasLoss = 0;
     // 用于记录发现货损时的表格
-    Table *tableLoss;
-    // 用于记录未发现货损时的表格
-    Table *tableOk;
-
-    tableOk = NewTable(NULL, "本次更新中货物均完好 未发现货损");
+    Table *table;
+//    tableOk = NewTable(NULL, "本次更新中货物均完好 未发现货损");
 
     // 创建货损表头所需要的元素
     TableRow *row = NewTableRow();
@@ -176,7 +173,7 @@ Table *UpdateInventory(Table *input)
     AppendTableRow(row, "货损的原因");
     AppendTableRow(row, "货损的日期");
 
-    tableLoss = NewTable(row, "以下记录的货损均已自动进入货损系统中");
+    table = NewTable(row, "以下记录的货损均已自动进入货损系统中");
 
     while (head != NULL)
     {
@@ -216,7 +213,7 @@ Table *UpdateInventory(Table *input)
             // 将时间插入
             free(AppendTableRow(row, TimeToString(GetTimeInfo(&timeNow, 1))));
             // 将创建好的tablerow插入到表格中
-            AppendTable(tableLoss, row);
+            AppendTable(table, row);
             // 将货损的这批货放入货损管理系统中
             AppendLossEntry(NewLossEntry(id, GetInventoryEntryNumber(entry), "过期", &timeNow));
             // 将该批货物删除
@@ -230,13 +227,12 @@ Table *UpdateInventory(Table *input)
 
     if (hasLoss == 1)
     {
-        FreeTable(tableOk);
-        return tableLoss;
+        return table;
     }
     else
     {
-        FreeTable(tableLoss);
-        return tableOk;
+        SetTableRemark(table, "本次更新中货物均完好 未发现货损");
+        return table;
     }
 }
 
@@ -749,7 +745,11 @@ Table *ShowItem(Table *input)
     LinkedList *head = GetAllItems();
 
     if (head == NULL)
-        return table = NewTable(NULL, "现商品系统未存储任何商品信息");
+    {
+        SetTableRemark(table, "现商品系统未存储任何商品信息");
+        return table;
+    }
+
     while (head != NULL)
     {
 
@@ -1084,7 +1084,7 @@ Table *ReviseAnItemByItemId(Table *input)
         Time shelfLife = NewTimeSpan(change(d), change(h));
         Time judgeTime = NewTimeSpan(0, 0);
         if (CompareTime(&judgeTime, &shelfLife) >= 0)
-            return table = NewTable(NULL, "输入的新的保质期有误");
+            return NewTable(NULL, "输入的新的保质期有误");
         // 将要修改的各类信息传入到item中
         SetItemName(item, GetRowItemByColumnName(input, row, "商品名称"));
         SetItemPrice(item, &price);
