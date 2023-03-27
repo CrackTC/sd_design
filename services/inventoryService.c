@@ -65,7 +65,7 @@ Table *AddInventory(Table *input)
         min2 = 0, s2 = 0, yuan = 0, jiao = 0, cent = 0;
     GetInventoryInformationFromTable(input, &itemId, &number, &y1, &m1, &d1, &h1, &min1, &s1, &y2, &m2, &d2, &h2, &min2,
                                      &s2, &yuan, &jiao, &cent);
-    if (yuan < 0 || jiao < 0 || cent < 0)
+    if (yuan < 0 || jiao < 0 || cent < 0 || jiao >= 10 || cent >= 10)
         return NewTable(NULL, "输入的金额有问题");
     // 将入库时间信息转化
     Time inboundTime = NewDateTime(y1, m1, d1, h1, min1, s1);
@@ -434,7 +434,7 @@ Table *ReviseInventory(Table *input)
             min2 = 0, s2 = 0, yuan = 0, jiao = 0, cent = 0;
         GetInventoryInformationFromTable(input, &itemId, &number, &y1, &m1, &d1, &h1, &min1, &s1, &y2, &m2, &d2, &h2,
                                          &min2, &s2, &yuan, &jiao, &cent);
-        if (yuan < 0 || jiao < 0 || cent < 0)
+        if (yuan < 0 || jiao < 0 || cent < 0 || jiao >= 10 || cent >= 10)
             return NewTable(NULL, "输入的金额有问题");
         // 将入库时间信息转化
         Time inboundTime = NewDateTime(y1, m1, d1, h1, min1, s1);
@@ -560,7 +560,7 @@ Table *AddItem(Table *input)
     int yuan = change(GetRowItemByColumnName(input, row, "元"));
     int jiao = change(GetRowItemByColumnName(input, row, "角"));
     int cent = change(GetRowItemByColumnName(input, row, "分"));
-    if (yuan < 0 || jiao < 0 || cent < 0)
+    if (yuan < 0 || jiao < 0 || cent < 0 || jiao >= 10 || cent >= 10)
         return NewTable(NULL, "输入的金额有问题");
     Amount amount = NewAmount(yuan, jiao, cent);
 
@@ -1070,7 +1070,7 @@ Table *ReviseAnItemByItemId(Table *input)
         int yuan = change(GetRowItemByColumnName(input, row, "元"));
         int jiao = change(GetRowItemByColumnName(input, row, "角"));
         int cent = change(GetRowItemByColumnName(input, row, "分"));
-        if (yuan < 0 || jiao < 0 || cent < 0)
+        if (yuan < 0 || jiao < 0 || cent < 0 || jiao >= 10 || cent >= 10)
             return NewTable(NULL, "输入的金额有问题");
         Amount price = NewAmount(yuan, jiao, cent);
 
