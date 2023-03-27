@@ -12,16 +12,9 @@
 #include <stddef.h>
 #include <malloc.h>
 
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
-}
-
 void LossEntryDelete(int ok, void *parameter)
 {
-    MessageBoxCallBack(ok, parameter);
+    MessageBoxCallback(ok, parameter);
     if (ok == 0)
     {
         return;
@@ -33,7 +26,7 @@ void LossEntryDelete(int ok, void *parameter)
     Judge(data->id, &hasPermission, data->password, OP_DELETE_LOSS);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：删除货损");
         return;
     }
@@ -62,7 +55,7 @@ void LossEntryDelete(int ok, void *parameter)
                 int error = 0;
                 if (response->remark != NULL && response->remark[0] != '\0')
                 {
-                    data->messageCallback = MessageBoxCallBack;
+                    data->messageCallback = MessageBoxCallback;
                     data->message = CloneString(response->remark);
                     error = 1;
                 }
@@ -76,7 +69,7 @@ void LossEntryDelete(int ok, void *parameter)
         now = now->next;
         rowNow = rowNow->next;
     }
-    data->messageCallback = MessageBoxCallBack;
+    data->messageCallback = MessageBoxCallback;
     data->message = CloneString("删除成功");
 }
 
@@ -86,7 +79,7 @@ void SendLossRequest(struct Data *data)
     Judge(data->id, &hasPermission, data->password, OP_READ_LOSS);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：读取货损");
         return;
     }
@@ -97,17 +90,20 @@ void SendLossRequest(struct Data *data)
     {
         if (response->remark != NULL && response->remark[0] != '\0')
         {
-            data->messageCallback = MessageBoxCallBack;
+            data->messageCallback = MessageBoxCallback;
             data->message = CloneString(response->remark);
         }
 
+        free(data->lossProperties);
         FreeList(data->lossCheckList);
+        FreeTable(data->lossTable);
         data->lossCheckList = NewCheckList();
         data->lossTable = response;
+        data->lossProperties = NULL;
     }
     else
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("查询失败: 响应为NULL");
     }
 }
@@ -319,7 +315,7 @@ void LossPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!LossLookup(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个货损条目");
                     }
                 }
@@ -336,7 +332,7 @@ void LossPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!LossAdd(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请在库存页面选择一个库存条目");
                     }
                 }
@@ -367,7 +363,7 @@ void LossPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!LossModify(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个货损条目");
                     }
                 }

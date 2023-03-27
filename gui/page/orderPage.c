@@ -32,9 +32,12 @@ void SendOrderRequest(struct Data *data)
             data->message = CloneString(response->remark);
         }
 
+        free(data->orderProperties);
         FreeList(data->orderCheckList);
+        FreeTable(data->orderTable);
         data->orderCheckList = NewCheckList();
         data->orderTable = response;
+        data->orderProperties = NULL;
     }
     else
     {

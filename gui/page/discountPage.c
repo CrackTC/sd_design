@@ -101,9 +101,12 @@ void SendDiscountRequest(struct Data *data)
             data->message = CloneString(response->remark);
         }
 
+        free(data->discountProperties);
+        FreeTable(data->discountTable);
         FreeList(data->discountCheckList);
         data->discountCheckList = NewCheckList();
         data->discountTable = response;
+        data->discountProperties = NULL;
     }
     else
     {

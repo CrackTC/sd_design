@@ -12,20 +12,13 @@
 #include "design/mainWindow.h"
 #include <malloc.h>
 
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
-}
-
 void SendItemRequest(struct Data *data)
 {
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_READ_ITEM);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：读取商品");
         return;
     }
@@ -36,13 +29,16 @@ void SendItemRequest(struct Data *data)
     {
         if (response->remark != NULL && response->remark[0] != '\0')
         {
-            data->messageCallback = MessageBoxCallBack;
+            data->messageCallback = MessageBoxCallback;
             data->message = CloneString(response->remark);
         }
 
+        free(data->itemProperties);
         FreeList(data->itemCheckList);
+        FreeTable(data->itemTable);
         data->itemCheckList = NewCheckList();
         data->itemTable = response;
+        data->itemProperties = NULL;
 
         response = ShowLackInventory(NULL);
         if (response->rows->next != NULL)
@@ -52,7 +48,7 @@ void SendItemRequest(struct Data *data)
     }
     else
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("查询失败: 响应为NULL");
     }
 }
@@ -154,7 +150,7 @@ int ItemModify(struct Data *data)
 
 void ItemDelete(int ok, void *parameter)
 {
-    MessageBoxCallBack(ok, parameter);
+    MessageBoxCallback(ok, parameter);
     if (ok == 0)
     {
         return;
@@ -166,7 +162,7 @@ void ItemDelete(int ok, void *parameter)
     Judge(data->id, &hasPermission, data->password, OP_DELETE_ITEM);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：删除商品");
         return;
     }
@@ -196,7 +192,7 @@ void ItemDelete(int ok, void *parameter)
                 int error = 0;
                 if (response->remark != NULL && response->remark[0] != '\0')
                 {
-                    data->messageCallback = MessageBoxCallBack;
+                    data->messageCallback = MessageBoxCallback;
                     data->message = CloneString(response->remark);
                     error = 1;
                 }
@@ -210,7 +206,7 @@ void ItemDelete(int ok, void *parameter)
         now = now->next;
         rowNow = rowNow->next;
     }
-    data->messageCallback = MessageBoxCallBack;
+    data->messageCallback = MessageBoxCallback;
     data->message = CloneString("删除成功");
 }
 
@@ -310,7 +306,7 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!ItemLookup(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个商品条目");
                     }
                 }
@@ -354,7 +350,7 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!ItemModify(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个商品条目");
                     }
                 }

@@ -125,6 +125,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         TableRow *row = NewTableRow();
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "售货状态");
         AppendTableRow(row, "售价");
         AppendTableRow(row, "保质期");
         Table *table = NewTable(row, NULL);
@@ -222,9 +223,9 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         TableRow *row = NewTableRow();
         AppendTableRow(row, "货损编号");
         AppendTableRow(row, "库存编号");
-        AppendTableRow(row, "损耗时间");
         AppendTableRow(row, "货损数量");
         AppendTableRow(row, "货损原因");
+        AppendTableRow(row, "损耗时间");
         Table *table = NewTable(row, NULL);
         data->lossTable = table;
     }

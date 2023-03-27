@@ -12,16 +12,9 @@
 #include <stddef.h>
 #include <malloc.h>
 
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
-}
-
 void RefundDelete(int ok, void *parameter)
 {
-    MessageBoxCallBack(ok, parameter);
+    MessageBoxCallback(ok, parameter);
     if (ok == 0)
     {
         return;
@@ -33,7 +26,7 @@ void RefundDelete(int ok, void *parameter)
     Judge(data->id, &hasPermission, data->password, OP_DELETE_REFUND);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：删除退款条目");
         return;
     }
@@ -62,7 +55,7 @@ void RefundDelete(int ok, void *parameter)
                 int error = 0;
                 if (response->remark != NULL && response->remark[0] != '\0')
                 {
-                    data->messageCallback = MessageBoxCallBack;
+                    data->messageCallback = MessageBoxCallback;
                     data->message = CloneString(response->remark);
                     error = 1;
                 }
@@ -76,7 +69,7 @@ void RefundDelete(int ok, void *parameter)
         now = now->next;
         rowNow = rowNow->next;
     }
-    data->messageCallback = MessageBoxCallBack;
+    data->messageCallback = MessageBoxCallback;
     data->message = CloneString("删除成功");
 }
 
@@ -86,7 +79,7 @@ void SendRefundRequest(struct Data *data)
     Judge(data->id, &hasPermission, data->password, OP_READ_REFUND);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：读取退款");
         return;
     }
@@ -97,17 +90,20 @@ void SendRefundRequest(struct Data *data)
     {
         if (response->remark != NULL && response->remark[0] != '\0')
         {
-            data->messageCallback = MessageBoxCallBack;
+            data->messageCallback = MessageBoxCallback;
             data->message = CloneString(response->remark);
         }
 
+        free(data->refundProperties);
         FreeList(data->refundCheckList);
+        FreeTable(data->refundTable);
         data->refundCheckList = NewCheckList();
         data->refundTable = response;
+        data->refundProperties = NULL;
     }
     else
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("查询失败: 响应为NULL");
     }
 }
@@ -312,7 +308,7 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!RefundLookup(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个退款条目");
                     }
                 }
@@ -329,7 +325,7 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!RefundAdd(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请在订单页面选择一个订单条目");
                     }
                 }
@@ -360,7 +356,7 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!RefundModify(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个退款条目");
                     }
                 }

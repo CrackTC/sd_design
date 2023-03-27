@@ -10,20 +10,13 @@
 #include <stddef.h>
 #include <malloc.h>
 
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
-}
-
 void SendJournalRequest(struct Data *data)
 {
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_READ_JOURNAL);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：读取日志");
         return;
     }
@@ -34,17 +27,20 @@ void SendJournalRequest(struct Data *data)
     {
         if (response->remark != NULL && response->remark[0] != '\0')
         {
-            data->messageCallback = MessageBoxCallBack;
+            data->messageCallback = MessageBoxCallback;
             data->message = CloneString(response->remark);
         }
 
+        free(data->journalProperties);
         FreeList(data->journalCheckList);
+        FreeTable(data->journalTable);
         data->journalCheckList = NewCheckList();
         data->journalTable = response;
+        data->journalProperties = NULL;
     }
     else
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("查询失败: 响应为NULL");
     }
 }
@@ -166,7 +162,7 @@ void JournalPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!JournalLookup(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个日志条目");
                     }
                 }

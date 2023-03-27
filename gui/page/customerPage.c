@@ -11,16 +11,9 @@
 #include <stddef.h>
 #include <malloc.h>
 
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
-}
-
 void CustomerDelete(int ok, void *parameter)
 {
-    MessageBoxCallBack(ok, parameter);
+    MessageBoxCallback(ok, parameter);
     if (ok == 0)
     {
         return;
@@ -32,7 +25,7 @@ void CustomerDelete(int ok, void *parameter)
     Judge(data->id, &hasPermission, data->password, OP_DELETE_CUSTOMER);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：删除客户");
         return;
     }
@@ -62,7 +55,7 @@ void CustomerDelete(int ok, void *parameter)
                 int error = 0;
                 if (response->remark != NULL && response->remark[0] != '\0')
                 {
-                    data->messageCallback = MessageBoxCallBack;
+                    data->messageCallback = MessageBoxCallback;
                     data->message = CloneString(response->remark);
                     error = 1;
                 }
@@ -76,8 +69,14 @@ void CustomerDelete(int ok, void *parameter)
         now = now->next;
         rowNow = rowNow->next;
     }
-    data->messageCallback = MessageBoxCallBack;
+    data->messageCallback = MessageBoxCallback;
     data->message = CloneString("删除成功");
+}
+
+void ConfirmCustomerDelete(struct Data *data)
+{
+    data->messageCallback = CustomerDelete;
+    data->message = CloneString("是否确认要删除选中的客户条目");
 }
 
 void SendCustomerRequest(struct Data *data)
@@ -86,7 +85,7 @@ void SendCustomerRequest(struct Data *data)
     Judge(data->id, &hasPermission, data->password, OP_READ_CUSTOMER);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：读取客户");
         return;
     }
@@ -97,22 +96,25 @@ void SendCustomerRequest(struct Data *data)
     {
         if (response->remark != NULL && response->remark[0] != '\0')
         {
-            data->messageCallback = MessageBoxCallBack;
+            data->messageCallback = MessageBoxCallback;
             data->message = CloneString(response->remark);
         }
 
+        free(data->customerProperties);
+        FreeTable(data->customerTable);
         FreeList(data->customerCheckList);
         data->customerCheckList = NewCheckList();
         data->customerTable = response;
+        data->customerProperties = NULL;
     }
     else
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("查询失败: 响应为NULL");
     }
 }
 
-int CustomerLookup(struct Data *data)
+void CustomerLookup(struct Data *data)
 {
     LinkedList *now = data->customerCheckList->next;
     LinkedList *rowNow = data->customerTable->rows->next;
@@ -125,12 +127,13 @@ int CustomerLookup(struct Data *data)
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewCustomerDetail("客户详情", table));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个客户条目");
 }
 
 void CustomerAdd(struct Data *data)
@@ -151,7 +154,7 @@ void CustomerAdd(struct Data *data)
     FreeTable(table);
 }
 
-int CustomerModify(struct Data *data)
+void CustomerModify(struct Data *data)
 {
     LinkedList *now = data->customerCheckList->next;
     LinkedList *rowNow = data->customerTable->rows->next;
@@ -175,12 +178,13 @@ int CustomerModify(struct Data *data)
 
             PushWindow(NewCustomerEdit("客户编辑", data->id, data->password, table, 1));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个客户条目");
 }
 
 void CustomerPageLayout(struct nk_context *context, struct Window *window)
@@ -256,83 +260,14 @@ void CustomerPageLayout(struct nk_context *context, struct Window *window)
 
     nk_layout_row_static(context, 10, 0, 0);
 
-    nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查询"))
-                {
-                    SendCustomerRequest(data);
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查看"))
-                {
-                    if (!CustomerLookup(data))
-                    {
-                        data->messageCallback = MessageBoxCallBack;
-                        data->message = CloneString("请选择一个客户条目");
-                    }
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "+"))
-                {
-                    CustomerAdd(data);
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "-"))
-                {
-                    data->messageCallback = CustomerDelete;
-                    data->message = CloneString("是否确认要删除选中的客户条目");
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "~"))
-                {
-                    if (!CustomerModify(data))
-                    {
-                        data->messageCallback = MessageBoxCallBack;
-                        data->message = CloneString("请选择一个客户条目");
-                    }
-                }
-            }
-
-            nk_style_pop_font(context);
-        }
-        nk_layout_row_end(context);
-    }
+    OperationLayout(context,
+            OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
+            (OperationHandler)SendCustomerRequest,
+            (OperationHandler)CustomerLookup,
+            (OperationHandler)CustomerAdd,
+            (OperationHandler)ConfirmCustomerDelete,
+            (OperationHandler)CustomerModify,
+            data);
 
     nk_layout_row_dynamic(context, 10, 1);
     {
