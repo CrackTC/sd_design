@@ -45,7 +45,7 @@ void SendJournalRequest(struct Data *data)
     }
 }
 
-int JournalLookup(struct Data *data)
+void JournalLookup(struct Data *data)
 {
     LinkedList *now = data->journalCheckList->next;
     LinkedList *rowNow = data->journalTable->rows->next;
@@ -58,12 +58,13 @@ int JournalLookup(struct Data *data)
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewJournalDetail("日志详情", table));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个日志条目");
 }
 
 void JournalPageLayout(struct nk_context *context, struct Window *window)
@@ -139,39 +140,14 @@ void JournalPageLayout(struct nk_context *context, struct Window *window)
 
     nk_layout_row_static(context, 10, 0, 0);
 
-    nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查询"))
-                {
-                    SendJournalRequest(data);
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查看"))
-                {
-                    if (!JournalLookup(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个日志条目");
-                    }
-                }
-            }
-
-            nk_style_pop_font(context);
-        }
-        nk_layout_row_end(context);
-    }
+    OperationLayout(context,
+            OP_TYPE_GET | OP_TYPE_DETAIL,
+            (OperationHandler)SendJournalRequest,
+            (OperationHandler)JournalLookup,
+            NULL,
+            NULL,
+            NULL,
+            data);
 
     nk_layout_row_dynamic(context, 10, 1);
     {

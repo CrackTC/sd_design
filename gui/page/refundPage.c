@@ -73,6 +73,12 @@ void RefundDelete(int ok, void *parameter)
     data->message = CloneString("删除成功");
 }
 
+void ConfirmRefundDelete(struct Data *data)
+{
+    data->messageCallback = RefundDelete;
+    data->message = CloneString("是否确认要删除选中的退款条目");
+}
+
 void SendRefundRequest(struct Data *data)
 {
     int hasPermission;
@@ -108,7 +114,7 @@ void SendRefundRequest(struct Data *data)
     }
 }
 
-int RefundLookup(struct Data *data)
+void RefundLookup(struct Data *data)
 {
     LinkedList *now = data->refundCheckList->next;
     LinkedList *rowNow = data->refundTable->rows->next;
@@ -121,15 +127,16 @@ int RefundLookup(struct Data *data)
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewRefundDetail("退款详情", table));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个退款条目");
 }
 
-int RefundAdd(struct Data *data)
+void RefundAdd(struct Data *data)
 {
     LinkedList *now = data->orderCheckList->next;
     LinkedList *rowNow = data->orderTable->rows->next;
@@ -163,15 +170,16 @@ int RefundAdd(struct Data *data)
 
             PushWindow(NewRefundEdit("退款编辑", data->id, data->password, table, 0));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请在订单页面选择一个订单条目");
 }
 
-int RefundModify(struct Data *data)
+void RefundModify(struct Data *data)
 {
     LinkedList *now = data->refundCheckList->next;
     LinkedList *rowNow = data->refundTable->rows->next;
@@ -204,12 +212,13 @@ int RefundModify(struct Data *data)
 
             PushWindow(NewRefundEdit("退款编辑", data->id, data->password, table, 1));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个退款条目");
 }
 
 void RefundPageLayout(struct nk_context *context, struct Window *window)
@@ -285,87 +294,14 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
 
     nk_layout_row_static(context, 10, 0, 0);
 
-    nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查询"))
-                {
-                    SendRefundRequest(data);
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查看"))
-                {
-                    if (!RefundLookup(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个退款条目");
-                    }
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "+"))
-                {
-                    if (!RefundAdd(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请在订单页面选择一个订单条目");
-                    }
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "-"))
-                {
-                    data->messageCallback = RefundDelete;
-                    data->message = CloneString("是否确认要删除选中的退款条目");
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "~"))
-                {
-                    if (!RefundModify(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个退款条目");
-                    }
-                }
-            }
-
-            nk_style_pop_font(context);
-        }
-        nk_layout_row_end(context);
-    }
+    OperationLayout(context,
+            OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
+            (OperationHandler)SendRefundRequest,
+            (OperationHandler)RefundLookup,
+            (OperationHandler)RefundAdd,
+            (OperationHandler)ConfirmRefundDelete,
+            (OperationHandler)RefundModify,
+            data);
 
     nk_layout_row_dynamic(context, 10, 1);
     {

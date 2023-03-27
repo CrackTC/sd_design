@@ -30,8 +30,8 @@ int change(const char *q)
 
 // 从表格中获取货存系统所需要的信息
 void GetInventoryInformationFromTable(Table *input, int *itemId, int *number, int *y1, int *m1, int *d1, int *h1,
-                                      int *min1, int *s1, int *y2, int *m2, int *d2, int *h2, int *min2, int *s2,
-                                      int *yuan, int *jiao, int *cent)
+        int *min1, int *s1, int *y2, int *m2, int *d2, int *h2, int *min2, int *s2,
+        int *yuan, int *jiao, int *cent)
 {
 
     TableRow *row = GetRowByIndex(input, 1);
@@ -62,9 +62,9 @@ void GetInventoryInformationFromTable(Table *input, int *itemId, int *number, in
 Table *AddInventory(Table *input)
 {
     int itemId = 0, number = 0, y1 = 0, m1 = 0, d1 = 0, h1 = 0, min1 = 0, s1 = 0, y2 = 0, m2 = 0, d2 = 0, h2 = 0,
-        min2 = 0, s2 = 0, yuan = 0, jiao = 0, cent = 0;
+            min2 = 0, s2 = 0, yuan = 0, jiao = 0, cent = 0;
     GetInventoryInformationFromTable(input, &itemId, &number, &y1, &m1, &d1, &h1, &min1, &s1, &y2, &m2, &d2, &h2, &min2,
-                                     &s2, &yuan, &jiao, &cent);
+            &s2, &yuan, &jiao, &cent);
     if (yuan < 0 || jiao < 0 || cent < 0 || jiao >= 10 || cent >= 10)
         return NewTable(NULL, "输入的金额有问题");
     // 将入库时间信息转化
@@ -100,8 +100,9 @@ Table *AddInventory(Table *input)
                         {
                             // 将获取的货存信息转化为结构体并添加到货存链表中
                             int result1 =
-                                AppendInventoryEntry(NewInventoryEntry(itemId, number, &inboundTime, &productionTime,
-                                                                       &unitPrice)); // result1 用于存储是否插入成功
+                                    AppendInventoryEntry(
+                                            NewInventoryEntry(itemId, number, &inboundTime, &productionTime,
+                                                    &unitPrice)); // result1 用于存储是否插入成功
                             if (result1 == 0)
                             {
                                 InventorySave(); // 将添加结果进行保存
@@ -431,9 +432,9 @@ Table *ReviseInventory(Table *input)
     {
         // 获取表格中相应的信息
         int itemId = 0, number = 0, y1 = 0, m1 = 0, d1 = 0, h1 = 0, min1 = 0, s1 = 0, y2 = 0, m2 = 0, d2 = 0, h2 = 0,
-            min2 = 0, s2 = 0, yuan = 0, jiao = 0, cent = 0;
+                min2 = 0, s2 = 0, yuan = 0, jiao = 0, cent = 0;
         GetInventoryInformationFromTable(input, &itemId, &number, &y1, &m1, &d1, &h1, &min1, &s1, &y2, &m2, &d2, &h2,
-                                         &min2, &s2, &yuan, &jiao, &cent);
+                &min2, &s2, &yuan, &jiao, &cent);
         if (yuan < 0 || jiao < 0 || cent < 0 || jiao >= 10 || cent >= 10)
             return NewTable(NULL, "输入的金额有问题");
         // 将入库时间信息转化
@@ -720,7 +721,6 @@ Table *ShowInventory(Table *input)
     return table;
 }
 
-// 展示商品系统中的全部信息
 Table *ShowItem(Table *input)
 {
     // 用于记录一共有多少中商品
@@ -748,38 +748,71 @@ Table *ShowItem(Table *input)
 
     while (head != NULL)
     {
-
-        // 用于记录一共有多少个商品
-        itemCount++;
-        // 获取相应的商品信息
-        const Item *item = head->data;
-        row = NewTableRow();
-
-        // 得到商品编号
-        free(AppendTableRow(row, LongLongToString(GetItemId(item))));
-
-        // 得到商品名称
-        AppendTableRow(row, GetItemName(item));
-
-        // 得到商品的销售状态
         if (GetItemIsEnabled(head->data) == 1)
+        {
+            // 用于记录一共有多少个商品
+            itemCount++;
+            // 获取相应的商品信息
+            const Item *item = head->data;
+            row = NewTableRow();
+
+            // 得到商品编号
+            free(AppendTableRow(row, LongLongToString(GetItemId(item))));
+
+            // 得到商品名称
+            AppendTableRow(row, GetItemName(item));
+
+            // 得到商品的销售状态
+
             AppendTableRow(row, "在售");
-        else
-            AppendTableRow(row, "下架");
 
-        // 得到商品的售价
-        Amount salePrice = GetItemPrice(item);
-        free(AppendTableRow(row, AmountToString(&salePrice)));
 
-        // 得到商品的保质期
-        Time shelfLife = GetItemShelfLife(item);
-        free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelfLife, 0))));
+            // 得到商品的售价
+            Amount salePrice = GetItemPrice(item);
+            free(AppendTableRow(row, AmountToString(&salePrice)));
 
-        AppendTable(table, row);
+            // 得到商品的保质期
+            Time shelfLife = GetItemShelfLife(item);
+            free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelfLife, 0))));
 
+            AppendTable(table, row);
+        }
         head = head->next;
     }
+    head = GetAllItems();
+    while (head != NULL)
+    {
+        if (GetItemIsEnabled(head->data) == 0)
+        {
+            // 用于记录一共有多少个商品
+            itemCount++;
+            // 获取相应的商品信息
+            const Item *item = head->data;
+            row = NewTableRow();
 
+            // 得到商品编号
+            free(AppendTableRow(row, LongLongToString(GetItemId(item))));
+
+            // 得到商品名称
+            AppendTableRow(row, GetItemName(item));
+
+            // 得到商品的销售状态
+
+            AppendTableRow(row, "下架");
+
+
+            // 得到商品的售价
+            Amount salePrice = GetItemPrice(item);
+            free(AppendTableRow(row, AmountToString(&salePrice)));
+
+            // 得到商品的保质期
+            Time shelfLife = GetItemShelfLife(item);
+            free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelfLife, 0))));
+
+            AppendTable(table, row);
+        }
+        head = head->next;
+    }
     // 备注的具体实现
     char remark[100] = "以下为商品系统中的全部信息 一共记录了";
     char *itemCountString = LongLongToString(itemCount);
@@ -1034,7 +1067,7 @@ Table *ShowSingleLossById(Table *input)
 
     // 获取表格中相应的信息
     LinkedList *head =
-        GetLossEntriesByInventoryId(change(GetRowItemByColumnName(input, GetRowByIndex(input, 1), "Id")));
+            GetLossEntriesByInventoryId(change(GetRowItemByColumnName(input, GetRowByIndex(input, 1), "Id")));
 
     if (head != NULL)
     {
@@ -1066,6 +1099,9 @@ Table *ReviseAnItemByItemId(Table *input)
     Item *item = GetItemById(change(GetRowItemByColumnName(input, row, "商品编号")));
     if (item != NULL)
     {
+        //获取修改后商品的新名称
+        char *newName = GetRowItemByColumnName(input, row, "商品名称");
+
         // 获取商品的价格信息
         int yuan = change(GetRowItemByColumnName(input, row, "元"));
         int jiao = change(GetRowItemByColumnName(input, row, "角"));
@@ -1081,8 +1117,15 @@ Table *ReviseAnItemByItemId(Table *input)
         Time judgeTime = NewTimeSpan(0, 0);
         if (CompareTime(&judgeTime, &shelfLife) >= 0)
             return NewTable(NULL, "输入的新的保质期有误");
+        Item *newItem = GetItemByName(newName);
+        //判断修改后的商品名称在原商品系统中是否存在
+        if (newItem != NULL)
+        {
+            return NewTable(NULL, "修改后的商品已在商品系统中存在");
+        }
+
         // 将要修改的各类信息传入到item中
-        SetItemName(item, GetRowItemByColumnName(input, row, "商品名称"));
+        SetItemName(item, newName);
         SetItemPrice(item, &price);
         SetItemShelfLife(item, &shelfLife);
         table = NULL;
@@ -1116,10 +1159,10 @@ Table *ReviseLossInventory(Table *input)
 
             // 获取原有的货损数量
             int oldNumber =
-                GetLossEntryNumber(GetLossEntryById(change(GetRowItemByColumnName(input, row, "货损编号"))));
+                    GetLossEntryNumber(GetLossEntryById(change(GetRowItemByColumnName(input, row, "货损编号"))));
             // 获取原有的货损库存编号
-            int oldInventoryId =
-                GetLossEntryInventoryId(GetLossEntryById(change(GetRowItemByColumnName(input, row, "库存编号"))));
+            int oldInventoryId = GetLossEntryInventoryId(
+                    GetLossEntryById(change(GetRowItemByColumnName(input, row, "货损编号"))));
             // 获取新的货存
             InventoryEntry *Newinventory = GetInventoryById(change(GetRowItemByColumnName(input, row, "库存编号")));
             // 获取修改后的数量
@@ -1140,7 +1183,7 @@ Table *ReviseLossInventory(Table *input)
 
                 // 将原有的货损数量加回到货存系统中
                 SetInventoryEntryNumber(GetInventoryById(oldInventoryId),
-                                        GetInventoryEntryNumber(GetInventoryById(oldInventoryId)) + oldNumber);
+                        GetInventoryEntryNumber(GetInventoryById(oldInventoryId)) + oldNumber);
                 // 将货存系统中的货存数量对应减少
                 SetInventoryEntryNumber(Newinventory, GetInventoryEntryNumber(Newinventory) - NewNumber); //
                 // 向文件中保存

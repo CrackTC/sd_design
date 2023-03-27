@@ -46,7 +46,7 @@ void SendProfitRequest(struct Data *data)
     }
 }
 
-int ProfitLookup(struct Data *data)
+void ProfitLookup(struct Data *data)
 {
     LinkedList *now = data->profitCheckList->next;
     LinkedList *rowNow = data->profitTable->rows->next;
@@ -59,12 +59,13 @@ int ProfitLookup(struct Data *data)
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewProfitDetail("收支详情", table));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个收支条目");
 }
 
 void ProfitPageLayout(struct nk_context *context, struct Window *window)
@@ -140,39 +141,14 @@ void ProfitPageLayout(struct nk_context *context, struct Window *window)
 
     nk_layout_row_static(context, 10, 0, 0);
 
-    nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查询"))
-                {
-                    SendProfitRequest(data);
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查看"))
-                {
-                    if (!ProfitLookup(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个收支条目");
-                    }
-                }
-            }
-
-            nk_style_pop_font(context);
-        }
-        nk_layout_row_end(context);
-    }
+    OperationLayout(context,
+            OP_TYPE_GET | OP_TYPE_DETAIL,
+            (OperationHandler)SendProfitRequest,
+            (OperationHandler)ProfitLookup,
+            NULL,
+            NULL,
+            NULL,
+            data);
 
     nk_layout_row_dynamic(context, 10, 1);
     {

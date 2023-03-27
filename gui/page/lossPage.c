@@ -73,6 +73,12 @@ void LossEntryDelete(int ok, void *parameter)
     data->message = CloneString("删除成功");
 }
 
+void ConfirmLossDelete(struct Data *data)
+{
+    data->messageCallback = LossEntryDelete;
+    data->message = CloneString("是否确认要删除选中的货损条目");
+}
+
 void SendLossRequest(struct Data *data)
 {
     int hasPermission;
@@ -108,7 +114,7 @@ void SendLossRequest(struct Data *data)
     }
 }
 
-int LossLookup(struct Data *data)
+void LossLookup(struct Data *data)
 {
     LinkedList *now = data->lossCheckList->next;
     LinkedList *rowNow = data->lossTable->rows->next;
@@ -121,15 +127,16 @@ int LossLookup(struct Data *data)
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewLossDetail("货损详情", table));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个货损条目");
 }
 
-int LossAdd(struct Data *data)
+void LossAdd(struct Data *data)
 {
     LinkedList *now = data->inventoryCheckList->next;
     LinkedList *rowNow = data->inventoryTable->rows->next;
@@ -163,15 +170,16 @@ int LossAdd(struct Data *data)
 
             PushWindow(NewLossEdit("货损编辑", data->id, data->password, table, 0));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请在库存页面选择一个库存条目");
 }
 
-int LossModify(struct Data *data)
+void LossModify(struct Data *data)
 {
     LinkedList *now = data->lossCheckList->next;
     LinkedList *rowNow = data->lossTable->rows->next;
@@ -211,12 +219,13 @@ int LossModify(struct Data *data)
 
             PushWindow(NewLossEdit("货损编辑", data->id, data->password, table, 1));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个货损条目");
 }
 
 void LossPageLayout(struct nk_context *context, struct Window *window)
@@ -292,87 +301,14 @@ void LossPageLayout(struct nk_context *context, struct Window *window)
 
     nk_layout_row_static(context, 10, 0, 0);
 
-    nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查询"))
-                {
-                    SendLossRequest(data);
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查看"))
-                {
-                    if (!LossLookup(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个货损条目");
-                    }
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "+"))
-                {
-                    if (!LossAdd(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请在库存页面选择一个库存条目");
-                    }
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "-"))
-                {
-                    data->messageCallback = LossEntryDelete;
-                    data->message = CloneString("是否确认要删除选中的货损条目");
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "~"))
-                {
-                    if (!LossModify(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个货损条目");
-                    }
-                }
-            }
-
-            nk_style_pop_font(context);
-        }
-        nk_layout_row_end(context);
-    }
+    OperationLayout(context,
+            OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
+            (OperationHandler)SendLossRequest,
+            (OperationHandler)LossLookup,
+            (OperationHandler)LossAdd,
+            (OperationHandler)ConfirmLossDelete,
+            (OperationHandler)LossModify,
+            data);
 
     nk_layout_row_dynamic(context, 10, 1);
     {

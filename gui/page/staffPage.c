@@ -72,6 +72,12 @@ void StaffDelete(int ok, void *parameter)
     data->message = CloneString("删除成功");
 }
 
+void ConfirmStaffDelete(struct Data *data)
+{
+    data->messageCallback = StaffDelete;
+    data->message = CloneString("是否确认要删除选中的员工条目");
+}
+
 void SendStaffRequest(struct Data *data)
 {
     int hasPermission;
@@ -107,7 +113,7 @@ void SendStaffRequest(struct Data *data)
     }
 }
 
-int StaffLookup(struct Data *data)
+void StaffLookup(struct Data *data)
 {
     LinkedList *now = data->staffCheckList->next;
     LinkedList *rowNow = data->staffTable->rows->next;
@@ -120,12 +126,13 @@ int StaffLookup(struct Data *data)
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewStaffDetail("员工详情", table));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个员工条目");
 }
 
 void StaffAdd(struct Data *data)
@@ -150,7 +157,7 @@ void StaffAdd(struct Data *data)
     FreeTable(table);
 }
 
-int StaffModify(struct Data *data)
+void StaffModify(struct Data *data)
 {
     LinkedList *now = data->staffCheckList->next;
     LinkedList *rowNow = data->staffTable->rows->next;
@@ -178,12 +185,13 @@ int StaffModify(struct Data *data)
 
             PushWindow(NewStaffEdit("员工编辑", data->id, data->password, table, 1));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个员工条目");
 }
 
 void StaffPageLayout(struct nk_context *context, struct Window *window)
@@ -259,83 +267,14 @@ void StaffPageLayout(struct nk_context *context, struct Window *window)
 
     nk_layout_row_static(context, 10, 0, 0);
 
-    nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查询"))
-                {
-                    SendStaffRequest(data);
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查看"))
-                {
-                    if (!StaffLookup(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个员工条目");
-                    }
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "+"))
-                {
-                    StaffAdd(data);
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "-"))
-                {
-                    data->messageCallback = StaffDelete;
-                    data->message = CloneString("是否确认要删除选中的员工条目");
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "~"))
-                {
-                    if (!StaffModify(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个员工条目");
-                    }
-                }
-            }
-
-            nk_style_pop_font(context);
-        }
-        nk_layout_row_end(context);
-    }
+    OperationLayout(context,
+            OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
+            (OperationHandler)SendStaffRequest,
+            (OperationHandler)StaffLookup,
+            (OperationHandler)StaffAdd,
+            (OperationHandler)ConfirmStaffDelete,
+            (OperationHandler)StaffModify,
+            data);
 
     nk_layout_row_dynamic(context, 10, 1);
     {

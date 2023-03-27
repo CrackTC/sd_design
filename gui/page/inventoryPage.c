@@ -75,6 +75,12 @@ void InventoryDelete(int ok, void *parameter)
     data->message = CloneString("删除成功");
 }
 
+void ConfirmInventoryDelete(struct Data *data)
+{
+    data->messageCallback = InventoryDelete;
+    data->message = CloneString("是否确认要删除选中的库存条目");
+}
+
 void SendInventoryRequest(struct Data *data)
 {
     int hasPermission;
@@ -110,7 +116,7 @@ void SendInventoryRequest(struct Data *data)
     }
 }
 
-int InventoryLookup(struct Data *data)
+void InventoryLookup(struct Data *data)
 {
     LinkedList *now = data->inventoryCheckList->next;
     LinkedList *rowNow = data->inventoryTable->rows->next;
@@ -123,15 +129,16 @@ int InventoryLookup(struct Data *data)
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewInventoryDetail("库存详情", table));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个库存条目");
 }
 
-int InventoryAdd(struct Data *data)
+void InventoryAdd(struct Data *data)
 {
     LinkedList *now = data->itemCheckList->next;
     LinkedList *rowNow = data->itemTable->rows->next;
@@ -181,15 +188,16 @@ int InventoryAdd(struct Data *data)
             AppendTable(table, row);
             PushWindow(NewInventoryEdit("库存编辑", data->id, data->password, table, 0));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请在商品页面选择一个商品条目");
 }
 
-int InventoryModify(struct Data *data)
+void InventoryModify(struct Data *data)
 {
     LinkedList *now = data->inventoryCheckList->next;
     LinkedList *rowNow = data->inventoryTable->rows->next;
@@ -250,12 +258,13 @@ int InventoryModify(struct Data *data)
             AppendTable(table, row);
             PushWindow(NewInventoryEdit("库存编辑", data->id, data->password, table, 1));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个库存条目");
 }
 
 void InventoryPageLayout(struct nk_context *context, struct Window *window)
@@ -331,87 +340,14 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
 
     nk_layout_row_static(context, 10, 0, 0);
 
-    nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查询"))
-                {
-                    SendInventoryRequest(data);
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查看"))
-                {
-                    if (!InventoryLookup(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个库存条目");
-                    }
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "+"))
-                {
-                    if (!InventoryAdd(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请在商品页面选择一个商品条目");
-                    }
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "-"))
-                {
-                    data->messageCallback = InventoryDelete;
-                    data->message = CloneString("是否确认要删除选中的库存条目");
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "~"))
-                {
-                    if (!InventoryModify(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个库存条目");
-                    }
-                }
-            }
-
-            nk_style_pop_font(context);
-        }
-        nk_layout_row_end(context);
-    }
+    OperationLayout(context,
+            OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
+            (OperationHandler)SendInventoryRequest,
+            (OperationHandler)InventoryLookup,
+            (OperationHandler)InventoryAdd,
+            (OperationHandler)ConfirmInventoryDelete,
+            (OperationHandler)InventoryModify,
+            data);
 
     nk_layout_row_dynamic(context, 10, 1);
     {

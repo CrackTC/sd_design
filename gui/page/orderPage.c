@@ -46,7 +46,7 @@ void SendOrderRequest(struct Data *data)
     }
 }
 
-int OrderLookup(struct Data *data)
+void OrderLookup(struct Data *data)
 {
     LinkedList *now = data->orderCheckList->next;
     LinkedList *rowNow = data->orderTable->rows->next;
@@ -59,15 +59,16 @@ int OrderLookup(struct Data *data)
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewOrderDetail("订单详情", table));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个订单");
 }
 
-int OrderAdd(struct Data *data)
+void OrderAdd(struct Data *data)
 {
     LinkedList *itemCheckNow = data->itemCheckList->next;
     LinkedList *itemRowNow = data->itemTable->rows->next;
@@ -99,20 +100,23 @@ int OrderAdd(struct Data *data)
 
                     PushWindow(NewOrderEdit("订单编辑", data->id, data->password, table, 0));
                     FreeTable(table);
-                    return 1;
+                    return;
                 }
                 customerCheckNow = customerCheckNow->next;
                 customerRowNow = customerRowNow->next;
             }
-            return 0;
+            data->messageCallback = MessageBoxCallback;
+            data->message = CloneString("请确保在商品页面选择一个商品条目，且在客户页面选择一个客户条目");
+            return;
         }
         itemCheckNow = itemCheckNow->next;
         itemRowNow = itemRowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请确保在商品页面选择一个商品条目，且在客户页面选择一个客户条目");
 }
 
-int OrderModify(struct Data *data)
+void OrderModify(struct Data *data)
 {
     LinkedList *now = data->orderCheckList->next;
     LinkedList *rowNow = data->orderTable->rows->next;
@@ -146,12 +150,13 @@ int OrderModify(struct Data *data)
 
             PushWindow(NewOrderEdit("订单编辑", data->id, data->password, table, 1));
             FreeTable(table);
-            return 1;
+            return;
         }
         now = now->next;
         rowNow = rowNow->next;
     }
-    return 0;
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个订单条目");
 }
 
 void OrderDelete(int ok, void *parameter)
@@ -214,6 +219,12 @@ void OrderDelete(int ok, void *parameter)
     }
     data->messageCallback = MessageBoxCallback;
     data->message = CloneString("删除成功");
+}
+
+void ConfirmOrderDelete(struct Data *data)
+{
+    data->messageCallback = MessageBoxCallback;
+    data->message = CloneString("请选择一个订单条目");
 }
 
 void OrderPageLayout(struct nk_context *context, struct Window *window)
@@ -289,87 +300,14 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
 
     nk_layout_row_static(context, 10, 0, 0);
 
-    nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查询"))
-                {
-                    SendOrderRequest(data);
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.15f);
-            {
-                if (nk_button_label(context, "查看"))
-                {
-                    if (!OrderLookup(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个订单");
-                    }
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "+"))
-                {
-                    if (!OrderAdd(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请确保在商品页面选择一个商品条目，且在客户页面选择一个客户条目");
-                    }
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "-"))
-                {
-                    data->messageCallback = OrderDelete;
-                    data->message = CloneString("是否确认要删除选中的订单条目");
-                }
-            }
-
-            nk_layout_row_push(context, 0.01f);
-            {
-                PlaceNothing(context);
-            }
-
-            nk_layout_row_push(context, 0.08f);
-            {
-                if (nk_button_label(context, "~"))
-                {
-                    if (!OrderModify(data))
-                    {
-                        data->messageCallback = MessageBoxCallback;
-                        data->message = CloneString("请选择一个订单条目");
-                    }
-                }
-            }
-
-            nk_style_pop_font(context);
-        }
-        nk_layout_row_end(context);
-    }
+    OperationLayout(context,
+            OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
+            (OperationHandler)SendOrderRequest,
+            (OperationHandler)OrderLookup,
+            (OperationHandler)OrderAdd,
+            (OperationHandler)ConfirmOrderDelete,
+            (OperationHandler)OrderModify,
+            data);
 
     nk_layout_row_dynamic(context, 10, 1);
     {
