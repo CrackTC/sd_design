@@ -286,7 +286,7 @@ Table *RemoveAnOrder(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int orderid = atoi(GetRowItemByColumnName(a, information, "orderid"));
+    int orderid = atoi(GetRowItemByColumnName(a, information, "订单编号"));
 
     Order *thisorder = GetOrderById(orderid);
     if (thisorder == NULL)
@@ -343,10 +343,10 @@ Table *UpdateOrder(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int orderid = atoi(GetRowItemByColumnName(a, information, "orderid"));
-    int inventoryid = atoi(GetRowItemByColumnName(a, information, "inventoryid"));
-    int number = atoi(GetRowItemByColumnName(a, information, "number"));
-    int customerid = atoi(GetRowItemByColumnName(a, information, "customerid"));
+    int orderid = atoi(GetRowItemByColumnName(a, information, "订单编号"));
+    int inventoryid = atoi(GetRowItemByColumnName(a, information, "库存编号"));
+    int number = atoi(GetRowItemByColumnName(a, information, "数量"));
+    int customerid = atoi(GetRowItemByColumnName(a, information, "客户编号"));
 
     Order *thisorder = GetOrderById(orderid);
     if (thisorder == NULL)

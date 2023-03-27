@@ -142,7 +142,7 @@ Table *AddInventory(Table *input)
                         table1 = NewTable(NULL, "该批货物已过期 无法加入");
                 }
                 else
-                    table1 = NewTable(NULL, "输入的入库时间大于生产日期");
+                    table1 = NewTable(NULL, "输入的生产日期大于入库时间");
             }
             else
                 table1 = NewTable(NULL, "输入的生产日期时间有误");
@@ -239,10 +239,7 @@ Table *UpdateInventory(Table *input)
 // 展示所有的缺货状态的货物
 Table *ShowLackInventory(Table *input)
 {
-    // 创建表格 该表格用于有货存过少时使用
-    Table *tableLack;
-    // 创建表格 该表格用于没有货存过少时使用
-    Table *tableOk;
+    Table *table;
     // 用于存放是否有货存过少的情况发生 并记录有多少条信息
     int lackCount = 0;
     // 创建表头 表头信息如下所示
@@ -251,8 +248,8 @@ Table *ShowLackInventory(Table *input)
     AppendTableRow(row, "商品名称");
     AppendTableRow(row, "剩余数量");
     // 根据有没有缺货的货存返回不同的表格
-    tableLack = NewTable(row, NULL);
-    tableOk = NewTable(NULL, "全部商品库存都很充足 未出现缺货现象");
+    table = NewTable(row, NULL);
+    /* tableOk = NewTable(NULL, "全部商品库存都很充足 未出现缺货现象"); */
     // 获取全部的商品链表
     LinkedList *itemNow = GetAllItems();
     while (itemNow != NULL)
@@ -310,7 +307,7 @@ Table *ShowLackInventory(Table *input)
                 // 插入剩余数量
                 free(AppendTableRow(row, LongLongToString(remainCount)));
                 // 将这些数据插入到表格中
-                AppendTable(tableLack, row);
+                AppendTable(table, row);
             }
         }
         itemNow = itemNow->next;
@@ -325,16 +322,15 @@ Table *ShowLackInventory(Table *input)
         strcat(remark, lackCountString);
         strcat(remark, "条信息");
         // 重新设置备注
-        SetTableRemark(tableLack, remark);
+        SetTableRemark(table, remark);
         // 释放占用的空间
         free(lackCountString);
-        FreeTable(tableOk); //
-        return tableLack;
+        return table;
     }
     else
     {
-        FreeTable(tableLack);
-        return tableOk;
+        SetTableRemark(table, "全部商品库存都很充足 未出现缺货现象");
+        return table;
     }
 }
 

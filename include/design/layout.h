@@ -10,11 +10,11 @@
 #define NK_INCLUDE_DEFAULT_FONT
 #define NK_KEYSTATE_BASED_INPUT
 
-#include "linkedList.h"
-#include "table.h"
 #include "glad/glad.h"
+#include "linkedList.h"
 #include "nuklear/nuklear.h"
 #include "nuklear/nuklear_glfw_gl3.h"
+#include "table.h"
 
 #define BUFFER_SIZE 256
 
@@ -74,6 +74,8 @@ Window *NewStaffDetail(const char *title, const Table *staff);
 
 Window *NewStaffEdit(const char *title, int id, const char *password, Table *staff, int modify);
 
+Window *NewResultDialog(const char *title, Table *data);
+
 void WelcomePageLayout(struct nk_context *context, struct Window *window);
 
 void InventoryPageLayout(struct nk_context *context, struct Window *window);
@@ -101,10 +103,10 @@ void PlaceNothing(struct nk_context *context);
 void EnsureWindowSize(struct nk_context *context, Window *window, float width, float height);
 
 void DrawMessageBox(struct nk_context *context, const char *title, int draw, const char *message,
-        void (*callback)(int, void *), void *parameter);
+                    void (*callback)(int, void *), void *parameter);
 
 void TableLayout(struct nk_context *context, const Table *table, LinkedList *checkList, const char *filter,
-        const char *value);
+                 const char *value);
 
 void PushWindow(Window *window);
 

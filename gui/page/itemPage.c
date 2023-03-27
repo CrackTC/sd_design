@@ -43,6 +43,12 @@ void SendItemRequest(struct Data *data)
         FreeList(data->itemCheckList);
         data->itemCheckList = NewCheckList();
         data->itemTable = response;
+
+        response = ShowLackInventory(NULL);
+        if (response->rows->next != NULL)
+        {
+            PushWindow(NewResultDialog("缺货详情", response));
+        }
     }
     else
     {
