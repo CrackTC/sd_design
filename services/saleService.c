@@ -285,6 +285,7 @@ Table *GetAllOrder(Table *a)
     {
         Order *order = orderNow->data;
         row = NewTableRow();
+        count++;
 
         // 数据准备
         int orderId = GetOrderId(order);
