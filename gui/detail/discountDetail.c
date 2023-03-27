@@ -19,9 +19,9 @@ void DiscountDetailLayout(struct nk_context *context, Window *window)
     nk_style_push_font(context, &fontSmall->handle);
     {
         nk_layout_row_dynamic(context, 0, 1);
-        nk_label(context, "id", NK_TEXT_CENTERED);
+        nk_label(context, "折扣编号", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                GetRowItemByColumnName(data->discount, dataRow, "id"), 512, nk_filter_default);
+                GetRowItemByColumnName(data->discount, dataRow, "折扣编号"), 512, nk_filter_default);
 
         nk_label(context, "商品编号", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
@@ -43,9 +43,9 @@ void DiscountDetailLayout(struct nk_context *context, Window *window)
                 GetRowItemByColumnName(data->discount, dataRow, "客户等级"), 512,
                 nk_filter_default);
 
-        nk_label(context, "截止日期", NK_TEXT_CENTERED);
+        nk_label(context, "截止时间", NK_TEXT_CENTERED);
         nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD,
-                GetRowItemByColumnName(data->discount, dataRow, "截止日期"), 512,
+                GetRowItemByColumnName(data->discount, dataRow, "截止时间"), 512,
                 nk_filter_default);
 
         if (nk_button_label(context, "确定"))

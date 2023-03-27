@@ -1,6 +1,6 @@
 #include "design/utils.h"
-#include "design/amount.h"
 #include "config.h"
+#include "design/amount.h"
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +8,11 @@
 int IntegerStringLength(long long x)
 {
     return snprintf(NULL, 0, "%lld", x);
+}
+
+inline int abs(int x)
+{
+    return x < 0 ? -x : x;
 }
 
 char *AmountToString(const Amount *amount)

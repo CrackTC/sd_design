@@ -8,33 +8,7 @@
 #include <malloc.h>
 #include <string.h>
 
-struct Data
-{
-    struct Table *loss;
-    int id;
-    const char *password;
-    char *message;
-    int modify;
-    Window *window;
-
-    void (*messageCallback)(int, void *);
-};
-
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
-}
-
-static void FinishCallback(__attribute__((unused)) int ok, void *parameter)
-{
-    MessageBoxCallBack(ok, parameter);
-    struct Data *data = parameter;
-    data->window->isClosed = 1;
-}
-
-static void SendRequest(struct Data *data)
+static void SendRequest(struct EditData *data)
 {
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_LOSS : OP_ADD_LOSS;
@@ -63,20 +37,20 @@ static void SendRequest(struct Data *data)
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
-    TableRow *sourceRow = GetRowByIndex(data->loss, 1);
+    TableRow *sourceRow = GetRowByIndex(data->data, 1);
     if (data->modify)
     {
-        AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "货损编号"));
+        AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "货损编号"));
     }
-    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "库存编号"));
-    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "年"));
-    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "月"));
-    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "日"));
-    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "时"));
-    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "分"));
-    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "秒"));
-    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "货损数量"));
-    AppendTableRow(row, GetRowItemByColumnName(data->loss, sourceRow, "货损原因"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "库存编号"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "年"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "月"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "日"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "时"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "分"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "秒"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "货损数量"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "货损原因"));
     AppendTable(request, row);
 
     Table *response;
@@ -94,7 +68,7 @@ static void SendRequest(struct Data *data)
 
     if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString(response->remark);
     }
     else
@@ -111,9 +85,9 @@ static void SendRequest(struct Data *data)
 
 void LossEditLayout(struct nk_context *context, Window *window)
 {
-    struct Data *data = window->data;
+    struct EditData *data = window->data;
     DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
-    TableRow *dataRow = GetRowByIndex(data->loss, 1);
+    TableRow *dataRow = GetRowByIndex(data->data, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
     {
@@ -136,7 +110,7 @@ void LossEditLayout(struct nk_context *context, Window *window)
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
                     context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->loss, dataRow, "库存编号"), 512, nk_filter_decimal);
+                    GetRowItemByColumnName(data->data, dataRow, "库存编号"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -152,7 +126,7 @@ void LossEditLayout(struct nk_context *context, Window *window)
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
                     context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->loss, dataRow, "货损数量"), 512, nk_filter_decimal);
+                    GetRowItemByColumnName(data->data, dataRow, "货损数量"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -168,7 +142,7 @@ void LossEditLayout(struct nk_context *context, Window *window)
             nk_layout_row_push(context, 500);
             nk_edit_string_zero_terminated(
                     context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->loss, dataRow, "货损原因"), 512, nk_filter_default);
+                    GetRowItemByColumnName(data->data, dataRow, "货损原因"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -194,8 +168,8 @@ void LossEditLayout(struct nk_context *context, Window *window)
 
 void FreeLossEdit(Window *window)
 {
-    struct Data *data = window->data;
-    FreeTable(data->loss);
+    struct EditData *data = window->data;
+    FreeTable(data->data);
     free(window);
 }
 
@@ -207,9 +181,9 @@ Window *NewLossEdit(const char *title, int id, const char *password, Table *loss
     window->freeFunc = FreeLossEdit;
     window->title = title;
 
-    struct Data *data = malloc(sizeof(struct Data));
-    memset(data, 0, sizeof(struct Data));
-    data->loss = CloneTableBuffered(loss, 512);
+    struct EditData *data = malloc(sizeof(struct EditData));
+    memset(data, 0, sizeof(struct EditData));
+    data->data = CloneTableBuffered(loss, 512);
     data->id = id;
     data->password = password;
     data->modify = modify;

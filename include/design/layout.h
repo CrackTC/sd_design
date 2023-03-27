@@ -24,6 +24,8 @@ typedef void (*LayoutFunc)(struct nk_context *context, Window *window);
 
 typedef void (*FreeFunc)(Window *window);
 
+typedef void (*OperationHandler)(void *);
+
 struct Window
 {
     int isClosed;
@@ -32,6 +34,18 @@ struct Window
     const char *title;
     void *data;
     struct Window *next;
+};
+
+struct EditData
+{
+    struct Table *data;
+    int id;
+    const char *password;
+    char *message;
+    int modify;
+    Window *window;
+
+    void (*messageCallback)(int, void *);
 };
 
 Window *NewMainWindow(const char *title, const char *id, const char *password, const char *name);
@@ -105,10 +119,32 @@ void EnsureWindowSize(struct nk_context *context, Window *window, float width, f
 void DrawMessageBox(struct nk_context *context, const char *title, int draw, const char *message,
                     void (*callback)(int, void *), void *parameter);
 
+void MessageBoxCallback(int ok, void *parameter);
+
+void FinishCallback(int ok, void *parameter);
+
 void TableLayout(struct nk_context *context, const Table *table, LinkedList *checkList, const char *filter,
                  const char *value);
 
 void PushWindow(Window *window);
+
+enum OperationTypes
+{
+    OP_TYPE_GET = 1 << 0,
+    OP_TYPE_DETAIL = 1 << 1,
+    OP_TYPE_ADD = 1 << 2,
+    OP_TYPE_DELETE = 1 << 3,
+    OP_TYPE_UPDATE = 1 << 4
+};
+
+void OperationLayout(struct nk_context *context,
+        enum OperationTypes types,
+        OperationHandler getHandler,
+        OperationHandler detailHandler,
+        OperationHandler addHandler,
+        OperationHandler deleteHandler,
+        OperationHandler updateHandler,
+        void *data);
 
 LinkedList *NewCheckList();
 

@@ -104,6 +104,7 @@ Window *NewMainWindow(const char *title, const char *id, const char *password, c
         AppendTableRow(row, "库存编号");
         AppendTableRow(row, "商品编号");
         AppendTableRow(row, "商品名称");
+        AppendTableRow(row, "售货状态");
         AppendTableRow(row, "数量");
         AppendTableRow(row, "入库时间");
         AppendTableRow(row, "生产日期");

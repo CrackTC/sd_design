@@ -10,6 +10,8 @@
 #include "design/utils.h"
 
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 // 自动售货
 Table *AddOrder(Table *a)
@@ -651,7 +653,7 @@ Table *RemoveDiscount(Table *a)
 {
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int discountid = atoi(GetRowItemByColumnName(a, information, "id"));
+    int discountid = atoi(GetRowItemByColumnName(a, information, "折扣编号"));
 
     BasicDiscount *discount = GetBasicDiscountById(discountid);
     if (discount == NULL)

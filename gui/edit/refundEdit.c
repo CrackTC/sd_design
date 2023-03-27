@@ -8,22 +8,14 @@
 #include <malloc.h>
 #include <string.h>
 
-struct Data
-{
-    struct Table *refund;
-    int id;
-    const char *password;
-    char *message;
-    int modify;
-};
-
-static int SendRequest(struct Data *data)
+static int SendRequest(struct EditData *data)
 {
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_REFUND : OP_ADD_REFUND;
     Judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString("没有权限");
         return 0;
     }
@@ -40,15 +32,15 @@ static int SendRequest(struct Data *data)
     Table *request = NewTable(row, NULL);
 
     row = NewTableRow();
-    TableRow *sourceRow = GetRowByIndex(data->refund, 1);
+    TableRow *sourceRow = GetRowByIndex(data->data, 1);
 
-    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "订单编号"));
-    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "退款原因"));
-    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "元"));
-    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "角"));
-    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "分"));
-    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "退回数目"));
-    AppendTableRow(row, GetRowItemByColumnName(data->refund, sourceRow, "备注"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "订单编号"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "退款原因"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "元"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "角"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "分"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "退回数目"));
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "备注"));
     AppendTable(request, row);
 
     Table *response;
@@ -66,10 +58,12 @@ static int SendRequest(struct Data *data)
 
     if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
     {
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString(response->remark);
     }
     else
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString("操作成功完成");
     }
 
@@ -81,18 +75,11 @@ static int SendRequest(struct Data *data)
     return 1;
 }
 
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
-}
-
 void RefundEditLayout(struct nk_context *context, Window *window)
 {
-    struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
-    TableRow *dataRow = GetRowByIndex(data->refund, 1);
+    struct EditData *data = window->data;
+    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
+    TableRow *dataRow = GetRowByIndex(data->data, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
     {
@@ -115,7 +102,7 @@ void RefundEditLayout(struct nk_context *context, Window *window)
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
                     context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->refund, dataRow, "订单编号"), 512, nk_filter_decimal);
+                    GetRowItemByColumnName(data->data, dataRow, "订单编号"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -131,7 +118,7 @@ void RefundEditLayout(struct nk_context *context, Window *window)
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
                     context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->refund, dataRow, "退款原因"), 512, nk_filter_default);
+                    GetRowItemByColumnName(data->data, dataRow, "退款原因"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -147,7 +134,7 @@ void RefundEditLayout(struct nk_context *context, Window *window)
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
                     context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->refund, dataRow, "退回数目"), 512, nk_filter_decimal);
+                    GetRowItemByColumnName(data->data, dataRow, "退回数目"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
@@ -164,21 +151,21 @@ void RefundEditLayout(struct nk_context *context, Window *window)
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
                     context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->refund, dataRow, "元"), 512, nk_filter_decimal);
+                    GetRowItemByColumnName(data->data, dataRow, "元"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "元", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
                     context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->refund, dataRow, "角"), 512, nk_filter_decimal);
+                    GetRowItemByColumnName(data->data, dataRow, "角"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "角", NK_TEXT_CENTERED);
 
             nk_layout_row_push(context, 40);
             nk_edit_string_zero_terminated(
                     context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->refund, dataRow, "分"), 512, nk_filter_decimal);
+                    GetRowItemByColumnName(data->data, dataRow, "分"), 512, nk_filter_decimal);
             nk_layout_row_push(context, 30);
             nk_label(context, "分", NK_TEXT_CENTERED);
 
@@ -209,8 +196,8 @@ void RefundEditLayout(struct nk_context *context, Window *window)
 
 void FreeRefundEdit(Window *window)
 {
-    struct Data *data = window->data;
-    FreeTable(data->refund);
+    struct EditData *data = window->data;
+    FreeTable(data->data);
     free(window);
 }
 
@@ -222,9 +209,9 @@ Window *NewRefundEdit(const char *title, int id, const char *password, Table *re
     window->freeFunc = FreeRefundEdit;
     window->title = title;
 
-    struct Data *data = malloc(sizeof(struct Data));
-    memset(data, 0, sizeof(struct Data));
-    data->refund = CloneTableBuffered(refund, 512);
+    struct EditData *data = malloc(sizeof(struct EditData));
+    memset(data, 0, sizeof(struct EditData));
+    data->data = CloneTableBuffered(refund, 512);
     data->id = id;
     data->password = password;
     data->modify = modify;

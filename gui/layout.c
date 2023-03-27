@@ -1,6 +1,7 @@
 #include "design/layout.h"
 #include <malloc.h>
 #include <stddef.h>
+#include "../config.h"
 
 static struct nk_rect none = { 0, 0, 0, 0 };
 
@@ -55,6 +56,119 @@ void DrawMessageBox(struct nk_context *context, const char *title, int draw, con
 
             nk_popup_end(context);
         }
+    }
+}
+
+void MessageBoxCallback(int ok, void *parameter)
+{
+    struct EditData *data = parameter;
+    free(data->message);
+    data->message = NULL;
+}
+
+void FinishCallback(int ok, void *parameter)
+{
+    MessageBoxCallback(ok, parameter);
+    struct EditData *data = parameter;
+    data->window->isClosed = 1;
+}
+
+void OperationLayout(struct nk_context *context,
+        enum OperationTypes types,
+        OperationHandler getHandler,
+        OperationHandler detailHandler,
+        OperationHandler addHandler,
+        OperationHandler deleteHandler,
+        OperationHandler updateHandler,
+        void *data)
+{
+    nk_layout_row_begin(context, NK_DYNAMIC, 35, 10);
+    {
+        if (nk_style_push_font(context, &fontSmall->handle))
+        {
+            if (types & OP_TYPE_GET)
+            {
+                nk_layout_row_push(context, 0.15f);
+                {
+                    if (nk_button_label(context, "查询"))
+                    {
+                        getHandler(data);
+                    }
+                }
+
+                nk_layout_row_push(context, 0.01f);
+                {
+                    PlaceNothing(context);
+                }
+            }
+
+            if (types & OP_TYPE_DETAIL)
+            {
+                nk_layout_row_push(context, 0.15f);
+                {
+                    if (nk_button_label(context, "查看"))
+                    {
+                        detailHandler(data);
+                    }
+                }
+
+                nk_layout_row_push(context, 0.01f);
+                {
+                    PlaceNothing(context);
+                }
+            }
+
+            if (types & OP_TYPE_ADD)
+            {
+                nk_layout_row_push(context, 0.08f);
+                {
+                    if (nk_button_label(context, "+"))
+                    {
+                        addHandler(data);
+                    }
+                }
+
+                nk_layout_row_push(context, 0.01f);
+                {
+                    PlaceNothing(context);
+                }
+            }
+
+            if (types & OP_TYPE_DELETE)
+            {
+                nk_layout_row_push(context, 0.08f);
+                {
+                    if (nk_button_label(context, "-"))
+                    {
+                        deleteHandler(data);
+                    }
+                }
+
+                nk_layout_row_push(context, 0.01f);
+                {
+                    PlaceNothing(context);
+                }
+            }
+
+            if (types & OP_TYPE_UPDATE)
+            {
+                nk_layout_row_push(context, 0.08f);
+                {
+                    if (nk_button_label(context, "~"))
+                    {
+                        updateHandler(data);
+                    }
+                }
+
+                nk_layout_row_push(context, 0.01f);
+                {
+                    PlaceNothing(context);
+                }
+            }
+
+            nk_style_pop_font(context);
+        }
+        nk_layout_row_end(context);
     }
 }
 
