@@ -216,54 +216,12 @@ Table *DeleteStaff(Table *staff)
         /*FreeTable(staff);                */                        // 释放原有的员工具体信息表格
 
         Staff *objectStaff = GetStaffById(id); // 根据id得到这个员工
-//		if (objectStaff != NULL)
-//		{                                         // 若可以找到这个员工
-//			SetStaffAvailability(objectStaff, 0); // 将这个员工设置为不可用
-//			/*创建一个表格，包含已经删除的员工的信息*/
-//			Table* oriStaff = CreateStaffTableTitle();
-//			TableRow* oriStaffItem = NewTableRow();
-//			PermissionEntry* permission = GetPermissionEntryByStaffId(GetStaffId(objectStaff));
-//			free(AppendTableRow(oriStaffItem, LongLongToString(GetStaffId(objectStaff)))); // 加入Id
-//			free(AppendTableRow(oriStaffItem, CloneString(GetStaffName(objectStaff))));    // 加入名字
-//			free(AppendTableRow(oriStaffItem,
-//					LongLongToString(GetStaffAvailability(objectStaff))));     // 加入可用性
-//			free(AppendTableRow(oriStaffItem, CloneString(GetStaffContact(objectStaff)))); // 加入联系方式
-//			free(AppendTableRow(oriStaffItem, PermissionToString(permission)));
-//			int judge = AppendTable(oriStaff, oriStaffItem); // 判断是否添加入表格成功
 
         /*释放该员工*/
         RemoveStaff(objectStaff); // 释放这个员工
         StaffSave(); // 若释放成功，则保存这个更改
-//
-//			/*释放该员工的权限*/
-//			RemovePermissionEntry(permission);
-//			PermissionSave();
-//
-//			/*返回删除的员工信息表格*/
-//			if (judge == 0)
-//				return oriStaff; // 若添加表格成功，则返回该表格
-//			else
-//			{                                        // 若失败，返回一个空表格
-//				TableRow* blank_row = NewTableRow(); // 创建一个空的表格行
-//				Table* remark_table = NewTable(blank_row, "将该员工的信息填入表格时出错 !");
-//				/*创建一个空表格，只有备注说明添加员工信息表格出错*/
-//				return remark_table; // 返回空表格
-//			}
-//		}
-//		else
-//		{                                        // 若没有这个员工
-//			TableRow* blank_row = NewTableRow(); // 创建一个空的表格行
-//			Table* remark_table = NewTable(blank_row, "没有该员工 !");
-//			/*创建一个空表格，只有备注说明 没有该员工*/
-//			return remark_table; // 返回空表格
-//		}
-//	}
-//	else
-//	{                                        // 若传入的表格是空表
-//		TableRow* blank_row = NewTableRow(); // 创建一个空的表格行
-//		Table* remark_table = NewTable(blank_row, "没有提供任何信息 ");
-//		/*创建一个空表格，只有备注说明 没有给予任何信息*/
-//		return remark_table; // 返回空表格
+
+        return NULL;
     }
     return NewTable(NULL, "删除失败: 员工为NULL");
 }

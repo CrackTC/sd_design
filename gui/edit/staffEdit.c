@@ -85,7 +85,7 @@ static void SendRequest(struct Data *data)
 void StaffEditLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->editData->message != NULL, data->editData->message, data->editData->messageCallback, data);
+    DrawMessageBox(context, "", data->editData->message != NULL, data->editData->message, data->editData->messageCallback, data->editData);
     TableRow *dataRow = GetRowByIndex(data->editData->data, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
