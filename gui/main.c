@@ -1,5 +1,5 @@
-#include "design/utils.h"
 #include "../config.h"
+#include "design/utils.h"
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -21,20 +21,6 @@ static void error_callback(int e, const char *d)
 }
 
 LinkedList *windows;
-
-int ShouldExit(struct nk_context *context)
-{
-    LinkedList *now = windows;
-    while (now != NULL)
-    {
-        if (!nk_window_is_closed(context, ((Window *)now->data)->title))
-        {
-            return 0;
-        }
-        now = now->next;
-    }
-    return 1;
-}
 
 void PushWindow(Window *window)
 {
@@ -63,7 +49,8 @@ struct nk_font *fontLarge;
 struct nk_font *fontMedium;
 struct nk_font *fontSmall;
 
-void InitGraphic(int width, int height, struct nk_glfw **glfw, struct nk_context **pcontext, struct GLFWwindow **pwindow)
+void InitGraphic(int width, int height, struct nk_glfw **glfw, struct nk_context **pcontext,
+                 struct GLFWwindow **pwindow)
 {
     *glfw = calloc(1, sizeof(struct nk_glfw));
     glfwSetErrorCallback(error_callback);
@@ -93,126 +80,110 @@ void InitGraphic(int width, int height, struct nk_glfw **glfw, struct nk_context
     *pcontext = nk_glfw3_init(*glfw, *pwindow, NK_GLFW3_INSTALL_CALLBACKS);
 }
 
+struct nk_font *LoadFont(struct nk_glfw *glfw, float size)
+{
+    struct nk_font_config config;
+    struct nk_font_atlas *atlas;
+
+    config = nk_font_config(size);
+    config.oversample_h = 1;
+    config.oversample_v = 1;
+    config.range = nk_font_chinese_glyph_ranges();
+    config.pixel_snap = 1;
+
+    nk_glfw3_font_stash_begin(glfw, &atlas);
+    struct nk_font *result =
+        nk_font_atlas_add_from_file(atlas, JoinPath(executablePath, fontRelativePath), size, &config);
+    nk_glfw3_font_stash_end(glfw);
+
+    return result;
+}
+
+void InitFont(struct nk_glfw *glfw)
+{
+    fontMedium = LoadFont(glfw, 30.0f);
+    fontLarge = LoadFont(glfw, 35.0f);
+    fontSmall = LoadFont(glfw, 25.0f);
+}
+
+void Draw(struct nk_context *context)
+{
+    LinkedList *now = windows;
+    while (now != NULL)
+    {
+        while (((Window *)now->data)->next != NULL)
+        {
+            nk_window_close(context, ((Window *)now->data)->title);
+            Window *tmp = now->data;
+            now->data = ((Window *)now->data)->next;
+            tmp->freeFunc(tmp);
+        }
+        if (((Window *)now->data)->isClosed == 1)
+        {
+            if (!nk_window_is_closed(context, ((Window *)now->data)->title))
+            {
+                nk_window_close(context, ((Window *)now->data)->title);
+            }
+            ((Window *)now->data)->freeFunc(now->data);
+            RemoveNode(windows, now->data);
+
+            LinkedList *next = now->next;
+            free(now);
+            now = next;
+        }
+        else
+        {
+            if (nk_begin(context, ((Window *)now->data)->title, nk_rect(0, 0, 1000, 800),
+                         NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | NK_WINDOW_MOVABLE |
+                             NK_WINDOW_SCALABLE))
+            {
+                ((Window *)now->data)->layoutFunc(context, now->data);
+            }
+            nk_end(context);
+
+            now = now->next;
+        }
+    }
+}
+
+void Submit(struct nk_glfw *glfw, int width, int height, GLFWwindow *window)
+{
+    glfwPollEvents();
+    nk_glfw3_new_frame(glfw);
+
+    glViewport(0, 0, width, height);
+    glClear(GL_COLOR_BUFFER_BIT);
+    nk_glfw3_render(glfw, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
+    glfwSwapBuffers(window);
+}
+
 int main(int argc, char **argv)
 {
 #ifdef _WIN32
     // Windows使用utf-8代码页
-    printf("system: Windows\n");
     system("chcp 65001");
 #endif
 
-    // 操作系统路径分隔符
-    printf("separator: " PATH_SEPARATOR_STRING "\n");
-
     // 程序二进制路径
-    char *path = GetDirectory(argv[0]);
-    executablePath = path;
-    printf("%s\n", path);
+    executablePath = GetDirectory(argv[0]);
 
-    // glewExperimental = GL_TRUE;
-    // if (glewInit() != GLEW_OK)
-    // {
-    //     printf("[GLEW] failed to setup glew\n");
-    //     return -1;
-    // }
-    //
     int window_width = 1920;
     int window_height = 1080;
 
     struct nk_glfw *glfw;
     struct nk_context *context;
     struct GLFWwindow *window;
+
     InitGraphic(window_width, window_height, &glfw, &context, &window);
-
-    // font baking
-    {
-        struct nk_font_config config = nk_font_config(30.0f);
-        config.oversample_h = 1;
-        config.oversample_v = 1;
-        config.range = nk_font_chinese_glyph_ranges();
-        config.pixel_snap = 1;
-
-        struct nk_font_atlas *atlas;
-
-        nk_glfw3_font_stash_begin(glfw, &atlas);
-        fontMedium = nk_font_atlas_add_from_file(atlas, JoinPath(executablePath, fontRelativePath), 30.0f, &config);
-        nk_glfw3_font_stash_end(glfw);
-
-        config = nk_font_config(35.0f);
-        config.oversample_h = 1;
-        config.oversample_v = 1;
-        config.range = nk_font_chinese_glyph_ranges();
-        config.pixel_snap = 1;
-
-        nk_glfw3_font_stash_begin(glfw, &atlas);
-        fontLarge = nk_font_atlas_add_from_file(atlas, JoinPath(executablePath, fontRelativePath), 35.0f, &config);
-        nk_glfw3_font_stash_end(glfw);
-
-        config = nk_font_config(25.0f);
-        config.oversample_h = 1;
-        config.oversample_v = 1;
-        config.range = nk_font_chinese_glyph_ranges();
-        config.pixel_snap = 1;
-
-        nk_glfw3_font_stash_begin(glfw, &atlas);
-        fontSmall = nk_font_atlas_add_from_file(atlas, JoinPath(executablePath, fontRelativePath), 25.0f, &config);
-        nk_glfw3_font_stash_end(glfw);
-
-        nk_style_set_font(context, &fontMedium->handle);
-    }
+    InitFont(glfw);
+    nk_style_set_font(context, &fontMedium->handle);
 
     InitWindows();
 
     while (!glfwWindowShouldClose(window))
     {
-        glfwPollEvents();
-
-        LinkedList *now = windows;
-        while (now != NULL)
-        {
-            while (((Window *)now->data)->next != NULL)
-            {
-                nk_window_close(context, ((Window *)now->data)->title);
-                Window *tmp = now->data;
-                now->data = ((Window *)now->data)->next;
-                tmp->freeFunc(tmp);
-            }
-            if (((Window *)now->data)->isClosed == 1)
-            {
-                if (!nk_window_is_closed(context, ((Window *)now->data)->title))
-                {
-                    nk_window_close(context, ((Window *)now->data)->title);
-                }
-                ((Window *)now->data)->freeFunc(now->data);
-                RemoveNode(windows, now->data);
-
-                LinkedList *next = now->next;
-                free(now);
-                now = next;
-            }
-            else
-            {
-                if (nk_begin(context, ((Window *)now->data)->title, nk_rect(0, 0, 1000, 800),
-                             NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE | NK_WINDOW_MOVABLE |
-                                 NK_WINDOW_SCALABLE))
-                {
-                    ((Window *)now->data)->layoutFunc(context, now->data);
-                }
-                nk_end(context);
-
-                now = now->next;
-            }
-        }
-
-        nk_glfw3_new_frame(glfw);
-
-        glViewport(0, 0, window_width, window_height);
-        glClear(GL_COLOR_BUFFER_BIT);
-        nk_glfw3_render(glfw, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
-        glfwSwapBuffers(window);
-
-        if (ShouldExit(context))
-            break;
+        Draw(context);
+        Submit(glfw, window_width, window_height, window);
     }
 
     nk_glfw3_shutdown(glfw);
