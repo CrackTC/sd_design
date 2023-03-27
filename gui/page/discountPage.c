@@ -210,7 +210,7 @@ void DiscountModify(struct Data *data)
             AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "折扣比率"));
             AppendTableRow(row, GetRowItemByColumnName(data->discountTable, rowNow->data, "客户等级"));
 
-            const char *time = GetRowItemByColumnName(data->discountTable, rowNow->data, "截止日期");
+            const char *time = GetRowItemByColumnName(data->discountTable, rowNow->data, "截止时间");
             TimeInfo info = ParseTime(time, 0);
             free(AppendTableRow(row, LongLongToString(info.year)));
             free(AppendTableRow(row, LongLongToString(info.month)));
@@ -316,6 +316,18 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
                 nk_rgb(100, 100, 100));
     }
 
+    char *from, *to;
+    DateRangeFilterLayout(context, "筛选截止时间", &from, &to);
+
+    nk_layout_row_dynamic(context, 10, 1);
+    {
+        struct nk_rect space;
+        nk_widget(&space, context);
+        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
+        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
+                nk_rgb(100, 100, 100));
+    }
+
     nk_layout_row_dynamic(context, nk_window_get_height(context) - 285, 1);
     {
         if (nk_style_push_font(context, &fontSmall->handle))
@@ -326,7 +338,10 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
                         data->discountPropertySelected == 0
                         ? NULL
                         : data->discountProperties[data->discountPropertySelected],
-                        data->discountValueBuffer);
+                        data->discountValueBuffer,
+                        "截止时间",
+                        from,
+                        to);
                 nk_group_end(context);
             }
 

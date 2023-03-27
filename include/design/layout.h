@@ -124,7 +124,7 @@ void MessageBoxCallback(int ok, void *parameter);
 void FinishCallback(int ok, void *parameter);
 
 void TableLayout(struct nk_context *context, const Table *table, LinkedList *checkList, const char *filter,
-                 const char *value);
+                 const char *value, const char *rangeFilter, const char *from, const char *to);
 
 void PushWindow(Window *window);
 
@@ -145,6 +145,8 @@ void OperationLayout(struct nk_context *context,
         OperationHandler deleteHandler,
         OperationHandler updateHandler,
         void *data);
+
+void DateRangeFilterLayout(struct nk_context *context, const char *title, char **from, char **to);
 
 LinkedList *NewCheckList();
 

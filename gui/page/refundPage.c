@@ -312,6 +312,18 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
                 nk_rgb(100, 100, 100));
     }
 
+    char *from, *to;
+    DateRangeFilterLayout(context, "筛选退款时间", &from, &to);
+
+    nk_layout_row_dynamic(context, 10, 1);
+    {
+        struct nk_rect space;
+        nk_widget(&space, context);
+        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
+        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
+                nk_rgb(100, 100, 100));
+    }
+
     nk_layout_row_dynamic(context, nk_window_get_height(context) - 285, 1);
     {
         if (nk_style_push_font(context, &fontSmall->handle))
@@ -321,7 +333,10 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
                 TableLayout(context, data->refundTable, data->refundCheckList,
                         data->refundPropertySelected == 0 ? NULL
                                                           : data->refundProperties[data->refundPropertySelected],
-                        data->refundValueBuffer);
+                        data->refundValueBuffer,
+                        "退款时间",
+                        from,
+                        to);
                 nk_group_end(context);
             }
 

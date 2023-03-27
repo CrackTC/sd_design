@@ -294,7 +294,10 @@ void StaffPageLayout(struct nk_context *context, struct Window *window)
                 TableLayout(context, data->staffTable, data->staffCheckList,
                         data->staffPropertySelected == 0 ? NULL
                                                          : data->staffProperties[data->staffPropertySelected],
-                        data->staffValueBuffer);
+                        data->staffValueBuffer,
+                        NULL,
+                        NULL,
+                        NULL);
                 nk_group_end(context);
             }
 

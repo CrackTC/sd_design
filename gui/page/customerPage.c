@@ -288,7 +288,10 @@ void CustomerPageLayout(struct nk_context *context, struct Window *window)
                         data->customerPropertySelected == 0
                         ? NULL
                         : data->customerProperties[data->customerPropertySelected],
-                        data->customerValueBuffer);
+                        data->customerValueBuffer,
+                        NULL,
+                        NULL,
+                        NULL);
                 nk_group_end(context);
             }
 

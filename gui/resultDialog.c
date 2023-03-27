@@ -12,7 +12,7 @@ void ResultDialogLayout(struct nk_context *context, Window *window)
     {
         if (nk_group_begin(context,"groupTable", NK_WINDOW_BORDER))
         {
-            TableLayout(context, window->data, NULL, NULL, NULL);
+            TableLayout(context, window->data, NULL, NULL, NULL, NULL, NULL, NULL);
             nk_group_end(context);
         }
         nk_style_pop_font(context);

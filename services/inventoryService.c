@@ -1119,7 +1119,7 @@ Table *ReviseAnItemByItemId(Table *input)
             return NewTable(NULL, "输入的新的保质期有误");
         Item *newItem = GetItemByName(newName);
         //判断修改后的商品名称在原商品系统中是否存在
-        if (newItem != NULL)
+        if (newItem != NULL && GetItemId(item) != GetItemId(newItem))
         {
             return NewTable(NULL, "修改后的商品已在商品系统中存在");
         }

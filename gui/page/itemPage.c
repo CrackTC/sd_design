@@ -317,7 +317,10 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
             {
                 TableLayout(context, data->itemTable, data->itemCheckList,
                         data->itemPropertySelected == 0 ? NULL : data->itemProperties[data->itemPropertySelected],
-                        data->itemValueBuffer);
+                        data->itemValueBuffer,
+                        NULL,
+                        NULL,
+                        NULL);
                 nk_group_end(context);
             }
 

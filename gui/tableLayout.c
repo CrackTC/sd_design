@@ -4,13 +4,28 @@
 #include <stdlib.h>
 #include <string.h>
 
-int RowFiltered(const Table *table, const TableRow *row, const char *filter, const char *value)
+int RowFiltered(const Table *table, const TableRow *row, const char *filter, const char *value, const char *rangeFilter, const char *from, const char *to)
 {
-    return filter != NULL && strcmp(GetRowItemByColumnName(table, row, filter), value) != 0;
+    if (filter != NULL)
+    {
+        if (strcmp(GetRowItemByColumnName(table, row, filter), value) != 0)
+        {
+            return 1;
+        }
+    }
+    if (rangeFilter != NULL && from != NULL && to != NULL)
+    {
+        const char *rangeData = GetRowItemByColumnName(table, row, rangeFilter);
+        if (strcmp(from, rangeData) > 0 || strcmp(rangeData, to) > 0)
+        {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 void TableLayout(struct nk_context *context, const Table *table, LinkedList *checkList, const char *filter,
-                 const char *value)
+                 const char *value, const char *rangeFilter, const char *from, const char *to)
 {
     if (table != NULL)
     {
@@ -25,7 +40,7 @@ void TableLayout(struct nk_context *context, const Table *table, LinkedList *che
                     {
                         LinkedList *now = checkList->next;
                         LinkedList *rowNow = table->rows->next;
-                        while (now != NULL && !RowFiltered(table, rowNow->data, filter, value))
+                        while (now != NULL && !RowFiltered(table, rowNow->data, filter, value, rangeFilter, from, to))
                         {
                             *(int *)now->data = *(int *)checkList->data;
                             now = now->next;
@@ -63,7 +78,7 @@ void TableLayout(struct nk_context *context, const Table *table, LinkedList *che
                     AppendData(checkList, checked);
                 }
             }
-            if (!RowFiltered(table, row, filter, value))
+            if (!RowFiltered(table, row, filter, value, rangeFilter, from, to))
             {
                 if (checkList != NULL)
                 {
