@@ -218,6 +218,10 @@ Window *NewStaffEdit(const char *title, int id, const char *password, Table *sta
 
     struct Data *data = malloc(sizeof(struct Data));
     memset(data, 0, sizeof(struct Data));
+
+    data->editData = malloc(sizeof(struct EditData));
+    memset(data->editData, 0, sizeof(struct EditData));
+
     data->editData->data = CloneTableBuffered(staff, 512);
     data->editData->id = id;
     data->editData->password = password;

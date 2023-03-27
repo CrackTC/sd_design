@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "design/customer.h"
 #include "design/order.h"
@@ -136,55 +137,6 @@ Table *UpdateCustomer(Table *a)
     // 数据准备和录入
     TableRow *row = NewTableRow();
     Table *goback = NewTable(row, NULL);
-    return goback;
-}
-
-// 获取单个客户信息
-Table *GetSingleCustomer(Table *a)
-{
-    // 读数据
-    TableRow *information = GetRowByIndex(a, 1);
-    int id = atoi(GetRowItemByColumnName(a, information, "客户编号"));
-
-    // 获取信息
-    Customer *info = GetCustomerById(id);
-    // 判断
-    if (info == NULL)
-    {
-        TableRow *row = NewTableRow();
-        Table *goback = NewTable(row, "不存在符合条件的客户");
-        return goback;
-    }
-
-    // 数据准备和录入
-    int level = GetCustomerLevel(info);
-    const char *tempname = GetCustomerName(info);
-    const char *tempcontact = GetCustomerContact(info);
-    char *name = CloneString(tempname);
-    char *contact = CloneString(tempcontact);
-    char *idstring = LongLongToString(id);
-    char *levelstring = LongLongToString(level);
-
-    TableRow *row = NewTableRow();
-    AppendTableRow(row, "客户编号");
-    AppendTableRow(row, "客户等级");
-    AppendTableRow(row, "客户姓名");
-    AppendTableRow(row, "客户联系方式");
-    Table *goback = NewTable(row, NULL);
-
-    row = NewTableRow();
-    AppendTableRow(row, idstring);
-    AppendTableRow(row, levelstring);
-    AppendTableRow(row, name);
-    AppendTableRow(row, contact);
-
-    free(idstring);
-    free(levelstring);
-    free(name);
-    free(contact);
-
-    AppendTable(goback, row);
-    // 返回值
     return goback;
 }
 

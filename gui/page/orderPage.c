@@ -11,20 +11,13 @@
 #include "design/mainWindow.h"
 #include <malloc.h>
 
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
-}
-
 void SendOrderRequest(struct Data *data)
 {
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_READ_ORDER);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：读取订单");
         return;
     }
@@ -35,7 +28,7 @@ void SendOrderRequest(struct Data *data)
     {
         if (response->remark != NULL && response->remark[0] != '\0')
         {
-            data->messageCallback = MessageBoxCallBack;
+            data->messageCallback = MessageBoxCallback;
             data->message = CloneString(response->remark);
         }
 
@@ -45,7 +38,7 @@ void SendOrderRequest(struct Data *data)
     }
     else
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("查询失败: 响应为NULL");
     }
 }
@@ -160,7 +153,7 @@ int OrderModify(struct Data *data)
 
 void OrderDelete(int ok, void *parameter)
 {
-    MessageBoxCallBack(ok, parameter);
+    MessageBoxCallback(ok, parameter);
     if (ok == 0)
     {
         return;
@@ -172,7 +165,7 @@ void OrderDelete(int ok, void *parameter)
     Judge(data->id, &hasPermission, data->password, OP_DELETE_ORDER);
     if (!hasPermission)
     {
-        data->messageCallback = MessageBoxCallBack;
+        data->messageCallback = MessageBoxCallback;
         data->message = CloneString("缺少权限：删除订单");
         return;
     }
@@ -202,7 +195,7 @@ void OrderDelete(int ok, void *parameter)
                 int error = 0;
                 if (response->remark != NULL && response->remark[0] != '\0')
                 {
-                    data->messageCallback = MessageBoxCallBack;
+                    data->messageCallback = MessageBoxCallback;
                     data->message = CloneString(response->remark);
                     error = 1;
                 }
@@ -216,7 +209,7 @@ void OrderDelete(int ok, void *parameter)
         now = now->next;
         rowNow = rowNow->next;
     }
-    data->messageCallback = MessageBoxCallBack;
+    data->messageCallback = MessageBoxCallback;
     data->message = CloneString("删除成功");
 }
 
@@ -316,7 +309,7 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!OrderLookup(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个订单");
                     }
                 }
@@ -333,7 +326,7 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!OrderAdd(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请确保在商品页面选择一个商品条目，且在客户页面选择一个客户条目");
                     }
                 }
@@ -364,7 +357,7 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
                 {
                     if (!OrderModify(data))
                     {
-                        data->messageCallback = MessageBoxCallBack;
+                        data->messageCallback = MessageBoxCallback;
                         data->message = CloneString("请选择一个订单条目");
                     }
                 }
