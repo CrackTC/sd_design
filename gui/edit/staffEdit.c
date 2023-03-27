@@ -1,10 +1,10 @@
-#include "design/operation.h"
-#include "design/judgeService.h"
+#include "../../config.h"
 #include "design/journalService.h"
+#include "design/judgeService.h"
+#include "design/layout.h"
+#include "design/operation.h"
 #include "design/staffService.h"
 #include "design/utils.h"
-#include "../../config.h"
-#include "design/layout.h"
 #include <malloc.h>
 #include <string.h>
 
@@ -16,6 +16,8 @@ struct Data
     char *message;
     int modify;
     Window *window;
+    int enabledCheck;
+    int permissionChecks[OPERATION_COUNT];
 
     void (*messageCallback)(int, void *);
 };
@@ -127,8 +129,8 @@ void StaffEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->staff, dataRow, "员工密码"), 512, nk_filter_default);
+                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                GetRowItemByColumnName(data->staff, dataRow, "员工密码"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -143,8 +145,8 @@ void StaffEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 100);
             nk_edit_string_zero_terminated(
-                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->staff, dataRow, "员工姓名"), 512, nk_filter_default);
+                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                GetRowItemByColumnName(data->staff, dataRow, "员工姓名"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -159,8 +161,8 @@ void StaffEditLayout(struct nk_context *context, Window *window)
             }
             nk_layout_row_push(context, 300);
             nk_edit_string_zero_terminated(
-                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->staff, dataRow, "员工联系方式"), 512, nk_filter_default);
+                context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                GetRowItemByColumnName(data->staff, dataRow, "员工联系方式"), 512, nk_filter_default);
 
             nk_layout_row_end(context);
         }
@@ -173,30 +175,32 @@ void StaffEditLayout(struct nk_context *context, Window *window)
                 nk_label(context, "员工可用性", NK_TEXT_CENTERED);
                 nk_style_pop_font(context);
             }
+
             nk_layout_row_push(context, 100);
-#warning use checkbox
-            nk_edit_string_zero_terminated(
-                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->staff, dataRow, "员工可用性"), 512, nk_filter_decimal);
+            if (nk_checkbox_label(context, "", &data->enabledCheck))
+            {
+                GetRowItemByColumnName(data->staff, dataRow, "员工可用性")[0] = data->enabledCheck ? '1' : '0';
+            }
 
             nk_layout_row_end(context);
         }
 
-        nk_layout_row_begin(context, NK_STATIC, 0, 2);
+        nk_layout_row_dynamic(context, 0, 1);
+        nk_style_push_font(context, &fontMedium->handle);
         {
-            nk_style_push_font(context, &fontMedium->handle);
-            {
-                nk_layout_row_push(context, 200);
-                nk_label(context, "员工权限", NK_TEXT_CENTERED);
-                nk_style_pop_font(context);
-            }
-            nk_layout_row_push(context, 600);
-#warning use checkbox
-            nk_edit_string_zero_terminated(
-                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
-                    GetRowItemByColumnName(data->staff, dataRow, "员工权限"), 512, nk_filter_decimal);
+            nk_label(context, "员工权限", NK_TEXT_CENTERED);
+            nk_style_pop_font(context);
+        }
 
-            nk_layout_row_end(context);
+        nk_layout_row_dynamic(context, 0, 6);
+        for (int i = 0; i < OPERATION_COUNT; i++)
+        {
+            PlaceNothing(context);
+            if (nk_checkbox_label(context, OperationToString(i), &data->permissionChecks[i]))
+            {
+                GetRowItemByColumnName(data->staff, dataRow, "员工权限")[i] = data->permissionChecks[i] + '0';
+            }
+            PlaceNothing(context);
         }
 
         PlaceNothing(context);
@@ -240,6 +244,13 @@ Window *NewStaffEdit(const char *title, int id, const char *password, Table *sta
     data->password = password;
     data->modify = modify;
     data->window = window;
+    data->enabledCheck =
+        strcmp(GetRowItemByColumnName(data->staff, data->staff->rows->next->data, "员工可用性"), "1") == 0;
+    const char *permisssionString = GetRowItemByColumnName(data->staff, data->staff->rows->next->data, "员工权限");
+    for (int i = 0; i < OPERATION_COUNT; i++)
+    {
+        data->permissionChecks[i] = permisssionString[i] - '0';
+    }
 
     window->data = data;
     window->next = NULL;
