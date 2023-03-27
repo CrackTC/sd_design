@@ -36,7 +36,7 @@ Table *Judge(int staffId, int *hasPermission, const char *password, Operation op
         if (operation == OP_LOGIN)
         {
             // 判断是否 登录成功 如成功 返回员工姓名的表格
-            if (VerifyStaffPassword(staff, password))
+            if (HasPermission(staffId, OP_LOGIN) && VerifyStaffPassword(staff, password))
             {
                 *hasPermission = 1;
                 // 用于存放结果的表格
