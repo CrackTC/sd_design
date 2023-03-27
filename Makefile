@@ -17,7 +17,7 @@ build:
 	$(MKDIR) bin$(SEP)data
 	gcc -O2 -std=c99 -Wall -I include -L lib gui/*.c utils.c data/*.c services/*.c gui/edit/*.c gui/page/*.c gui/detail/*.c -o bin/gui $(LINK)
 	$(MKDIR) bin$(SEP)resources
-	$(CP) gui/resources$(SEP)* bin$(SEP)resources$(SEP)
+	$(CP) gui$(SEP)resources$(SEP)* bin$(SEP)resources$(SEP)
 
 run:
 	bin$(SEP)gui
