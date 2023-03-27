@@ -126,8 +126,8 @@ Table *AddInventory(Table *input)
                                 // 储存账目是否添加成功
                                 if (result2 == 0)
                                 {
-                                    table1 = NewTable(NULL, "货存添加成功且账目添加完成");
                                     ProfitSave();
+                                    table1 = NULL;
                                 }
                                 else
                                     table1 = NewTable(NULL, " 货存添加成功但账目添加失败");
@@ -536,7 +536,7 @@ Table *ReviseInventory(Table *input)
             table = NewTable(NULL, "输入的商品编号有误 未查询到相关的商品");
     }
     else
-        table = NewTable(NULL, "1 编号输入有误 未查找到相关的货存信息");
+        table = NewTable(NULL, "编号输入有误 未查找到相关的货存信息");
 
     return table;
 }
@@ -1146,7 +1146,7 @@ Table *ReviseLossInventory(Table *input)
                 // 向文件中保存
                 LossEntrySave();
                 InventorySave();
-                table = NewTable(NULL, "修改成功");
+                table = NULL;
             }
             else
                 table = NewTable(NULL, "输入货损数量大于货存的存储量 请重新输入");

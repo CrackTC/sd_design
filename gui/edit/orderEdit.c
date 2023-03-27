@@ -15,7 +15,24 @@ struct Data
     const char *password;
     char *message;
     int modify;
+    Window *window;
+
+    void (*messageCallback)(int, void *);
 };
+
+static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
+{
+    struct Data *data = parameter;
+    free(data->message);
+    data->message = NULL;
+}
+
+static void FinishCallback(__attribute__((unused)) int ok, void *parameter)
+{
+    MessageBoxCallBack(ok, parameter);
+    struct Data *data = parameter;
+    data->window->isClosed = 1;
+}
 
 static int SendRequest(struct Data *data)
 {
@@ -24,6 +41,7 @@ static int SendRequest(struct Data *data)
     Judge(data->id, &hasPermission, data->password, operation);
     if (!hasPermission)
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString("没有权限");
         return 0;
     }
@@ -64,10 +82,12 @@ static int SendRequest(struct Data *data)
 
     if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
     {
+        data->messageCallback = MessageBoxCallBack;
         data->message = CloneString(response->remark);
     }
     else
     {
+        data->messageCallback = FinishCallback;
         data->message = CloneString("操作成功完成");
     }
 
@@ -79,17 +99,10 @@ static int SendRequest(struct Data *data)
     return 1;
 }
 
-static void MessageBoxCallBack(__attribute__((unused)) int ok, void *parameter)
-{
-    struct Data *data = parameter;
-    free(data->message);
-    data->message = NULL;
-}
-
 void OrderEditLayout(struct nk_context *context, Window *window)
 {
     struct Data *data = window->data;
-    DrawMessageBox(context, "", data->message != NULL, data->message, MessageBoxCallBack, data);
+    DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
     TableRow *dataRow = GetRowByIndex(data->order, 1);
 
     nk_style_push_font(context, &fontLarge->handle);

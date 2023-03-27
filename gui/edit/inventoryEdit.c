@@ -110,7 +110,7 @@ static void SendRequest(struct Data *data)
 
     if (response != NULL && response->remark != NULL && response->remark[0] != '\0')
     {
-        data->messageCallback = FinishCallback;
+        data->messageCallback = MessageBoxCallBack;
         data->message = CloneString(response->remark);
     }
     else

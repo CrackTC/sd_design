@@ -189,7 +189,7 @@ Table *GetSingleCustomer(Table *a)
 }
 
 // 获取所有客户信息
-Table *GetAllCustomer(__attribute__((unused)) Table *a)
+Table *GetAllCustomer(Table *a)
 {
     LinkedList *customerNow = GetAllCustomers();
 
