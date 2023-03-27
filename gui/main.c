@@ -63,26 +63,14 @@ struct nk_font *fontLarge;
 struct nk_font *fontMedium;
 struct nk_font *fontSmall;
 
-int main(int argc, char **argv)
+void InitGraphic(int width, int height, struct nk_glfw **glfw, struct nk_context **pcontext, struct GLFWwindow **pwindow)
 {
-#ifdef _WIN32
-    printf("system: Windows\n");
-    system("chcp 65001");
-#endif
-    printf("separator: " PATH_SEPARATOR_STRING "\n");
-    char *path = GetDirectory(argv[0]);
-    executablePath = path;
-    printf("%s\n", path);
-    int window_width = 1920;
-    int window_height = 1080;
-
-    struct nk_glfw glfw = {0};
-    static GLFWwindow *window;
+    *glfw = calloc(1, sizeof(struct nk_glfw));
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
     {
         printf("[GLFW] failed to init!\n");
-        return -1;
+        exit(-1);
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -92,23 +80,49 @@ int main(int argc, char **argv)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    window = glfwCreateWindow(window_width, window_height, "Demo", NULL, NULL);
-    glfwMakeContextCurrent(window);
+    *pwindow = glfwCreateWindow(width, height, "酒水销售管理系统", NULL, NULL);
+    glfwMakeContextCurrent(*pwindow);
     glfwSwapInterval(1);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         printf("[GLAD] failed to setup glad\n");
-        return -1;
+        exit(-1);
     }
+
+    *pcontext = nk_glfw3_init(*glfw, *pwindow, NK_GLFW3_INSTALL_CALLBACKS);
+}
+
+int main(int argc, char **argv)
+{
+#ifdef _WIN32
+    // Windows使用utf-8代码页
+    printf("system: Windows\n");
+    system("chcp 65001");
+#endif
+
+    // 操作系统路径分隔符
+    printf("separator: " PATH_SEPARATOR_STRING "\n");
+
+    // 程序二进制路径
+    char *path = GetDirectory(argv[0]);
+    executablePath = path;
+    printf("%s\n", path);
+
     // glewExperimental = GL_TRUE;
     // if (glewInit() != GLEW_OK)
     // {
     //     printf("[GLEW] failed to setup glew\n");
     //     return -1;
     // }
+    //
+    int window_width = 1920;
+    int window_height = 1080;
 
-    struct nk_context *context = nk_glfw3_init(&glfw, window, NK_GLFW3_INSTALL_CALLBACKS);
+    struct nk_glfw *glfw;
+    struct nk_context *context;
+    struct GLFWwindow *window;
+    InitGraphic(window_width, window_height, &glfw, &context, &window);
 
     // font baking
     {
@@ -120,9 +134,9 @@ int main(int argc, char **argv)
 
         struct nk_font_atlas *atlas;
 
-        nk_glfw3_font_stash_begin(&glfw, &atlas);
+        nk_glfw3_font_stash_begin(glfw, &atlas);
         fontMedium = nk_font_atlas_add_from_file(atlas, JoinPath(executablePath, fontRelativePath), 30.0f, &config);
-        nk_glfw3_font_stash_end(&glfw);
+        nk_glfw3_font_stash_end(glfw);
 
         config = nk_font_config(35.0f);
         config.oversample_h = 1;
@@ -130,9 +144,9 @@ int main(int argc, char **argv)
         config.range = nk_font_chinese_glyph_ranges();
         config.pixel_snap = 1;
 
-        nk_glfw3_font_stash_begin(&glfw, &atlas);
+        nk_glfw3_font_stash_begin(glfw, &atlas);
         fontLarge = nk_font_atlas_add_from_file(atlas, JoinPath(executablePath, fontRelativePath), 35.0f, &config);
-        nk_glfw3_font_stash_end(&glfw);
+        nk_glfw3_font_stash_end(glfw);
 
         config = nk_font_config(25.0f);
         config.oversample_h = 1;
@@ -140,9 +154,9 @@ int main(int argc, char **argv)
         config.range = nk_font_chinese_glyph_ranges();
         config.pixel_snap = 1;
 
-        nk_glfw3_font_stash_begin(&glfw, &atlas);
+        nk_glfw3_font_stash_begin(glfw, &atlas);
         fontSmall = nk_font_atlas_add_from_file(atlas, JoinPath(executablePath, fontRelativePath), 25.0f, &config);
-        nk_glfw3_font_stash_end(&glfw);
+        nk_glfw3_font_stash_end(glfw);
 
         nk_style_set_font(context, &fontMedium->handle);
     }
@@ -190,18 +204,18 @@ int main(int argc, char **argv)
             }
         }
 
-        nk_glfw3_new_frame(&glfw);
+        nk_glfw3_new_frame(glfw);
 
         glViewport(0, 0, window_width, window_height);
         glClear(GL_COLOR_BUFFER_BIT);
-        nk_glfw3_render(&glfw, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
+        nk_glfw3_render(glfw, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
         glfwSwapBuffers(window);
 
         if (ShouldExit(context))
             break;
     }
 
-    nk_glfw3_shutdown(&glfw);
+    nk_glfw3_shutdown(glfw);
     glfwTerminate();
     return 0;
 }
