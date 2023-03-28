@@ -24,9 +24,9 @@ static void SendRequest(struct EditData *data)
     if (data->modify)
     {
         AppendTableRow(row, "订单编号");
+        AppendTableRow(row, "库存编号");
     }
     AppendTableRow(row, "商品编号");
-    AppendTableRow(row, "库存编号");
     AppendTableRow(row, "客户编号");
     AppendTableRow(row, "购买数量");
     Table *request = NewTable(row, NULL);
@@ -36,9 +36,9 @@ static void SendRequest(struct EditData *data)
     if (data->modify)
     {
         AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "订单编号"));
+        AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "库存编号"));
     }
     AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "商品编号"));
-    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "库存编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "客户编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "购买数量"));
     AppendTable(request, row);
