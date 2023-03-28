@@ -40,6 +40,10 @@ Table *AddOrder(Table *a)
     int customerid = atoi(GetRowItemByColumnName(a, information, "客户编号"));
     int number = atoi(GetRowItemByColumnName(a, information, "购买数量"));
     // 确认客户等级和所需金额
+    if (number <= 0)
+    {
+        return NewTable(NULL, "购买数量不符合实际");
+    }
     Customer *cus = GetCustomerById(customerid);
     if (cus == NULL)
     {
@@ -54,6 +58,7 @@ Table *AddOrder(Table *a)
     }
     Amount price = GetItemPrice(item);
     Amount store = NewAmount(0, 0, 0);
+    Time present = GetSystemTime();
 
     // 算折扣
     LinkedList *itemdiscount = GetBasicDiscountsByItemId(itemid);
@@ -70,13 +75,6 @@ Table *AddOrder(Table *a)
         singlediscount = singlediscount->next;
     }
 
-    // 给收支系统信息
-    Time present = GetSystemTime();
-    store = AmountMultiply(&price, number);
-    Profit *put = NewProfit(&store, "售货", &present);
-    AppendProfit(put);
-    ProfitSave();
-
     // 向库存系统确认并修改信息
     LinkedList *inventoryhead = GetInventoryByItemId(itemid);
     LinkedList *latest = inventoryhead;
@@ -84,11 +82,8 @@ Table *AddOrder(Table *a)
     {
         return NewTable(NULL, "该商品无库存");
     }
-    LinkedList *nextlatest = latest->next;
-    int judge = 1; // 判断是否达到出货数量要求
-    int totalnum = 0;
-
     // 判断库存是否充足
+    int totalnum = 0;
     while (latest != NULL)
     {
         totalnum += GetInventoryEntryNumber(latest->data);
@@ -100,6 +95,28 @@ Table *AddOrder(Table *a)
     }
     latest = inventoryhead;
 
+    LinkedList *nextlatest = latest->next;
+    if (nextlatest == NULL)
+    {
+        store = AmountMultiply(&price, number);
+
+        int inventoryid = GetInventoryEntryId(latest->data);
+        Order *neworder = NewOrder(inventoryid, number, customerid, &present, &store); // 添加订单
+        AppendOrder(neworder);
+        OrderSave();
+
+        int left = GetInventoryEntryNumber(latest->data);
+        SetInventoryEntryNumber(latest->data, left - number); // 修改库存数量
+        InventorySave();
+    }
+    int judge = 1; // 判断是否达到出货数量要求
+
+    // 给收支系统信息
+    store = AmountMultiply(&price, number);
+    Profit *put = NewProfit(&store, "售货", &present);
+    AppendProfit(put);
+    ProfitSave();
+
     while (judge) // 出货并记录订单直至达到需要的数量
     {
         while (nextlatest != NULL) // 找出生产日期最早的产品
@@ -107,7 +124,10 @@ Table *AddOrder(Table *a)
             Time now = GetInventoryEntryProductionTime(latest->data);
             Time com = GetInventoryEntryProductionTime(nextlatest->data);
             int templeft = GetInventoryEntryNumber(nextlatest->data);
+            int nowleft = GetInventoryEntryNumber(latest->data);
             if (CompareTime(&now, &com) > 0 && templeft > 0)
+                latest = nextlatest;
+            else if (templeft > 0 && nowleft == 0)
                 latest = nextlatest;
             nextlatest = nextlatest->next;
         }
@@ -227,7 +247,7 @@ Table *UpdateOrder(Table *a)
     RefundEntry *thisrefund = GetRefundByOrderId(orderId);
     if (thisrefund != NULL)
     {
-        return NewTable(NULL, "该订单不可删除");
+        return NewTable(NULL, "该订单不可修改");
     }
 
     Order *order = GetOrderById(orderId);
@@ -251,21 +271,10 @@ Table *UpdateOrder(Table *a)
     int newItemId = GetInventoryEntryItemId(inventory);
 
     // 判断库存是否充足
-    LinkedList *inventoryhead = GetInventoryByItemId(newItemId);
-    if (inventoryhead == NULL)
-    {
-        return NewTable(NULL, "该商品无库存");
-    }
-    LinkedList *latest = inventoryhead;
-    int totalnum = 0;
-    while (latest != NULL)
-    {
-        totalnum += GetInventoryEntryNumber(latest->data);
-        latest = latest->next;
-    }
+    int totalnum = GetInventoryEntryNumber(inventory);
     if (totalnum < number)
     {
-        return NewTable(NULL, "没有足够的库存");
+        return NewTable(NULL, "库存不足");
     }
 
     Item *newItem = GetItemById(newItemId);
@@ -278,7 +287,7 @@ Table *UpdateOrder(Table *a)
     int oldInventoryNumber = GetInventoryEntryNumber(oldInventory);
 
     Customer *newCustomer = GetCustomerById(customerId);
-    if (inventory == NULL)
+    if (newCustomer == NULL)
     {
         return NewTable(NULL, "不存在符合条件的客户");
     }
@@ -650,6 +659,24 @@ Table *ClearOutdateDiscount(Table *a)
 // 查询折扣
 Table *GetAllDiscount(Table *a)
 {
+    // 整合的根据日期更新折扣
+    LinkedList *discountNow = GetAllBasicDiscounts();
+    Time present = GetSystemTime();
+    while (discountNow != NULL)
+    {
+        BasicDiscount *discount = discountNow->data;
+        Time deadline = GetBasicDiscountDeadline(discount);
+        int judge = CompareTime(&present, &deadline);
+        if (judge > 0)
+        {
+            RemoveBasicDiscount(discount);
+            FreeBasicDiscount(discount);
+            BasicDiscountSave();
+        }
+
+        discountNow = discountNow->next;
+    }
+
     TableRow *row = NewTableRow();
 
     AppendTableRow(row, "折扣编号");
@@ -660,7 +687,7 @@ Table *GetAllDiscount(Table *a)
     AppendTableRow(row, "截止时间");
     Table *table = NewTable(row, NULL);
 
-    LinkedList *discountNow = GetAllBasicDiscounts();
+    discountNow = GetAllBasicDiscounts();
     // 判断
     if (discountNow == NULL)
     {
@@ -753,6 +780,16 @@ Table *AddRefund(Table *a)
 
     // 数据准备
     Order *order = GetOrderById(orderId);
+    if (order == NULL)
+    {
+        return NewTable(NULL, "没有相应的订单");
+    }
+    // 判断退货数量是否符合要求
+    int num = GetOrderNumber(order);
+    if (num < number || num <= 0)
+    {
+        return NewTable(NULL, "退货数量不合实际");
+    }
     int inventoryId = GetOrderInventoryId(order);
     InventoryEntry *inventory = GetInventoryById(inventoryId);
 
@@ -856,6 +893,7 @@ Table *UpdateRefund(Table *a)
     Amount oldAmount = GetRefundEntryAmount(refund);
     oldAmount = AmountMultiply(&oldAmount, -1);
     Amount deltaAmount = AmountAdd(&oldAmount, &newAmount);
+    deltaAmount = AmountMultiply(&deltaAmount, -1);
 
     Profit *profit = NewProfit(&deltaAmount, "修改退货信息", &timeNow);
     int judge = AppendProfit(profit);
@@ -868,10 +906,10 @@ Table *UpdateRefund(Table *a)
     SetRefundEntryAmount(refund, &newAmount);
 
     // 操作数量和库存
-    SetRefundEntryNumber(refund, number);
-
     int oldNumber = GetRefundEntryNumber(refund);
     int deltaNumber = number - oldNumber;
+
+    SetRefundEntryNumber(refund, number);
 
     int inventoryId = GetOrderInventoryId(order);
     InventoryEntry *inventory = GetInventoryById(inventoryId);
