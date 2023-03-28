@@ -118,5 +118,5 @@ void CustomerPageLayout(struct nk_context *context, struct Window *window)
             (OperationHandler)CustomerModify,
             data);
     DrawSeparateLine(context);
-    PageResultLayout(context, &data->dataArray[CUSTOMER_INDEX]);
+    PageResultLayout(context, &data->dataArray[CUSTOMER_INDEX], NULL, NULL, NULL);
 }

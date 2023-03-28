@@ -426,7 +426,7 @@ void BasicFilterLayout(struct nk_context *context, const char *title, struct Pag
     }
 }
 
-void PageResultLayout(struct nk_context *context, const struct PageData *data)
+void PageResultLayout(struct nk_context *context, const struct PageData *data, const char *rangeFilter, const char *from, const char *to)
 {
     nk_layout_row_dynamic(context, nk_window_get_height(context) - 420, 1);
     {
@@ -441,9 +441,9 @@ void PageResultLayout(struct nk_context *context, const struct PageData *data)
                            ? data->properties[data->propertySelected]
                            : NULL),
                         data->valueBuffer,
-                        NULL,
-                        NULL,
-                        NULL);
+                        rangeFilter,
+                        from,
+                        to);
                 nk_group_end(context);
             }
 

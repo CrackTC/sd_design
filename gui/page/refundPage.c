@@ -156,5 +156,5 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
     char *from, *to;
     DateRangeFilterLayout(context, "筛选退款时间", &from, &to);
     DrawSeparateLine(context);
-    PageResultLayout(context, &data->dataArray[REFUND_INDEX]);
+    PageResultLayout(context, &data->dataArray[REFUND_INDEX], "退款时间", from, to);
 }

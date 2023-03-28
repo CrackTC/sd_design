@@ -123,5 +123,5 @@ void StaffPageLayout(struct nk_context *context, struct Window *window)
             (OperationHandler)StaffModify,
             data);
     DrawSeparateLine(context);
-    PageResultLayout(context, &data->dataArray[STAFF_INDEX]);
+    PageResultLayout(context, &data->dataArray[STAFF_INDEX], NULL, NULL, NULL);
 }

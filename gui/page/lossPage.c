@@ -161,5 +161,5 @@ void LossPageLayout(struct nk_context *context, struct Window *window)
     char *from, *to;
     DateRangeFilterLayout(context, "筛选损耗时间", &from, &to);
     DrawSeparateLine(context);
-    PageResultLayout(context, &data->dataArray[LOSS_INDEX]);
+    PageResultLayout(context, &data->dataArray[LOSS_INDEX], "损耗时间", from, to);
 }

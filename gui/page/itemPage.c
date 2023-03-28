@@ -14,6 +14,11 @@
 void SendItemRequest(struct MainWindowData *data)
 {
     Read(data, &data->dataArray[ITEM_INDEX], ShowItem, "缺少权限：读取商品", OP_READ_ITEM);
+    Table *response = ShowLackInventory(NULL);
+    if (response->rows->next != NULL)
+    {
+        PushWindow(NewResultDialog("缺货详情", response));
+    }
 }
 
 void ItemLookup(struct MainWindowData *data)
@@ -143,5 +148,5 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
             (OperationHandler)ItemModify,
             data);
     DrawSeparateLine(context);
-    PageResultLayout(context, &data->dataArray[ITEM_INDEX]);
+    PageResultLayout(context, &data->dataArray[ITEM_INDEX], NULL, NULL, NULL);
 }

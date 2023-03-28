@@ -54,5 +54,5 @@ void ProfitPageLayout(struct nk_context *context, struct Window *window)
     char *from, *to;
     DateRangeFilterLayout(context, "筛选时间", &from, &to);
     DrawSeparateLine(context);
-    PageResultLayout(context, &data->dataArray[PROFIT_INDEX]);
+    PageResultLayout(context, &data->dataArray[PROFIT_INDEX], "时间", from, to);
 }

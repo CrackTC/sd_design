@@ -141,7 +141,8 @@ void OrderModify(struct MainWindowData *data)
 void OrderDelete(int ok, void *parameter)
 {
     struct MainWindowData *data = parameter;
-    Delete(ok, parameter, &data->dataArray[ORDER_INDEX], RemoveAnOrder, "缺少权限：删除订单", "订单编号", OP_DELETE_ORDER);
+    Delete(ok, parameter, &data->dataArray[ORDER_INDEX], RemoveAnOrder, "缺少权限：删除订单", "订单编号",
+            OP_DELETE_ORDER);
 }
 
 void ConfirmOrderDelete(struct MainWindowData *data)
@@ -168,5 +169,5 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
     char *from, *to;
     DateRangeFilterLayout(context, "筛选购买时间", &from, &to);
     DrawSeparateLine(context);
-    PageResultLayout(context, &data->dataArray[ORDER_INDEX]);
+    PageResultLayout(context, &data->dataArray[ORDER_INDEX], "购买时间", from, to);
 }

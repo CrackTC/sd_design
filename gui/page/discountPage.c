@@ -163,5 +163,5 @@ void DiscountPageLayout(struct nk_context *context, struct Window *window)
     char *from, *to;
     DateRangeFilterLayout(context, "筛选截止时间", &from, &to);
     DrawSeparateLine(context);
-    PageResultLayout(context, &data->dataArray[DISCOUNT_INDEX]);
+    PageResultLayout(context, &data->dataArray[DISCOUNT_INDEX], "截止时间", from, to);
 }

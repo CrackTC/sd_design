@@ -198,5 +198,5 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
     char *from, *to;
     DateRangeFilterLayout(context, "筛选入库时间", &from, &to);
     DrawSeparateLine(context);
-    PageResultLayout(context, &data->dataArray[INVENTORY_INDEX]);
+    PageResultLayout(context, &data->dataArray[INVENTORY_INDEX], "入库时间", from, to);
 }
