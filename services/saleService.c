@@ -16,6 +16,24 @@
 // 自动售货
 Table *AddOrder(Table *a)
 {
+    //整合的根据日期更新折扣
+    LinkedList *discountNow = GetAllBasicDiscounts();
+    Time nowtime = GetSystemTime();
+    while (discountNow != NULL)
+    {
+        BasicDiscount *discount = discountNow->data;
+        Time deadline = GetBasicDiscountDeadline(discount);
+        int judge = CompareTime(&nowtime, &deadline);
+        if (judge > 0)
+        {
+            RemoveBasicDiscount(discount);
+            FreeBasicDiscount(discount);
+            BasicDiscountSave();
+        }
+
+        discountNow = discountNow->next;
+    }
+
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
     int itemid = atoi(GetRowItemByColumnName(a, information, "商品编号"));
@@ -162,6 +180,24 @@ Table *RemoveAnOrder(Table *a)
 // 修改订单
 Table *UpdateOrder(Table *a)
 {
+    //整合的根据日期更新折扣
+    LinkedList *discountNow = GetAllBasicDiscounts();
+    Time present = GetSystemTime();
+    while (discountNow != NULL)
+    {
+        BasicDiscount *discount = discountNow->data;
+        Time deadline = GetBasicDiscountDeadline(discount);
+        int judge = CompareTime(&present, &deadline);
+        if (judge > 0)
+        {
+            RemoveBasicDiscount(discount);
+            FreeBasicDiscount(discount);
+            BasicDiscountSave();
+        }
+
+        discountNow = discountNow->next;
+    }
+
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
     int orderId = atoi(GetRowItemByColumnName(a, information, "订单编号"));
@@ -354,6 +390,7 @@ Table *GetAllOrder(Table *a)
 /**/ /*错误判断不够详细*/ /**/
 Table *AddDiscount(Table *a)
 {
+    //整合的根据日期更新折扣
     // 整合的根据日期更新折扣
     LinkedList *discountNow = GetAllBasicDiscounts();
     Time present = GetSystemTime();
@@ -387,6 +424,11 @@ Table *AddDiscount(Table *a)
     Time create = NewDateTime(year, month, day, hour, minute, second);
     Time nowtime = GetSystemTime();
     Item *thisitem = GetItemById(itemId);
+    
+    if (thisitem == NULL)
+    {
+        return NewTable(NULL, "该商品不存在");
+    }
     // 时间信息有误
     if (CompareTime(&nowtime, &create) > 0)
     {
@@ -419,6 +461,24 @@ Table *AddDiscount(Table *a)
 // 删除折扣
 Table *RemoveDiscount(Table *a)
 {
+    //整合的根据日期更新折扣
+    LinkedList *discountNow = GetAllBasicDiscounts();
+    Time present = GetSystemTime();
+    while (discountNow != NULL)
+    {
+        BasicDiscount *discount = discountNow->data;
+        Time deadline = GetBasicDiscountDeadline(discount);
+        int judge = CompareTime(&present, &deadline);
+        if (judge > 0)
+        {
+            RemoveBasicDiscount(discount);
+            FreeBasicDiscount(discount);
+            BasicDiscountSave();
+        }
+
+        discountNow = discountNow->next;
+    }
+
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
     int discountId = atoi(GetRowItemByColumnName(a, information, "折扣编号"));
@@ -441,6 +501,24 @@ Table *RemoveDiscount(Table *a)
 /**/ /*错误判断不够详细*/ /**/
 Table *UpdateDiscount(Table *a)
 {
+    //整合的根据日期更新折扣
+    LinkedList *discountNow = GetAllBasicDiscounts();
+    Time present = GetSystemTime();
+    while (discountNow != NULL)
+    {
+        BasicDiscount *discount = discountNow->data;
+        Time deadline = GetBasicDiscountDeadline(discount);
+        int judge = CompareTime(&present, &deadline);
+        if (judge > 0)
+        {
+            RemoveBasicDiscount(discount);
+            FreeBasicDiscount(discount);
+            BasicDiscountSave();
+        }
+
+        discountNow = discountNow->next;
+    }
+
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
     int discountId = atoi(GetRowItemByColumnName(a, information, "折扣编号"));
