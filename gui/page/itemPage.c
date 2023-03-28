@@ -130,7 +130,7 @@ void ItemDelete(int ok, void *parameter)
 void ConfirmItemDelete(struct MainWindowData *data)
 {
     data->messageCallback = ItemDelete;
-    data->message = CloneString("是否确认要删除选中的商品条目");
+    data->message = CloneString("是否确认要下架选中的商品条目");
 }
 
 void ItemPageLayout(struct nk_context *context, struct Window *window)
