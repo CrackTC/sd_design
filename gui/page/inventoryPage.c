@@ -27,6 +27,11 @@ void ConfirmInventoryDelete(struct MainWindowData *data)
 void SendInventoryRequest(struct MainWindowData *data)
 {
     Read(data, &data->dataArray[INVENTORY_INDEX], ShowInventory, "缺少权限：读取库存", OP_READ_INVENTORY);
+    Table *response = UpdateInventory(NULL);
+    if (response->rows->next != NULL)
+    {
+        PushWindow(NewResultDialog("过期详情", response));
+    }
 }
 
 void InventoryLookup(struct MainWindowData *data)

@@ -139,9 +139,9 @@ Table *UpdateInventory(Table *input)
 
     // 创建货损表头所需要的元素
     TableRow *row = NewTableRow();
-    AppendTableRow(row, "货损货物的编号");
-    AppendTableRow(row, "货损货物的商品名称");
-    AppendTableRow(row, "货损的原因");
+    AppendTableRow(row, "库存编号");
+    AppendTableRow(row, "商品名称");
+    AppendTableRow(row, "货损原因");
     AppendTableRow(row, "货损的日期");
 
     table = NewTable(row, "以下记录的货损均已自动进入货损系统中");
@@ -220,7 +220,6 @@ Table *ShowLackInventory(Table *input)
     AppendTableRow(row, "剩余数量");
     // 根据有没有缺货的货存返回不同的表格
     table = NewTable(row, NULL);
-    /* tableOk = NewTable(NULL, "全部商品库存都很充足 未出现缺货现象"); */
     // 获取全部的商品链表
     LinkedList *itemNow = GetAllItems();
     while (itemNow != NULL)
