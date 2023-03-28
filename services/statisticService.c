@@ -19,6 +19,7 @@ Table *GetStatistics(Table *a)
     Table *table = NewTable(row, NULL);
 
     int count = 0;
+    Amount total = NewAmount(0, 0, 0);
 
     while (profitHead != NULL)
     {
@@ -27,6 +28,7 @@ Table *GetStatistics(Table *a)
 
         row = NewTableRow();
         Amount amount = GetProfitAmount(profit);
+        total = AmountAdd(&total, &amount);
         free(AppendTableRow(row, AmountToString(&amount)));
         free(AppendTableRow(row, CloneString(GetProfitMatter(profit))));
         Time time = GetProfitTime(profit);
@@ -36,10 +38,12 @@ Table *GetStatistics(Table *a)
         profitHead = profitHead->next;
     }
 
-    size_t len = strlen("查询到") + IntegerStringLength(count) + strlen("条信息") + 1;
+    char *amountString = AmountToString(&total);
+    size_t len = strlen("查询到") + IntegerStringLength(count) + strlen("条信息，总收支") + strlen(amountString) + 1;
     char *remark = malloc(len);
-    sprintf(remark, "查询到%d条信息", count);
+    sprintf(remark, "查询到%d条信息，总收支%s", count, amountString);
     SetTableRemark(table, remark);
     free(remark);
+    free(amountString);
     return table;
 }

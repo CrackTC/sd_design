@@ -480,7 +480,7 @@ Table *ReviseInventory(Table *input)
     char newMatter[500] = "进货 商品名称：";
     strcat(newMatter, newName);
     // 创建一个新的profit结构体
-    Profit *newProfit = NewProfit(&newPay, matter, &NowTime);
+    Profit *newProfit = NewProfit(&newPay, newMatter, &NowTime);
     // 将新的profit结构体插入到链表中 并将插入结果返回到result2中
     int newResult = AppendProfit(newProfit);
 
