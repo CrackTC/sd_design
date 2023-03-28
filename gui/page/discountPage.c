@@ -1,3 +1,4 @@
+#include "design/crud.h"
 #include "design/linkedList.h"
 #include "design/operation.h"
 #include "design/table.h"
@@ -14,64 +15,8 @@
 
 void DiscountDelete(int ok, void *parameter)
 {
-    MessageBoxCallback(ok, parameter);
-    if (ok == 0)
-    {
-        return;
-    }
-
     struct MainWindowData *data = parameter;
-
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_DELETE_DISCOUNT);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：删除折扣");
-        return;
-    }
-
-    LinkedList *now = data->dataArray[DISCOUNT_INDEX].checkList->next;
-    LinkedList *rowNow = data->dataArray[DISCOUNT_INDEX].table->rows->next;
-    while (now != NULL)
-    {
-        if (*(int *)now->data == 1)
-        {
-            char *id = GetRowItemByColumnName(data->dataArray[DISCOUNT_INDEX].table, rowNow->data, "折扣编号");
-
-            TableRow *row = NewTableRow();
-            AppendTableRow(row, "折扣编号");
-            Table *table = NewTable(row, NULL);
-
-            row = NewTableRow();
-            AppendTableRow(row, id);
-            AppendTable(table, row);
-
-            AddJournal(table, data->id, OP_DELETE_DISCOUNT);
-            Table *response = RemoveDiscount(table);
-            FreeTable(table);
-
-            if (response != NULL)
-            {
-                int error = 0;
-                if (response->remark != NULL && response->remark[0] != '\0')
-                {
-                    data->messageCallback = MessageBoxCallback;
-                    data->message = CloneString(response->remark);
-                    error = 1;
-                }
-                FreeTable(response);
-                if (error)
-                {
-                    return;
-                }
-            }
-        }
-        now = now->next;
-        rowNow = rowNow->next;
-    }
-    data->messageCallback = MessageBoxCallback;
-    data->message = CloneString("删除成功");
+    Delete(ok, parameter, &data->dataArray[DISCOUNT_INDEX], RemoveDiscount, "缺少权限：删除折扣", "折扣编号");
 }
 
 void ConfirmDiscountDelete(struct MainWindowData *data)

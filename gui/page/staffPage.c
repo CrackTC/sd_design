@@ -1,3 +1,4 @@
+#include "design/crud.h"
 #include "design/linkedList.h"
 #include "design/operation.h"
 #include "design/table.h"
@@ -13,63 +14,8 @@
 
 void StaffDelete(int ok, void *parameter)
 {
-    MessageBoxCallback(ok, parameter);
-    if (ok == 0)
-    {
-        return;
-    }
-
     struct MainWindowData *data = parameter;
-
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_DELETE_STAFF);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：删除员工");
-        return;
-    }
-
-    LinkedList *now = data->dataArray[STAFF_INDEX].checkList->next;
-    LinkedList *rowNow = data->dataArray[STAFF_INDEX].table->rows->next;
-    while (now != NULL)
-    {
-        if (*(int *)now->data == 1)
-        {
-            char *id = GetRowItemByColumnName(data->dataArray[STAFF_INDEX].table, rowNow->data, "员工编号");
-
-            TableRow *row = NewTableRow();
-            AppendTableRow(row, "员工编号");
-            Table *table = NewTable(row, NULL);
-            row = NewTableRow();
-            AppendTableRow(row, id);
-            AppendTable(table, row);
-
-            AddJournal(table, data->id, OP_DELETE_STAFF);
-            Table *response = DeleteStaff(table);
-            FreeTable(table);
-
-            if (response != NULL)
-            {
-                int error = 0;
-                if (response->remark != NULL && response->remark[0] != '\0')
-                {
-                    data->messageCallback = MessageBoxCallback;
-                    data->message = CloneString(response->remark);
-                    error = 1;
-                }
-                FreeTable(response);
-                if (error)
-                {
-                    return;
-                }
-            }
-        }
-        now = now->next;
-        rowNow = rowNow->next;
-    }
-    data->messageCallback = MessageBoxCallback;
-    data->message = CloneString("删除成功");
+    Delete(ok, parameter, &data->dataArray[STAFF_INDEX], DeleteStaff, "缺少权限：删除员工", "员工编号");
 }
 
 void ConfirmStaffDelete(struct MainWindowData *data)

@@ -1,3 +1,4 @@
+#include "design/crud.h"
 #include "design/amount.h"
 #include "design/linkedList.h"
 #include "design/operation.h"
@@ -15,64 +16,8 @@
 
 void InventoryDelete(int ok, void *parameter)
 {
-    MessageBoxCallback(ok, parameter);
-    if (ok == 0)
-    {
-        return;
-    }
-
     struct MainWindowData *data = parameter;
-
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_DELETE_INVENTORY);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：删除库存");
-        return;
-    }
-
-    LinkedList *now = data->dataArray[INVENTORY_INDEX].checkList->next;
-    LinkedList *rowNow = data->dataArray[INVENTORY_INDEX].table->rows->next;
-    while (now != NULL)
-    {
-        if (*(int *)now->data == 1)
-        {
-            char *id = GetRowItemByColumnName(data->dataArray[INVENTORY_INDEX].table, rowNow->data, "库存编号");
-
-            TableRow *row = NewTableRow();
-            AppendTableRow(row, "库存编号");
-            Table *table = NewTable(row, NULL);
-
-            row = NewTableRow();
-            AppendTableRow(row, id);
-            AppendTable(table, row);
-
-            AddJournal(table, data->id, OP_DELETE_INVENTORY);
-            Table *response = DeleteInventoryById(table);
-            FreeTable(table);
-
-            if (response != NULL)
-            {
-                int error = 0;
-                if (response->remark != NULL && response->remark[0] != '\0')
-                {
-                    data->messageCallback = MessageBoxCallback;
-                    data->message = CloneString(response->remark);
-                    error = 1;
-                }
-                FreeTable(response);
-                if (error)
-                {
-                    return;
-                }
-            }
-        }
-        now = now->next;
-        rowNow = rowNow->next;
-    }
-    data->messageCallback = MessageBoxCallback;
-    data->message = CloneString("删除成功");
+    Delete(ok, parameter, &data->dataArray[INVENTORY_INDEX], DeleteInventoryById, "缺少权限：删除库存", "库存编号");
 }
 
 void ConfirmInventoryDelete(struct MainWindowData *data)

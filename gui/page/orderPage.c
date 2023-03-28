@@ -1,3 +1,4 @@
+#include "design/crud.h"
 #include "design/amount.h"
 #include "design/linkedList.h"
 #include "design/operation.h"
@@ -174,69 +175,13 @@ void OrderModify(struct MainWindowData *data)
 
 void OrderDelete(int ok, void *parameter)
 {
-    MessageBoxCallback(ok, parameter);
-    if (ok == 0)
-    {
-        return;
-    }
-
     struct MainWindowData *data = parameter;
-
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_DELETE_ORDER);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：删除订单");
-        return;
-    }
-
-    LinkedList *now = data->dataArray[ORDER_INDEX].checkList->next;
-    LinkedList *rowNow = data->dataArray[ORDER_INDEX].table->rows->next;
-    while (now != NULL)
-    {
-        if (*(int *)now->data == 1)
-        {
-            char *id = GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "id");
-
-            TableRow *row = NewTableRow();
-            AppendTableRow(row, "id");
-            Table *table = NewTable(row, NULL);
-
-            row = NewTableRow();
-            AppendTableRow(row, id);
-            AppendTable(table, row);
-
-            AddJournal(table, data->id, OP_DELETE_ORDER);
-            Table *response = RemoveAnOrder(table);
-            FreeTable(table);
-
-            if (response != NULL)
-            {
-                int error = 0;
-                if (response->remark != NULL && response->remark[0] != '\0')
-                {
-                    data->messageCallback = MessageBoxCallback;
-                    data->message = CloneString(response->remark);
-                    error = 1;
-                }
-                FreeTable(response);
-                if (error)
-                {
-                    return;
-                }
-            }
-        }
-        now = now->next;
-        rowNow = rowNow->next;
-    }
-    data->messageCallback = MessageBoxCallback;
-    data->message = CloneString("删除成功");
+    Delete(ok, parameter, &data->dataArray[ORDER_INDEX], RemoveAnOrder, "缺少权限：删除订单", "订单编号");
 }
 
 void ConfirmOrderDelete(struct MainWindowData *data)
 {
-    data->messageCallback = MessageBoxCallback;
+    data->messageCallback = OrderDelete;
     data->message = CloneString("请选择一个订单条目");
 }
 
