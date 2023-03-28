@@ -7,6 +7,7 @@
 #include "design/order.h"
 #include "design/profit.h"
 #include "design/refundEntry.h"
+#include "design/table.h"
 #include "design/utils.h"
 
 #include <stdio.h>
@@ -16,7 +17,7 @@
 // 自动售货
 Table *AddOrder(Table *a)
 {
-    //整合的根据日期更新折扣
+    // 整合的根据日期更新折扣
     LinkedList *discountNow = GetAllBasicDiscounts();
     Time nowTime = GetSystemTime();
     while (discountNow != NULL)
@@ -55,6 +56,11 @@ Table *AddOrder(Table *a)
     Amount price = GetItemPrice(item);
     Amount store = NewAmount(0, 0, 0);
 
+    if (AmountMultiply(&price, number).value == 0)
+    {
+        return NewTable(NULL, "购买数量超出范围");
+    }
+
     // 算折扣
     LinkedList *itemDiscount = GetBasicDiscountsByItemId(itemId);
     LinkedList *singleDiscount = itemDiscount;
@@ -77,7 +83,7 @@ Table *AddOrder(Table *a)
     Time present = GetSystemTime();
     int judge = 1; // 判断是否达到出货数量要求
     int total = 0;
-    while (judge)  // 出货并记录订单直至达到需要的数量
+    while (judge) // 出货并记录订单直至达到需要的数量
     {
         int exists = 0;
         while (nextLatest != NULL) // 找出生产日期最早的产品
@@ -201,7 +207,7 @@ Table *RemoveAnOrder(Table *a)
 // 修改订单
 Table *UpdateOrder(Table *a)
 {
-    //整合的根据日期更新折扣
+    // 整合的根据日期更新折扣
     LinkedList *discountNow = GetAllBasicDiscounts();
     Time present = GetSystemTime();
     while (discountNow != NULL)
@@ -411,8 +417,8 @@ Table *GetAllOrder(Table *a)
 /**/ /*错误判断不够详细*/ /**/
 Table *AddDiscount(Table *a)
 {
-    //整合的根据日期更新折扣
     // 整合的根据日期更新折扣
+    //  整合的根据日期更新折扣
     LinkedList *discountNow = GetAllBasicDiscounts();
     Time present = GetSystemTime();
     while (discountNow != NULL)
@@ -445,7 +451,7 @@ Table *AddDiscount(Table *a)
     Time create = NewDateTime(year, month, day, hour, minute, second);
     Time nowtime = GetSystemTime();
     Item *thisitem = GetItemById(itemId);
-    
+
     if (thisitem == NULL)
     {
         return NewTable(NULL, "该商品不存在");
@@ -482,7 +488,7 @@ Table *AddDiscount(Table *a)
 // 删除折扣
 Table *RemoveDiscount(Table *a)
 {
-    //整合的根据日期更新折扣
+    // 整合的根据日期更新折扣
     LinkedList *discountNow = GetAllBasicDiscounts();
     Time present = GetSystemTime();
     while (discountNow != NULL)
@@ -522,7 +528,7 @@ Table *RemoveDiscount(Table *a)
 /**/ /*错误判断不够详细*/ /**/
 Table *UpdateDiscount(Table *a)
 {
-    //整合的根据日期更新折扣
+    // 整合的根据日期更新折扣
     LinkedList *discountNow = GetAllBasicDiscounts();
     Time present = GetSystemTime();
     while (discountNow != NULL)
