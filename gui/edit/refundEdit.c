@@ -210,6 +210,7 @@ Window *NewRefundEdit(const char *title, int id, const char *password, Table *re
     data->id = id;
     data->password = password;
     data->modify = modify;
+    data->window = window;
 
     window->data = data;
     window->next = NULL;

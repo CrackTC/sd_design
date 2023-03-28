@@ -234,6 +234,7 @@ Window *NewStaffEdit(const char *title, int id, const char *password, Table *sta
     {
         data->permissionChecks[i] = permissionString[i] - '0';
     }
+    data->editData->window = window;
 
     window->data = data;
     window->next = NULL;
