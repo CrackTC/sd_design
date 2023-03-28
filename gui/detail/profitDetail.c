@@ -5,7 +5,7 @@
 
 void ProfitDetailLayout(struct nk_context *context, Window *window)
 {
-    struct MainWindowData *data = window->data;
+    struct Table *data = window->data;
     TableRow *dataRow = GetRowByIndex(data, 1);
 
     nk_layout_row_dynamic(context, 0, 1);
