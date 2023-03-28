@@ -12,7 +12,7 @@
 #include "design/mainWindow.h"
 #include <malloc.h>
 
-void SendItemRequest(struct Data *data)
+void SendItemRequest(struct MainWindowData *data)
 {
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_READ_ITEM);
@@ -33,12 +33,13 @@ void SendItemRequest(struct Data *data)
             data->message = CloneString(response->remark);
         }
 
-        free(data->itemProperties);
-        FreeList(data->itemCheckList);
-        FreeTable(data->itemTable);
-        data->itemCheckList = NewCheckList();
-        data->itemTable = response;
-        data->itemProperties = NULL;
+        free(data->dataArray[ITEM_INDEX].properties);
+        FreeList(data->dataArray[ITEM_INDEX].checkList);
+        FreeTable(data->dataArray[ITEM_INDEX].table);
+        data->dataArray[ITEM_INDEX].checkList = NewCheckList();
+        data->dataArray[ITEM_INDEX].table = response;
+        data->dataArray[ITEM_INDEX].properties = NULL;
+        data->dataArray[ITEM_INDEX].propertySelected = 0;
 
         response = ShowLackInventory(NULL);
         if (response->rows->next != NULL)
@@ -53,15 +54,15 @@ void SendItemRequest(struct Data *data)
     }
 }
 
-void ItemLookup(struct Data *data)
+void ItemLookup(struct MainWindowData *data)
 {
-    LinkedList *now = data->itemCheckList->next;
-    LinkedList *rowNow = data->itemTable->rows->next;
+    LinkedList *now = data->dataArray[ITEM_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[ITEM_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            TableRow *titleRow = CloneRow(GetTableTitle(data->itemTable));
+            TableRow *titleRow = CloneRow(GetTableTitle(data->dataArray[ITEM_INDEX].table));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewItemDetail("商品详情", table));
@@ -75,7 +76,7 @@ void ItemLookup(struct Data *data)
     data->message = CloneString("请选择一个商品条目");
 }
 
-void ItemAdd(struct Data *data)
+void ItemAdd(struct MainWindowData *data)
 {
     TableRow *row = NewTableRow();
     AppendTableRow(row, "商品名称");
@@ -99,10 +100,10 @@ void ItemAdd(struct Data *data)
     FreeTable(table);
 }
 
-void ItemModify(struct Data *data)
+void ItemModify(struct MainWindowData *data)
 {
-    LinkedList *now = data->itemCheckList->next;
-    LinkedList *rowNow = data->itemTable->rows->next;
+    LinkedList *now = data->dataArray[ITEM_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[ITEM_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
@@ -123,15 +124,18 @@ void ItemModify(struct Data *data)
 
             {
                 row = NewTableRow();
-                AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品编号"));
-                AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品名称"));
+                AppendTableRow(row,
+                        GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, rowNow->data, "商品编号"));
+                AppendTableRow(row,
+                        GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, rowNow->data, "商品名称"));
 
-                const char *time = GetRowItemByColumnName(data->itemTable, rowNow->data, "保质期");
+                const char *time = GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, rowNow->data, "保质期");
                 TimeInfo info = ParseTime(time, 1);
                 free(AppendTableRow(row, LongLongToString(info.day)));
                 free(AppendTableRow(row, LongLongToString(info.hour)));
 
-                Amount amount = ParseAmount(GetRowItemByColumnName(data->itemTable, rowNow->data, "售价"));
+                Amount amount = ParseAmount(
+                        GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, rowNow->data, "售价"));
                 free(AppendTableRow(row, LongLongToString(GetAmountYuan(&amount))));
                 free(AppendTableRow(row, LongLongToString(GetAmountJiao(&amount))));
                 free(AppendTableRow(row, LongLongToString(GetAmountCent(&amount))));
@@ -158,7 +162,7 @@ void ItemDelete(int ok, void *parameter)
         return;
     }
 
-    struct Data *data = parameter;
+    struct MainWindowData *data = parameter;
 
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_DELETE_ITEM);
@@ -169,13 +173,13 @@ void ItemDelete(int ok, void *parameter)
         return;
     }
 
-    LinkedList *now = data->itemCheckList->next;
-    LinkedList *rowNow = data->itemTable->rows->next;
+    LinkedList *now = data->dataArray[ITEM_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[ITEM_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->itemTable, rowNow->data, "商品编号");
+            char *id = GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, rowNow->data, "商品编号");
 
             TableRow *row = NewTableRow();
             AppendTableRow(row, "商品编号");
@@ -212,7 +216,7 @@ void ItemDelete(int ok, void *parameter)
     data->message = CloneString("删除成功");
 }
 
-void ConfirmItemDelete(struct Data *data)
+void ConfirmItemDelete(struct MainWindowData *data)
 {
     data->messageCallback = ItemDelete;
     data->message = CloneString("是否确认要删除选中的商品条目");
@@ -220,77 +224,10 @@ void ConfirmItemDelete(struct Data *data)
 
 void ItemPageLayout(struct nk_context *context, struct Window *window)
 {
-    struct Data *data = window->data;
+    struct MainWindowData *data = window->data;
     DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
-
-    // title
-    nk_layout_row_dynamic(context, 0, 1);
-    {
-        if (nk_style_push_font(context, &fontLarge->handle))
-        {
-            nk_label(context, "商品", NK_TEXT_LEFT);
-            nk_style_pop_font(context);
-        }
-    }
-
-    // filter
-    nk_layout_row_begin(context, NK_STATIC, 35, 5);
-    {
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "通过条件 ", NK_TEXT_LEFT);
-        }
-
-        int columnCount;
-        {
-            TableRow *row = data->itemTable == NULL ? NULL : GetTableTitle(data->itemTable);
-            columnCount = row == NULL ? 0 : row->columnCount;
-            if (data->itemProperties == NULL)
-            {
-                data->itemProperties = malloc((columnCount + 1) * sizeof(char *));
-                data->itemProperties[0] = "无";
-
-                LinkedList *rowNow = row == NULL ? NULL : row->items;
-                for (int i = 1; i < columnCount + 1; i++)
-                {
-                    data->itemProperties[i] = rowNow->data;
-                    rowNow = rowNow->next;
-                }
-            }
-        }
-
-        nk_layout_row_push(context, 140);
-        {
-            if (nk_style_push_font(context, &fontSmall->handle))
-            {
-                nk_combobox(context, data->itemProperties, columnCount + 1, &data->itemPropertySelected, 35,
-                        nk_vec2(200, 400));
-                nk_style_pop_font(context);
-            }
-        }
-
-        nk_layout_row_push(context, 30);
-        {
-            nk_label(context, "为", NK_TEXT_CENTERED);
-        }
-
-        nk_layout_row_push(context, 200);
-        {
-            nk_edit_string_zero_terminated(context,
-                    (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
-                    data->itemValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
-        }
-
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "进行筛选", NK_TEXT_LEFT);
-        }
-
-        nk_layout_row_end(context);
-    }
-
+    BasicFilterLayout(context, "商品", &data->dataArray[ITEM_INDEX]);
     nk_layout_row_static(context, 10, 0, 0);
-
     OperationLayout(context,
             OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
             (OperationHandler)SendItemRequest,
@@ -299,32 +236,6 @@ void ItemPageLayout(struct nk_context *context, struct Window *window)
             (OperationHandler)ConfirmItemDelete,
             (OperationHandler)ItemModify,
             data);
-
-    nk_layout_row_dynamic(context, 10, 1);
-    {
-        struct nk_rect space;
-        nk_widget(&space, context);
-        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
-        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                nk_rgb(100, 100, 100));
-    }
-
-    nk_layout_row_dynamic(context, nk_window_get_height(context) - 285, 1);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
-            {
-                TableLayout(context, data->itemTable, data->itemCheckList,
-                        data->itemPropertySelected == 0 ? NULL : data->itemProperties[data->itemPropertySelected],
-                        data->itemValueBuffer,
-                        NULL,
-                        NULL,
-                        NULL);
-                nk_group_end(context);
-            }
-
-            nk_style_pop_font(context);
-        }
-    }
+    DrawSeparateLine(context);
+    PageResultLayout(context, &data->dataArray[ITEM_INDEX]);
 }

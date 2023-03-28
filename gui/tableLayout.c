@@ -54,7 +54,7 @@ void TableLayout(struct nk_context *context, const Table *table, LinkedList *che
 
             while (itemNow != NULL)
             {
-                nk_layout_row_push(context, 150);
+                nk_layout_row_push(context, 200);
                 {
                     nk_label(context, itemNow->data, NK_TEXT_CENTERED);
                 }
@@ -97,7 +97,7 @@ void TableLayout(struct nk_context *context, const Table *table, LinkedList *che
                 LinkedList *itemNow = row->items;
                 while (itemNow != NULL)
                 {
-                    nk_layout_row_push(context, 150);
+                    nk_layout_row_push(context, 200);
                     {
                         nk_label(context, itemNow->data, NK_TEXT_CENTERED);
                     }

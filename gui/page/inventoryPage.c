@@ -21,7 +21,7 @@ void InventoryDelete(int ok, void *parameter)
         return;
     }
 
-    struct Data *data = parameter;
+    struct MainWindowData *data = parameter;
 
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_DELETE_INVENTORY);
@@ -32,13 +32,13 @@ void InventoryDelete(int ok, void *parameter)
         return;
     }
 
-    LinkedList *now = data->inventoryCheckList->next;
-    LinkedList *rowNow = data->inventoryTable->rows->next;
+    LinkedList *now = data->dataArray[INVENTORY_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[INVENTORY_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->inventoryTable, rowNow->data, "库存编号");
+            char *id = GetRowItemByColumnName(data->dataArray[INVENTORY_INDEX].table, rowNow->data, "库存编号");
 
             TableRow *row = NewTableRow();
             AppendTableRow(row, "库存编号");
@@ -75,13 +75,13 @@ void InventoryDelete(int ok, void *parameter)
     data->message = CloneString("删除成功");
 }
 
-void ConfirmInventoryDelete(struct Data *data)
+void ConfirmInventoryDelete(struct MainWindowData *data)
 {
     data->messageCallback = InventoryDelete;
     data->message = CloneString("是否确认要删除选中的库存条目");
 }
 
-void SendInventoryRequest(struct Data *data)
+void SendInventoryRequest(struct MainWindowData *data)
 {
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_READ_INVENTORY);
@@ -102,12 +102,13 @@ void SendInventoryRequest(struct Data *data)
             data->message = CloneString(response->remark);
         }
 
-        free(data->inventoryProperties);
-        FreeTable(data->inventoryTable);
-        FreeList(data->inventoryCheckList);
-        data->inventoryCheckList = NewCheckList();
-        data->inventoryTable = response;
-        data->inventoryProperties = NULL;
+        free(data->dataArray[INVENTORY_INDEX].properties);
+        FreeTable(data->dataArray[INVENTORY_INDEX].table);
+        FreeList(data->dataArray[INVENTORY_INDEX].checkList);
+        data->dataArray[INVENTORY_INDEX].checkList = NewCheckList();
+        data->dataArray[INVENTORY_INDEX].table = response;
+        data->dataArray[INVENTORY_INDEX].properties = NULL;
+        data->dataArray[INVENTORY_INDEX].propertySelected = 0;
     }
     else
     {
@@ -116,15 +117,15 @@ void SendInventoryRequest(struct Data *data)
     }
 }
 
-void InventoryLookup(struct Data *data)
+void InventoryLookup(struct MainWindowData *data)
 {
-    LinkedList *now = data->inventoryCheckList->next;
-    LinkedList *rowNow = data->inventoryTable->rows->next;
+    LinkedList *now = data->dataArray[INVENTORY_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[INVENTORY_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            TableRow *titleRow = CloneRow(GetTableTitle(data->inventoryTable));
+            TableRow *titleRow = CloneRow(GetTableTitle(data->dataArray[INVENTORY_INDEX].table));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewInventoryDetail("库存详情", table));
@@ -138,10 +139,10 @@ void InventoryLookup(struct Data *data)
     data->message = CloneString("请选择一个库存条目");
 }
 
-void InventoryAdd(struct Data *data)
+void InventoryAdd(struct MainWindowData *data)
 {
-    LinkedList *now = data->itemCheckList->next;
-    LinkedList *rowNow = data->itemTable->rows->next;
+    LinkedList *now = data->dataArray[ITEM_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[ITEM_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
@@ -167,8 +168,8 @@ void InventoryAdd(struct Data *data)
             AppendTableRow(row, "分");
             Table *table = NewTable(row, "");
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品编号"));
-            AppendTableRow(row, GetRowItemByColumnName(data->itemTable, rowNow->data, "商品名称"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, rowNow->data, "商品编号"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, rowNow->data, "商品名称"));
             AppendTableRow(row, "");
             AppendTableRow(row, "1");
             AppendTableRow(row, "1");
@@ -197,10 +198,10 @@ void InventoryAdd(struct Data *data)
     data->message = CloneString("请在商品页面选择一个商品条目");
 }
 
-void InventoryModify(struct Data *data)
+void InventoryModify(struct MainWindowData *data)
 {
-    LinkedList *now = data->inventoryCheckList->next;
-    LinkedList *rowNow = data->inventoryTable->rows->next;
+    LinkedList *now = data->dataArray[INVENTORY_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[INVENTORY_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
@@ -227,12 +228,12 @@ void InventoryModify(struct Data *data)
             AppendTableRow(row, "分");
             Table *table = NewTable(row, "");
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "库存编号"));
-            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "商品编号"));
-            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "商品名称"));
-            AppendTableRow(row, GetRowItemByColumnName(data->inventoryTable, rowNow->data, "数量"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[INVENTORY_INDEX].table, rowNow->data, "库存编号"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[INVENTORY_INDEX].table, rowNow->data, "商品编号"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[INVENTORY_INDEX].table, rowNow->data, "商品名称"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[INVENTORY_INDEX].table, rowNow->data, "数量"));
 
-            const char *time = GetRowItemByColumnName(data->inventoryTable, rowNow->data, "入库时间");
+            const char *time = GetRowItemByColumnName(data->dataArray[INVENTORY_INDEX].table, rowNow->data, "入库时间");
             TimeInfo info = ParseTime(time, 0);
             free(AppendTableRow(row, LongLongToString(info.year)));
             free(AppendTableRow(row, LongLongToString(info.month)));
@@ -241,7 +242,7 @@ void InventoryModify(struct Data *data)
             free(AppendTableRow(row, LongLongToString(info.minute)));
             free(AppendTableRow(row, LongLongToString(info.second)));
 
-            time = GetRowItemByColumnName(data->inventoryTable, rowNow->data, "生产日期");
+            time = GetRowItemByColumnName(data->dataArray[INVENTORY_INDEX].table, rowNow->data, "生产日期");
             info = ParseTime(time, 0);
             free(AppendTableRow(row, LongLongToString(info.year)));
             free(AppendTableRow(row, LongLongToString(info.month)));
@@ -250,7 +251,7 @@ void InventoryModify(struct Data *data)
             free(AppendTableRow(row, LongLongToString(info.minute)));
             free(AppendTableRow(row, LongLongToString(info.second)));
 
-            Amount amount = ParseAmount(GetRowItemByColumnName(data->inventoryTable, rowNow->data, "购入单价"));
+            Amount amount = ParseAmount(GetRowItemByColumnName(data->dataArray[INVENTORY_INDEX].table, rowNow->data, "购入单价"));
             free(AppendTableRow(row, LongLongToString(GetAmountYuan(&amount))));
             free(AppendTableRow(row, LongLongToString(GetAmountJiao(&amount))));
             free(AppendTableRow(row, LongLongToString(GetAmountCent(&amount))));
@@ -269,77 +270,10 @@ void InventoryModify(struct Data *data)
 
 void InventoryPageLayout(struct nk_context *context, struct Window *window)
 {
-    struct Data *data = window->data;
+    struct MainWindowData *data = window->data;
     DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
-
-    // title
-    nk_layout_row_dynamic(context, 0, 1);
-    {
-        if (nk_style_push_font(context, &fontLarge->handle))
-        {
-            nk_label(context, "库存", NK_TEXT_LEFT);
-            nk_style_pop_font(context);
-        }
-    }
-
-    // filter
-    nk_layout_row_begin(context, NK_STATIC, 35, 5);
-    {
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "通过条件 ", NK_TEXT_LEFT);
-        }
-
-        int columnCount;
-        {
-            TableRow *row = data->inventoryTable == NULL ? NULL : GetTableTitle(data->inventoryTable);
-            columnCount = row == NULL ? 0 : row->columnCount;
-            if (data->inventoryProperties == NULL)
-            {
-                data->inventoryProperties = malloc((columnCount + 1) * sizeof(char *));
-                data->inventoryProperties[0] = "无";
-
-                LinkedList *rowNow = row == NULL ? NULL : row->items;
-                for (int i = 1; i < columnCount + 1; i++)
-                {
-                    data->inventoryProperties[i] = rowNow->data;
-                    rowNow = rowNow->next;
-                }
-            }
-        }
-
-        nk_layout_row_push(context, 140);
-        {
-            if (nk_style_push_font(context, &fontSmall->handle))
-            {
-                nk_combobox(context, data->inventoryProperties, columnCount + 1, &data->inventoryPropertySelected, 35,
-                        nk_vec2(200, 400));
-                nk_style_pop_font(context);
-            }
-        }
-
-        nk_layout_row_push(context, 30);
-        {
-            nk_label(context, "为", NK_TEXT_CENTERED);
-        }
-
-        nk_layout_row_push(context, 200);
-        {
-            nk_edit_string_zero_terminated(context,
-                    (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
-                    data->inventoryValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
-        }
-
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "进行筛选", NK_TEXT_LEFT);
-        }
-
-        nk_layout_row_end(context);
-    }
-
+    BasicFilterLayout(context, "库存", &data->dataArray[INVENTORY_INDEX]);
     nk_layout_row_static(context, 10, 0, 0);
-
     OperationLayout(context,
             OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
             (OperationHandler)SendInventoryRequest,
@@ -348,46 +282,9 @@ void InventoryPageLayout(struct nk_context *context, struct Window *window)
             (OperationHandler)ConfirmInventoryDelete,
             (OperationHandler)InventoryModify,
             data);
-
-    nk_layout_row_dynamic(context, 10, 1);
-    {
-        struct nk_rect space;
-        nk_widget(&space, context);
-        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
-        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                nk_rgb(100, 100, 100));
-    }
-
+    DrawSeparateLine(context);
     char *from, *to;
     DateRangeFilterLayout(context, "筛选入库时间", &from, &to);
-
-    nk_layout_row_dynamic(context, 10, 1);
-    {
-        struct nk_rect space;
-        nk_widget(&space, context);
-        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
-        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                nk_rgb(100, 100, 100));
-    }
-
-    nk_layout_row_dynamic(context, nk_window_get_height(context) - 285, 1);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
-            {
-                TableLayout(context, data->inventoryTable, data->inventoryCheckList,
-                        data->inventoryPropertySelected == 0
-                        ? NULL
-                        : data->inventoryProperties[data->inventoryPropertySelected],
-                        data->inventoryValueBuffer,
-                        "入库时间",
-                        from,
-                        to);
-                nk_group_end(context);
-            }
-
-            nk_style_pop_font(context);
-        }
-    }
+    DrawSeparateLine(context);
+    PageResultLayout(context, &data->dataArray[INVENTORY_INDEX]);
 }

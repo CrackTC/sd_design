@@ -48,6 +48,30 @@ struct EditData
     void (*messageCallback)(int, void *);
 };
 
+struct PageData
+{
+    int propertySelected;
+    char *valueBuffer;
+    const char **properties;
+    struct Table *table;
+    struct LinkedList *checkList;
+};
+
+struct MainWindowData
+{
+    int id;
+    char *name;
+    char *password;
+    char *message;
+    int sectionSelected;
+
+    struct nk_context *context;
+
+    void (*messageCallback)(int, void *);
+
+    struct PageData *dataArray;
+};
+
 Window *NewMainWindow(const char *title, const char *id, const char *password, const char *name);
 
 Window *NewLoginWindow(const char *title);
@@ -119,6 +143,8 @@ void EnsureWindowSize(struct nk_context *context, Window *window, float width, f
 void DrawMessageBox(struct nk_context *context, const char *title, int draw, const char *message,
                     void (*callback)(int, void *), void *parameter);
 
+void DrawSeparateLine(struct nk_context *context);
+
 void MessageBoxCallback(int ok, void *parameter);
 
 void FinishCallback(int ok, void *parameter);
@@ -147,6 +173,10 @@ void OperationLayout(struct nk_context *context,
         void *data);
 
 void DateRangeFilterLayout(struct nk_context *context, const char *title, char **from, char **to);
+
+void BasicFilterLayout(struct nk_context *context, const char *title, struct PageData *data);
+
+void PageResultLayout(struct nk_context *context, const struct PageData *data);
 
 LinkedList *NewCheckList();
 

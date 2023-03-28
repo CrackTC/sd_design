@@ -11,7 +11,7 @@
 #include <stddef.h>
 #include <malloc.h>
 
-void SendProfitRequest(struct Data *data)
+void SendProfitRequest(struct MainWindowData *data)
 {
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_READ_STATISTICS);
@@ -32,12 +32,13 @@ void SendProfitRequest(struct Data *data)
             data->message = CloneString(response->remark);
         }
 
-        free(data->profitProperties);
-        FreeList(data->profitCheckList);
-        FreeTable(data->profitTable);
-        data->profitCheckList = NewCheckList();
-        data->profitTable = response;
-        data->profitProperties = NULL;
+        free(data->dataArray[PROFIT_INDEX].properties);
+        FreeList(data->dataArray[PROFIT_INDEX].checkList);
+        FreeTable(data->dataArray[PROFIT_INDEX].table);
+        data->dataArray[PROFIT_INDEX].checkList = NewCheckList();
+        data->dataArray[PROFIT_INDEX].table = response;
+        data->dataArray[PROFIT_INDEX].properties = NULL;
+        data->dataArray[PROFIT_INDEX].propertySelected = 0;
     }
     else
     {
@@ -46,15 +47,15 @@ void SendProfitRequest(struct Data *data)
     }
 }
 
-void ProfitLookup(struct Data *data)
+void ProfitLookup(struct MainWindowData *data)
 {
-    LinkedList *now = data->profitCheckList->next;
-    LinkedList *rowNow = data->profitTable->rows->next;
+    LinkedList *now = data->dataArray[PROFIT_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[PROFIT_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            TableRow *titleRow = CloneRow(GetTableTitle(data->profitTable));
+            TableRow *titleRow = CloneRow(GetTableTitle(data->dataArray[PROFIT_INDEX].table));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewProfitDetail("收支详情", table));
@@ -70,77 +71,10 @@ void ProfitLookup(struct Data *data)
 
 void ProfitPageLayout(struct nk_context *context, struct Window *window)
 {
-    struct Data *data = window->data;
+    struct MainWindowData *data = window->data;
     DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
-
-    // title
-    nk_layout_row_dynamic(context, 0, 1);
-    {
-        if (nk_style_push_font(context, &fontLarge->handle))
-        {
-            nk_label(context, "统计", NK_TEXT_LEFT);
-            nk_style_pop_font(context);
-        }
-    }
-
-    // filter
-    nk_layout_row_begin(context, NK_STATIC, 35, 5);
-    {
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "通过条件 ", NK_TEXT_LEFT);
-        }
-
-        int columnCount;
-        {
-            TableRow *row = data->profitTable == NULL ? NULL : GetTableTitle(data->profitTable);
-            columnCount = row == NULL ? 0 : row->columnCount;
-            if (data->profitProperties == NULL)
-            {
-                data->profitProperties = malloc((columnCount + 1) * sizeof(char *));
-                data->profitProperties[0] = "无";
-
-                LinkedList *rowNow = row == NULL ? NULL : row->items;
-                for (int i = 1; i < columnCount + 1; i++)
-                {
-                    data->profitProperties[i] = rowNow->data;
-                    rowNow = rowNow->next;
-                }
-            }
-        }
-
-        nk_layout_row_push(context, 140);
-        {
-            if (nk_style_push_font(context, &fontSmall->handle))
-            {
-                nk_combobox(context, data->profitProperties, columnCount + 1, &data->profitPropertySelected, 35,
-                        nk_vec2(200, 400));
-                nk_style_pop_font(context);
-            }
-        }
-
-        nk_layout_row_push(context, 30);
-        {
-            nk_label(context, "为", NK_TEXT_CENTERED);
-        }
-
-        nk_layout_row_push(context, 200);
-        {
-            nk_edit_string_zero_terminated(context,
-                    (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
-                    data->profitValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
-        }
-
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "进行筛选", NK_TEXT_LEFT);
-        }
-
-        nk_layout_row_end(context);
-    }
-
+    BasicFilterLayout(context, "统计", &data->dataArray[PROFIT_INDEX]);
     nk_layout_row_static(context, 10, 0, 0);
-
     OperationLayout(context,
             OP_TYPE_GET | OP_TYPE_DETAIL,
             (OperationHandler)SendProfitRequest,
@@ -149,45 +83,9 @@ void ProfitPageLayout(struct nk_context *context, struct Window *window)
             NULL,
             NULL,
             data);
-
-    nk_layout_row_dynamic(context, 10, 1);
-    {
-        struct nk_rect space;
-        nk_widget(&space, context);
-        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
-        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                nk_rgb(100, 100, 100));
-    }
-
+    DrawSeparateLine(context);
     char *from, *to;
     DateRangeFilterLayout(context, "筛选时间", &from, &to);
-
-    nk_layout_row_dynamic(context, 10, 1);
-    {
-        struct nk_rect space;
-        nk_widget(&space, context);
-        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
-        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                nk_rgb(100, 100, 100));
-    }
-
-    nk_layout_row_dynamic(context, nk_window_get_height(context) - 285, 1);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
-            {
-                TableLayout(context, data->profitTable, data->profitCheckList,
-                        data->profitPropertySelected == 0 ? NULL
-                                                          : data->profitProperties[data->profitPropertySelected],
-                        data->profitValueBuffer,
-                        "时间",
-                        from,
-                        to);
-                nk_group_end(context);
-            }
-
-            nk_style_pop_font(context);
-        }
-    }
+    DrawSeparateLine(context);
+    PageResultLayout(context, &data->dataArray[PROFIT_INDEX]);
 }

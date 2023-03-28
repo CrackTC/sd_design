@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-struct Data
+struct LoginData
 {
     char id[BUFFER_SIZE];
     char password[BUFFER_SIZE];
@@ -32,7 +32,7 @@ int SendLoginRequest(const char *id, const char *password, char **name)
     return 0;
 }
 
-void LoginButtonEventHandler(struct Data *data, Window *window)
+void LoginButtonEventHandler(struct LoginData *data, Window *window)
 {
     char *name;
     if (SendLoginRequest(data->id, data->password, &name))
@@ -50,7 +50,7 @@ void LoginButtonEventHandler(struct Data *data, Window *window)
 void loginWindowLayout(struct nk_context *context, Window *window)
 {
     EnsureWindowSize(context, window, 400, 500);
-    struct Data *data = window->data;
+    struct LoginData *data = window->data;
 
     nk_layout_row_dynamic(context, 120, 1);
     nk_label(context, data->message, NK_TEXT_CENTERED);
@@ -126,7 +126,7 @@ Window *NewLoginWindow(const char *title)
     window->freeFunc = FreeLoginWindow;
     window->title = title;
 
-    struct Data *data = malloc(sizeof(struct Data));
+    struct LoginData *data = malloc(sizeof(struct LoginData));
     strcpy(data->id, "");
     strcpy(data->password, "");
     strcpy(data->message, "登录");

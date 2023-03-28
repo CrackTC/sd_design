@@ -19,7 +19,7 @@ void StaffDelete(int ok, void *parameter)
         return;
     }
 
-    struct Data *data = parameter;
+    struct MainWindowData *data = parameter;
 
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_DELETE_STAFF);
@@ -30,13 +30,13 @@ void StaffDelete(int ok, void *parameter)
         return;
     }
 
-    LinkedList *now = data->staffCheckList->next;
-    LinkedList *rowNow = data->staffTable->rows->next;
+    LinkedList *now = data->dataArray[STAFF_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[STAFF_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->staffTable, rowNow->data, "员工编号");
+            char *id = GetRowItemByColumnName(data->dataArray[STAFF_INDEX].table, rowNow->data, "员工编号");
 
             TableRow *row = NewTableRow();
             AppendTableRow(row, "员工编号");
@@ -72,13 +72,13 @@ void StaffDelete(int ok, void *parameter)
     data->message = CloneString("删除成功");
 }
 
-void ConfirmStaffDelete(struct Data *data)
+void ConfirmStaffDelete(struct MainWindowData *data)
 {
     data->messageCallback = StaffDelete;
     data->message = CloneString("是否确认要删除选中的员工条目");
 }
 
-void SendStaffRequest(struct Data *data)
+void SendStaffRequest(struct MainWindowData *data)
 {
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_READ_STAFF);
@@ -99,12 +99,13 @@ void SendStaffRequest(struct Data *data)
             data->message = CloneString(response->remark);
         }
 
-        free(data->staffProperties);
-        FreeList(data->staffCheckList);
-        FreeTable(data->staffTable);
-        data->staffCheckList = NewCheckList();
-        data->staffTable = response;
-        data->staffProperties = NULL;
+        free(data->dataArray[STAFF_INDEX].properties);
+        FreeList(data->dataArray[STAFF_INDEX].checkList);
+        FreeTable(data->dataArray[STAFF_INDEX].table);
+        data->dataArray[STAFF_INDEX].checkList = NewCheckList();
+        data->dataArray[STAFF_INDEX].table = response;
+        data->dataArray[STAFF_INDEX].properties = NULL;
+        data->dataArray[STAFF_INDEX].propertySelected = 0;
     }
     else
     {
@@ -113,15 +114,15 @@ void SendStaffRequest(struct Data *data)
     }
 }
 
-void StaffLookup(struct Data *data)
+void StaffLookup(struct MainWindowData *data)
 {
-    LinkedList *now = data->staffCheckList->next;
-    LinkedList *rowNow = data->staffTable->rows->next;
+    LinkedList *now = data->dataArray[STAFF_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[STAFF_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            TableRow *titleRow = CloneRow(GetTableTitle(data->staffTable));
+            TableRow *titleRow = CloneRow(GetTableTitle(data->dataArray[STAFF_INDEX].table));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewStaffDetail("员工详情", table));
@@ -135,7 +136,7 @@ void StaffLookup(struct Data *data)
     data->message = CloneString("请选择一个员工条目");
 }
 
-void StaffAdd(struct Data *data)
+void StaffAdd(struct MainWindowData *data)
 {
     TableRow *row = NewTableRow();
     AppendTableRow(row, "员工密码");
@@ -157,10 +158,10 @@ void StaffAdd(struct Data *data)
     FreeTable(table);
 }
 
-void StaffModify(struct Data *data)
+void StaffModify(struct MainWindowData *data)
 {
-    LinkedList *now = data->staffCheckList->next;
-    LinkedList *rowNow = data->staffTable->rows->next;
+    LinkedList *now = data->dataArray[STAFF_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[STAFF_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
@@ -175,12 +176,13 @@ void StaffModify(struct Data *data)
             Table *table = NewTable(row, "");
 
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工编号"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[STAFF_INDEX].table, rowNow->data, "员工编号"));
             AppendTableRow(row, "");
-            AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工姓名"));
-            AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工联系方式"));
-            AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工可用性"));
-            AppendTableRow(row, GetRowItemByColumnName(data->staffTable, rowNow->data, "员工权限"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[STAFF_INDEX].table, rowNow->data, "员工姓名"));
+            AppendTableRow(row,
+                    GetRowItemByColumnName(data->dataArray[STAFF_INDEX].table, rowNow->data, "员工联系方式"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[STAFF_INDEX].table, rowNow->data, "员工可用性"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[STAFF_INDEX].table, rowNow->data, "员工权限"));
             AppendTable(table, row);
 
             PushWindow(NewStaffEdit("员工编辑", data->id, data->password, table, 1));
@@ -196,77 +198,10 @@ void StaffModify(struct Data *data)
 
 void StaffPageLayout(struct nk_context *context, struct Window *window)
 {
-    struct Data *data = window->data;
+    struct MainWindowData *data = window->data;
     DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
-
-    // title
-    nk_layout_row_dynamic(context, 0, 1);
-    {
-        if (nk_style_push_font(context, &fontLarge->handle))
-        {
-            nk_label(context, "员工", NK_TEXT_LEFT);
-            nk_style_pop_font(context);
-        }
-    }
-
-    // filter
-    nk_layout_row_begin(context, NK_STATIC, 35, 5);
-    {
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "通过条件 ", NK_TEXT_LEFT);
-        }
-
-        int columnCount;
-        {
-            TableRow *row = data->staffTable == NULL ? NULL : GetTableTitle(data->staffTable);
-            columnCount = row == NULL ? 0 : row->columnCount;
-            if (data->staffProperties == NULL)
-            {
-                data->staffProperties = malloc((columnCount + 1) * sizeof(char *));
-                data->staffProperties[0] = "无";
-
-                LinkedList *rowNow = row == NULL ? NULL : row->items;
-                for (int i = 1; i < columnCount + 1; i++)
-                {
-                    data->staffProperties[i] = rowNow->data;
-                    rowNow = rowNow->next;
-                }
-            }
-        }
-
-        nk_layout_row_push(context, 140);
-        {
-            if (nk_style_push_font(context, &fontSmall->handle))
-            {
-                nk_combobox(context, data->staffProperties, columnCount + 1, &data->staffPropertySelected, 35,
-                        nk_vec2(200, 400));
-                nk_style_pop_font(context);
-            }
-        }
-
-        nk_layout_row_push(context, 30);
-        {
-            nk_label(context, "为", NK_TEXT_CENTERED);
-        }
-
-        nk_layout_row_push(context, 200);
-        {
-            nk_edit_string_zero_terminated(context,
-                    (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
-                    data->staffValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
-        }
-
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "进行筛选", NK_TEXT_LEFT);
-        }
-
-        nk_layout_row_end(context);
-    }
-
+    BasicFilterLayout(context, "员工", &data->dataArray[STAFF_INDEX]);
     nk_layout_row_static(context, 10, 0, 0);
-
     OperationLayout(context,
             OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
             (OperationHandler)SendStaffRequest,
@@ -275,33 +210,6 @@ void StaffPageLayout(struct nk_context *context, struct Window *window)
             (OperationHandler)ConfirmStaffDelete,
             (OperationHandler)StaffModify,
             data);
-
-    nk_layout_row_dynamic(context, 10, 1);
-    {
-        struct nk_rect space;
-        nk_widget(&space, context);
-        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
-        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                nk_rgb(100, 100, 100));
-    }
-
-    nk_layout_row_dynamic(context, nk_window_get_height(context) - 285, 1);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
-            {
-                TableLayout(context, data->staffTable, data->staffCheckList,
-                        data->staffPropertySelected == 0 ? NULL
-                                                         : data->staffProperties[data->staffPropertySelected],
-                        data->staffValueBuffer,
-                        NULL,
-                        NULL,
-                        NULL);
-                nk_group_end(context);
-            }
-
-            nk_style_pop_font(context);
-        }
-    }
+    DrawSeparateLine(context);
+    PageResultLayout(context, &data->dataArray[STAFF_INDEX]);
 }

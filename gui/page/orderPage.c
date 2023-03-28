@@ -11,7 +11,7 @@
 #include "design/mainWindow.h"
 #include <malloc.h>
 
-void SendOrderRequest(struct Data *data)
+void SendOrderRequest(struct MainWindowData *data)
 {
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_READ_ORDER);
@@ -32,12 +32,13 @@ void SendOrderRequest(struct Data *data)
             data->message = CloneString(response->remark);
         }
 
-        free(data->orderProperties);
-        FreeList(data->orderCheckList);
-        FreeTable(data->orderTable);
-        data->orderCheckList = NewCheckList();
-        data->orderTable = response;
-        data->orderProperties = NULL;
+        free(data->dataArray[ORDER_INDEX].properties);
+        FreeList(data->dataArray[ORDER_INDEX].checkList);
+        FreeTable(data->dataArray[ORDER_INDEX].table);
+        data->dataArray[ORDER_INDEX].checkList = NewCheckList();
+        data->dataArray[ORDER_INDEX].table = response;
+        data->dataArray[ORDER_INDEX].properties = NULL;
+        data->dataArray[ORDER_INDEX].propertySelected = 0;
     }
     else
     {
@@ -46,15 +47,15 @@ void SendOrderRequest(struct Data *data)
     }
 }
 
-void OrderLookup(struct Data *data)
+void OrderLookup(struct MainWindowData *data)
 {
-    LinkedList *now = data->orderCheckList->next;
-    LinkedList *rowNow = data->orderTable->rows->next;
+    LinkedList *now = data->dataArray[ORDER_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[ORDER_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            TableRow *titleRow = CloneRow(GetTableTitle(data->orderTable));
+            TableRow *titleRow = CloneRow(GetTableTitle(data->dataArray[ORDER_INDEX].table));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewOrderDetail("订单详情", table));
@@ -68,16 +69,16 @@ void OrderLookup(struct Data *data)
     data->message = CloneString("请选择一个订单");
 }
 
-void OrderAdd(struct Data *data)
+void OrderAdd(struct MainWindowData *data)
 {
-    LinkedList *itemCheckNow = data->itemCheckList->next;
-    LinkedList *itemRowNow = data->itemTable->rows->next;
+    LinkedList *itemCheckNow = data->dataArray[ITEM_INDEX].checkList->next;
+    LinkedList *itemRowNow = data->dataArray[ITEM_INDEX].table->rows->next;
     while (itemCheckNow != NULL)
     {
         if (*(int *)itemCheckNow->data == 1)
         {
-            LinkedList *customerCheckNow = data->customerCheckList->next;
-            LinkedList *customerRowNow = data->customerTable->rows->next;
+            LinkedList *customerCheckNow = data->dataArray[CUSTOMER_INDEX].checkList->next;
+            LinkedList *customerRowNow = data->dataArray[CUSTOMER_INDEX].table->rows->next;
             while (customerCheckNow != NULL)
             {
                 if (*(int *)customerCheckNow->data == 1)
@@ -91,10 +92,16 @@ void OrderAdd(struct Data *data)
                     Table *table = NewTable(row, "");
 
                     row = NewTableRow();
-                    AppendTableRow(row, GetRowItemByColumnName(data->itemTable, itemRowNow->data, "商品编号"));
-                    AppendTableRow(row, GetRowItemByColumnName(data->itemTable, itemRowNow->data, "商品名称"));
-                    AppendTableRow(row, GetRowItemByColumnName(data->customerTable, customerRowNow->data, "客户编号"));
-                    AppendTableRow(row, GetRowItemByColumnName(data->customerTable, customerRowNow->data, "客户姓名"));
+                    AppendTableRow(row,
+                            GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, itemRowNow->data, "商品编号"));
+                    AppendTableRow(row,
+                            GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, itemRowNow->data, "商品名称"));
+                    AppendTableRow(row,
+                            GetRowItemByColumnName(data->dataArray[CUSTOMER_INDEX].table, customerRowNow->data,
+                                    "客户编号"));
+                    AppendTableRow(row,
+                            GetRowItemByColumnName(data->dataArray[CUSTOMER_INDEX].table, customerRowNow->data,
+                                    "客户姓名"));
                     AppendTableRow(row, "0");
                     AppendTable(table, row);
 
@@ -116,10 +123,10 @@ void OrderAdd(struct Data *data)
     data->message = CloneString("请确保在商品页面选择一个商品条目，且在客户页面选择一个客户条目");
 }
 
-void OrderModify(struct Data *data)
+void OrderModify(struct MainWindowData *data)
 {
-    LinkedList *now = data->orderCheckList->next;
-    LinkedList *rowNow = data->orderTable->rows->next;
+    LinkedList *now = data->dataArray[ORDER_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[ORDER_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
@@ -139,12 +146,18 @@ void OrderModify(struct Data *data)
 
             {
                 row = NewTableRow();
-                AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "订单编号"));
-                AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "商品编号"));
-                AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "商品名称"));
-                AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "客户编号"));
-                AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "客户姓名"));
-                AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "购买数量"));
+                AppendTableRow(row,
+                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "订单编号"));
+                AppendTableRow(row,
+                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "商品编号"));
+                AppendTableRow(row,
+                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "商品名称"));
+                AppendTableRow(row,
+                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "客户编号"));
+                AppendTableRow(row,
+                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "客户姓名"));
+                AppendTableRow(row,
+                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "购买数量"));
                 AppendTable(table, row);
             }
 
@@ -167,7 +180,7 @@ void OrderDelete(int ok, void *parameter)
         return;
     }
 
-    struct Data *data = parameter;
+    struct MainWindowData *data = parameter;
 
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_DELETE_ORDER);
@@ -178,13 +191,13 @@ void OrderDelete(int ok, void *parameter)
         return;
     }
 
-    LinkedList *now = data->orderCheckList->next;
-    LinkedList *rowNow = data->orderTable->rows->next;
+    LinkedList *now = data->dataArray[ORDER_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[ORDER_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->orderTable, rowNow->data, "id");
+            char *id = GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "id");
 
             TableRow *row = NewTableRow();
             AppendTableRow(row, "id");
@@ -221,7 +234,7 @@ void OrderDelete(int ok, void *parameter)
     data->message = CloneString("删除成功");
 }
 
-void ConfirmOrderDelete(struct Data *data)
+void ConfirmOrderDelete(struct MainWindowData *data)
 {
     data->messageCallback = MessageBoxCallback;
     data->message = CloneString("请选择一个订单条目");
@@ -229,77 +242,10 @@ void ConfirmOrderDelete(struct Data *data)
 
 void OrderPageLayout(struct nk_context *context, struct Window *window)
 {
-    struct Data *data = window->data;
+    struct MainWindowData *data = window->data;
     DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
-
-    // title
-    nk_layout_row_dynamic(context, 0, 1);
-    {
-        if (nk_style_push_font(context, &fontLarge->handle))
-        {
-            nk_label(context, "订单", NK_TEXT_LEFT);
-            nk_style_pop_font(context);
-        }
-    }
-
-    // filter
-    nk_layout_row_begin(context, NK_STATIC, 35, 5);
-    {
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "通过条件 ", NK_TEXT_LEFT);
-        }
-
-        int columnCount;
-        {
-            TableRow *row = data->orderTable == NULL ? NULL : GetTableTitle(data->orderTable);
-            columnCount = row == NULL ? 0 : row->columnCount;
-            if (data->orderProperties == NULL)
-            {
-                data->orderProperties = malloc((columnCount + 1) * sizeof(char *));
-                data->orderProperties[0] = "无";
-
-                LinkedList *rowNow = row == NULL ? NULL : row->items;
-                for (int i = 1; i < columnCount + 1; i++)
-                {
-                    data->orderProperties[i] = rowNow->data;
-                    rowNow = rowNow->next;
-                }
-            }
-        }
-
-        nk_layout_row_push(context, 140);
-        {
-            if (nk_style_push_font(context, &fontSmall->handle))
-            {
-                nk_combobox(context, data->orderProperties, columnCount + 1, &data->orderPropertySelected, 35,
-                        nk_vec2(200, 400));
-                nk_style_pop_font(context);
-            }
-        }
-
-        nk_layout_row_push(context, 30);
-        {
-            nk_label(context, "为", NK_TEXT_CENTERED);
-        }
-
-        nk_layout_row_push(context, 200);
-        {
-            nk_edit_string_zero_terminated(context,
-                    (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
-                    data->orderValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
-        }
-
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "进行筛选", NK_TEXT_LEFT);
-        }
-
-        nk_layout_row_end(context);
-    }
-
+    BasicFilterLayout(context, "订单", &data->dataArray[ORDER_INDEX]);
     nk_layout_row_static(context, 10, 0, 0);
-
     OperationLayout(context,
             OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
             (OperationHandler)SendOrderRequest,
@@ -308,45 +254,9 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
             (OperationHandler)ConfirmOrderDelete,
             (OperationHandler)OrderModify,
             data);
-
-    nk_layout_row_dynamic(context, 10, 1);
-    {
-        struct nk_rect space;
-        nk_widget(&space, context);
-        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
-        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                nk_rgb(100, 100, 100));
-    }
-
+    DrawSeparateLine(context);
     char *from, *to;
     DateRangeFilterLayout(context, "筛选购买时间", &from, &to);
-
-    nk_layout_row_dynamic(context, 10, 1);
-    {
-        struct nk_rect space;
-        nk_widget(&space, context);
-        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
-        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                nk_rgb(100, 100, 100));
-    }
-
-    nk_layout_row_dynamic(context, nk_window_get_height(context) - 285, 1);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
-            {
-                TableLayout(context, data->orderTable, data->orderCheckList,
-                        data->orderPropertySelected == 0 ? NULL
-                                                         : data->orderProperties[data->orderPropertySelected],
-                        data->orderValueBuffer,
-                        "购买时间",
-                        from,
-                        to);
-                nk_group_end(context);
-            }
-
-            nk_style_pop_font(context);
-        }
-    }
+    DrawSeparateLine(context);
+    PageResultLayout(context, &data->dataArray[ORDER_INDEX]);
 }

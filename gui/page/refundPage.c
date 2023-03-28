@@ -20,7 +20,7 @@ void RefundDelete(int ok, void *parameter)
         return;
     }
 
-    struct Data *data = parameter;
+    struct MainWindowData *data = parameter;
 
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_DELETE_REFUND);
@@ -31,13 +31,13 @@ void RefundDelete(int ok, void *parameter)
         return;
     }
 
-    LinkedList *now = data->refundCheckList->next;
-    LinkedList *rowNow = data->refundTable->rows->next;
+    LinkedList *now = data->dataArray[REFUND_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[REFUND_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            char *id = GetRowItemByColumnName(data->refundTable, rowNow->data, "订单编号");
+            char *id = GetRowItemByColumnName(data->dataArray[REFUND_INDEX].table, rowNow->data, "订单编号");
 
             TableRow *row = NewTableRow();
             AppendTableRow(row, "订单编号");
@@ -73,13 +73,13 @@ void RefundDelete(int ok, void *parameter)
     data->message = CloneString("删除成功");
 }
 
-void ConfirmRefundDelete(struct Data *data)
+void ConfirmRefundDelete(struct MainWindowData *data)
 {
     data->messageCallback = RefundDelete;
     data->message = CloneString("是否确认要删除选中的退款条目");
 }
 
-void SendRefundRequest(struct Data *data)
+void SendRefundRequest(struct MainWindowData *data)
 {
     int hasPermission;
     Judge(data->id, &hasPermission, data->password, OP_READ_REFUND);
@@ -100,12 +100,13 @@ void SendRefundRequest(struct Data *data)
             data->message = CloneString(response->remark);
         }
 
-        free(data->refundProperties);
-        FreeList(data->refundCheckList);
-        FreeTable(data->refundTable);
-        data->refundCheckList = NewCheckList();
-        data->refundTable = response;
-        data->refundProperties = NULL;
+        free(data->dataArray[REFUND_INDEX].properties);
+        FreeList(data->dataArray[REFUND_INDEX].checkList);
+        FreeTable(data->dataArray[REFUND_INDEX].table);
+        data->dataArray[REFUND_INDEX].checkList = NewCheckList();
+        data->dataArray[REFUND_INDEX].table = response;
+        data->dataArray[REFUND_INDEX].properties = NULL;
+        data->dataArray[REFUND_INDEX].propertySelected = 0;
     }
     else
     {
@@ -114,15 +115,15 @@ void SendRefundRequest(struct Data *data)
     }
 }
 
-void RefundLookup(struct Data *data)
+void RefundLookup(struct MainWindowData *data)
 {
-    LinkedList *now = data->refundCheckList->next;
-    LinkedList *rowNow = data->refundTable->rows->next;
+    LinkedList *now = data->dataArray[REFUND_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[REFUND_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
         {
-            TableRow *titleRow = CloneRow(GetTableTitle(data->refundTable));
+            TableRow *titleRow = CloneRow(GetTableTitle(data->dataArray[REFUND_INDEX].table));
             Table *table = NewTable(titleRow, "");
             AppendTable(table, CloneRow(rowNow->data));
             PushWindow(NewRefundDetail("退款详情", table));
@@ -136,10 +137,10 @@ void RefundLookup(struct Data *data)
     data->message = CloneString("请选择一个退款条目");
 }
 
-void RefundAdd(struct Data *data)
+void RefundAdd(struct MainWindowData *data)
 {
-    LinkedList *now = data->orderCheckList->next;
-    LinkedList *rowNow = data->orderTable->rows->next;
+    LinkedList *now = data->dataArray[ORDER_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[ORDER_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
@@ -155,12 +156,12 @@ void RefundAdd(struct Data *data)
             Table *table = NewTable(row, NULL);
 
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "订单编号"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "订单编号"));
             AppendTableRow(row, "");
 
-            AppendTableRow(row, GetRowItemByColumnName(data->orderTable, rowNow->data, "购买数量"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "购买数量"));
 
-            Amount amount = ParseAmount(GetRowItemByColumnName(data->orderTable, rowNow->data, "总价"));
+            Amount amount = ParseAmount(GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "总价"));
             free(AppendTableRow(row, LongLongToString(GetAmountYuan(&amount))));
             free(AppendTableRow(row, LongLongToString(GetAmountJiao(&amount))));
             free(AppendTableRow(row, LongLongToString(GetAmountCent(&amount))));
@@ -179,10 +180,10 @@ void RefundAdd(struct Data *data)
     data->message = CloneString("请在订单页面选择一个订单条目");
 }
 
-void RefundModify(struct Data *data)
+void RefundModify(struct MainWindowData *data)
 {
-    LinkedList *now = data->refundCheckList->next;
-    LinkedList *rowNow = data->refundTable->rows->next;
+    LinkedList *now = data->dataArray[REFUND_INDEX].checkList->next;
+    LinkedList *rowNow = data->dataArray[REFUND_INDEX].table->rows->next;
     while (now != NULL)
     {
         if (*(int *)now->data == 1)
@@ -198,16 +199,16 @@ void RefundModify(struct Data *data)
             Table *table = NewTable(row, NULL);
 
             row = NewTableRow();
-            AppendTableRow(row, GetRowItemByColumnName(data->refundTable, rowNow->data, "订单编号"));
-            AppendTableRow(row, GetRowItemByColumnName(data->refundTable, rowNow->data, "退款原因"));
-            AppendTableRow(row, GetRowItemByColumnName(data->refundTable, rowNow->data, "退回数目"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[REFUND_INDEX].table, rowNow->data, "订单编号"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[REFUND_INDEX].table, rowNow->data, "退款原因"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[REFUND_INDEX].table, rowNow->data, "退回数目"));
 
-            Amount amount = ParseAmount(GetRowItemByColumnName(data->refundTable, rowNow->data, "退款"));
+            Amount amount = ParseAmount(GetRowItemByColumnName(data->dataArray[REFUND_INDEX].table, rowNow->data, "退款"));
             free(AppendTableRow(row, LongLongToString(GetAmountYuan(&amount))));
             free(AppendTableRow(row, LongLongToString(GetAmountJiao(&amount))));
             free(AppendTableRow(row, LongLongToString(GetAmountCent(&amount))));
 
-            AppendTableRow(row, GetRowItemByColumnName(data->refundTable, rowNow->data, "备注"));
+            AppendTableRow(row, GetRowItemByColumnName(data->dataArray[REFUND_INDEX].table, rowNow->data, "备注"));
             AppendTable(table, row);
 
             PushWindow(NewRefundEdit("退款编辑", data->id, data->password, table, 1));
@@ -223,74 +224,10 @@ void RefundModify(struct Data *data)
 
 void RefundPageLayout(struct nk_context *context, struct Window *window)
 {
-    struct Data *data = window->data;
+    struct MainWindowData *data = window->data;
     DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
 
-    // title
-    nk_layout_row_dynamic(context, 0, 1);
-    {
-        if (nk_style_push_font(context, &fontLarge->handle))
-        {
-            nk_label(context, "退款", NK_TEXT_LEFT);
-            nk_style_pop_font(context);
-        }
-    }
-
-    // filter
-    nk_layout_row_begin(context, NK_STATIC, 35, 5);
-    {
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "通过条件 ", NK_TEXT_LEFT);
-        }
-
-        int columnCount;
-        {
-            TableRow *row = data->refundTable == NULL ? NULL : GetTableTitle(data->refundTable);
-            columnCount = row == NULL ? 0 : row->columnCount;
-            if (data->refundProperties == NULL)
-            {
-                data->refundProperties = malloc((columnCount + 1) * sizeof(char *));
-                data->refundProperties[0] = "无";
-
-                LinkedList *rowNow = row == NULL ? NULL : row->items;
-                for (int i = 1; i < columnCount + 1; i++)
-                {
-                    data->refundProperties[i] = rowNow->data;
-                    rowNow = rowNow->next;
-                }
-            }
-        }
-
-        nk_layout_row_push(context, 140);
-        {
-            if (nk_style_push_font(context, &fontSmall->handle))
-            {
-                nk_combobox(context, data->refundProperties, columnCount + 1, &data->refundPropertySelected, 35,
-                        nk_vec2(200, 400));
-                nk_style_pop_font(context);
-            }
-        }
-
-        nk_layout_row_push(context, 30);
-        {
-            nk_label(context, "为", NK_TEXT_CENTERED);
-        }
-
-        nk_layout_row_push(context, 200);
-        {
-            nk_edit_string_zero_terminated(context,
-                    (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
-                    data->refundValueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
-        }
-
-        nk_layout_row_push(context, 100);
-        {
-            nk_label(context, "进行筛选", NK_TEXT_LEFT);
-        }
-
-        nk_layout_row_end(context);
-    }
+    BasicFilterLayout(context, "退款", &data->dataArray[REFUND_INDEX]);
 
     nk_layout_row_static(context, 10, 0, 0);
 
@@ -302,45 +239,9 @@ void RefundPageLayout(struct nk_context *context, struct Window *window)
             (OperationHandler)ConfirmRefundDelete,
             (OperationHandler)RefundModify,
             data);
-
-    nk_layout_row_dynamic(context, 10, 1);
-    {
-        struct nk_rect space;
-        nk_widget(&space, context);
-        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
-        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                nk_rgb(100, 100, 100));
-    }
-
+    DrawSeparateLine(context);
     char *from, *to;
     DateRangeFilterLayout(context, "筛选退款时间", &from, &to);
-
-    nk_layout_row_dynamic(context, 10, 1);
-    {
-        struct nk_rect space;
-        nk_widget(&space, context);
-        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
-        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
-                nk_rgb(100, 100, 100));
-    }
-
-    nk_layout_row_dynamic(context, nk_window_get_height(context) - 285, 1);
-    {
-        if (nk_style_push_font(context, &fontSmall->handle))
-        {
-            if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
-            {
-                TableLayout(context, data->refundTable, data->refundCheckList,
-                        data->refundPropertySelected == 0 ? NULL
-                                                          : data->refundProperties[data->refundPropertySelected],
-                        data->refundValueBuffer,
-                        "退款时间",
-                        from,
-                        to);
-                nk_group_end(context);
-            }
-
-            nk_style_pop_font(context);
-        }
-    }
+    DrawSeparateLine(context);
+    PageResultLayout(context, &data->dataArray[REFUND_INDEX]);
 }
