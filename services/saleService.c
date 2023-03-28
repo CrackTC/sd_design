@@ -9,9 +9,9 @@
 #include "design/refundEntry.h"
 #include "design/utils.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 // 自动售货
 Table *AddOrder(Table *a)
@@ -354,6 +354,24 @@ Table *GetAllOrder(Table *a)
 /**/ /*错误判断不够详细*/ /**/
 Table *AddDiscount(Table *a)
 {
+    // 整合的根据日期更新折扣
+    LinkedList *discountNow = GetAllBasicDiscounts();
+    Time present = GetSystemTime();
+    while (discountNow != NULL)
+    {
+        BasicDiscount *discount = discountNow->data;
+        Time deadline = GetBasicDiscountDeadline(discount);
+        int judge = CompareTime(&present, &deadline);
+        if (judge > 0)
+        {
+            RemoveBasicDiscount(discount);
+            FreeBasicDiscount(discount);
+            BasicDiscountSave();
+        }
+
+        discountNow = discountNow->next;
+    }
+
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
     int itemId = atoi(GetRowItemByColumnName(a, information, "商品编号"));
@@ -367,10 +385,22 @@ Table *AddDiscount(Table *a)
     int second = atoi(GetRowItemByColumnName(a, information, "秒"));
 
     Time create = NewDateTime(year, month, day, hour, minute, second);
+    Time nowtime = GetSystemTime();
+    Item *thisitem = GetItemById(itemId);
     // 时间信息有误
-    if (create.value < 0)
+    if (CompareTime(&nowtime, &create) > 0)
     {
         return NewTable(NULL, "时间信息有误");
+    }
+
+    if (GetItemIsEnabled(thisitem) == 0)
+    {
+        return NewTable(NULL, "该商品不可售");
+    }
+
+    if (rate <= 0 || rate >= 100)
+    {
+        return NewTable(NULL, "折扣比率应大于0且小于100");
     }
     // 创建折扣并判断是否失败
     BasicDiscount *newBasicDiscount = NewBasicDiscount(itemId, rate, customerLevel, &create);

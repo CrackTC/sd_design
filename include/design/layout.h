@@ -176,7 +176,7 @@ void DateRangeFilterLayout(struct nk_context *context, const char *title, char *
 
 void BasicFilterLayout(struct nk_context *context, const char *title, struct PageData *data);
 
-void PageResultLayout(struct nk_context *context, const struct PageData *data);
+void PageResultLayout(struct nk_context *context, const struct PageData *data, const char *rangeFilter, const char *from, const char *to);
 
 LinkedList *NewCheckList();
 
