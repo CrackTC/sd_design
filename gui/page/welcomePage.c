@@ -5,7 +5,7 @@
 
 void WelcomePageLayout(struct nk_context *context, struct Window *window)
 {
-    struct Data *data = window->data;
+    struct MainWindowData *data = window->data;
 
     nk_layout_row_dynamic(context, 0, 2);
 

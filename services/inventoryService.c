@@ -6,6 +6,7 @@
 #include "design/lossEntry.h"
 #include "design/order.h"
 #include "design/profit.h"
+#include "design/table.h"
 #include "design/utils.h"
 #include <malloc.h>
 #include <string.h>
@@ -76,83 +77,59 @@ Table *AddInventory(Table *input)
     Amount unitPrice = NewAmount(yuan, jiao, cent);
 
     Time NowTime = GetSystemTime();
-    Table *table1 = NULL;
-    // 用于判断是否有该商品信息
-    if (GetItemById(itemId) != NULL)
+
+    if (GetItemById(itemId) == NULL)
+        return NewTable(NULL, "输入的商品编号有误 未查找到相关的商品信息");
+
+    if (CompareTime(&NowTime, &inboundTime) < 0 || CompareTime(&inboundTime, &judgeTime) < 0 ||
+        IsValidDate(y1, m1, d1, h1, min1, s1) == 0)
+        return NewTable(NULL, "输入的入库时间有误");
+
+    if (CompareTime(&NowTime, &productionTime) < 0 || CompareTime(&productionTime, &judgeTime) < 0 ||
+        IsValidDate(y2, m2, d2, h2, min2, s2) == 0)
+        return NewTable(NULL, "输入的生产日期时间有误");
+
+    if (CompareTime(&inboundTime, &productionTime) < 0)
+        return NewTable(NULL, "输入的生产日期大于入库时间");
+
+    Amount pay = AmountMultiply(&unitPrice, -number);
+
+    if (pay.value == 0)
     {
-
-        // 判断输入的入库时间是否大于现在的时间
-        if (CompareTime(&NowTime, &inboundTime) >= 0 && CompareTime(&inboundTime, &judgeTime) >= 0)
-        {
-            // 判断输入的生产日期时间是否大于现在时间
-            if (CompareTime(&NowTime, &productionTime) >= 0 && CompareTime(&productionTime, &judgeTime) >= 0)
-            {
-                // 判断输入的入库时间是否大于生产日期
-                if (CompareTime(&inboundTime, &productionTime) >= 0)
-                {
-                    // 判断该批货存是否过期
-                    Time shelfTime = GetItemShelfLife(GetItemById(itemId));
-                    Time datejudgeTime = AddTime(&shelfTime, &productionTime);
-                    if (CompareTime(&datejudgeTime, &NowTime) >= 0)
-                    {
-                        // 判断数量是否小于0
-                        if (number > 0)
-                        {
-                            // 将获取的货存信息转化为结构体并添加到货存链表中
-                            int result1 =
-                                AppendInventoryEntry(NewInventoryEntry(itemId, number, &inboundTime, &productionTime,
-                                                                       &unitPrice)); // result1 用于存储是否插入成功
-                            if (result1 == 0)
-                            {
-                                InventorySave(); // 将添加结果进行保存
-
-                                // 将该批货物所花的钱计入profit结构体中
-
-                                // 获取系统时间
-                                Time t1 = GetSystemTime();
-                                // 计算出该批货物一共花费的钱
-                                Amount pay = AmountMultiply(&unitPrice, -number);
-                                // 通过商品Id得到item
-                                Item *item1 = GetItemById(itemId);
-                                // 获取商品的名称
-                                const char *name = GetItemName(item1);
-                                // 事项
-                                char matter[500] = "进货 商品名称:";
-                                strcat(matter, name);
-                                // 创建一个新的profit结构体
-                                Profit *profit1 = NewProfit(&pay, matter, &t1);
-                                // 将新的profit结构体插入到链表中 并将插入结果返回到result2中
-                                int result2 = AppendProfit(profit1);
-                                // 储存账目是否添加成功
-                                if (result2 == 0)
-                                {
-                                    ProfitSave();
-                                    table1 = NULL;
-                                }
-                                else
-                                    table1 = NewTable(NULL, " 货存添加成功但账目添加失败");
-                            }
-                            else
-                                table1 = NewTable(NULL, "货存添加失败");
-                        }
-                        else
-                            table1 = NewTable(NULL, "输入的货物数量有误");
-                    }
-                    else
-                        table1 = NewTable(NULL, "该批货物已过期 无法加入");
-                }
-                else
-                    table1 = NewTable(NULL, "输入的生产日期大于入库时间");
-            }
-            else
-                table1 = NewTable(NULL, "输入的生产日期时间有误");
-        }
-        else
-            table1 = NewTable(NULL, "输入的入库时间有误");
+        return NewTable(NULL, "金额超出范围");
     }
-    else
-        table1 = NewTable(NULL, "输入的商品编号有误 未查找到相关的商品信息");
-    return table1;
+
+    // 判断该批货存是否过期
+    Time shelfTime = GetItemShelfLife(GetItemById(itemId));
+    Time datejudgeTime = AddTime(&shelfTime, &productionTime);
+
+    if (CompareTime(&datejudgeTime, &NowTime) < 0)
+        return NewTable(NULL, "该批货物已过期 无法加入");
+
+    if (number <= 0)
+        return NewTable(NULL, "输入的货物数量有误");
+
+    int result1 = AppendInventoryEntry(NewInventoryEntry(itemId, number, &inboundTime, &productionTime,
+                                                         &unitPrice)); // result1 用于存储是否插入成功
+    if (result1 != 0)
+        return NewTable(NULL, "货存添加失败");
+
+    InventorySave();
+
+    Time t1 = GetSystemTime();
+    Item *item1 = GetItemById(itemId);
+    const char *name = GetItemName(item1);
+    char matter[500] = "进货 商品名称：";
+    strcat(matter, name);
+    Profit *profit1 = NewProfit(&pay, matter, &t1);
+
+    int result2 = AppendProfit(profit1);
+    // 储存账目是否添加成功
+    if (result2 != 0)
+        return NewTable(NULL, " 货存添加成功但账目添加失败");
+
+    ProfitSave();
+    return NULL;
 }
 
 // 更新货存链表 并将过期的货物放入货损链表中
@@ -164,13 +141,12 @@ Table *UpdateInventory(Table *input)
     int hasLoss = 0;
     // 用于记录发现货损时的表格
     Table *table;
-//    tableOk = NewTable(NULL, "本次更新中货物均完好 未发现货损");
 
     // 创建货损表头所需要的元素
     TableRow *row = NewTableRow();
-    AppendTableRow(row, "货损货物的编号");
-    AppendTableRow(row, "货损货物的商品名称");
-    AppendTableRow(row, "货损的原因");
+    AppendTableRow(row, "库存编号");
+    AppendTableRow(row, "商品名称");
+    AppendTableRow(row, "货损原因");
     AppendTableRow(row, "货损的日期");
 
     table = NewTable(row, "以下记录的货损均已自动进入货损系统中");
@@ -187,9 +163,9 @@ Table *UpdateInventory(Table *input)
         // 获取该批货物所对应商品的保质期
 
         // 获取商品id
-        int itemid = GetInventoryEntryItemId(entry);
+        int itemId = GetInventoryEntryItemId(entry);
         // 通过商品Id得到item
-        Item *item = GetItemById(itemid);
+        Item *item = GetItemById(itemId);
         // 得到保质期
         Time timeShelf = GetItemShelfLife(item);
         // 计算该批货物的到期时间
@@ -197,7 +173,7 @@ Table *UpdateInventory(Table *input)
         // 比较系统时间和到期时间
         int result = CompareTime(&timeNow, &timeOutOfDate);
 
-        if (result < 0)
+        if (result > 0)
         {
             hasLoss = 1;
             // 用于记录表格中相对应的信息
@@ -249,7 +225,6 @@ Table *ShowLackInventory(Table *input)
     AppendTableRow(row, "剩余数量");
     // 根据有没有缺货的货存返回不同的表格
     table = NewTable(row, NULL);
-    /* tableOk = NewTable(NULL, "全部商品库存都很充足 未出现缺货现象"); */
     // 获取全部的商品链表
     LinkedList *itemNow = GetAllItems();
     while (itemNow != NULL)
@@ -411,134 +386,114 @@ Table *DeleteSingleLossById(Table *input)
 // 修改一批货存的全部信息
 Table *ReviseInventory(Table *input)
 {
-    // 用于储存最后的结果
-    Table *table;
-
     // 获取要修改的货物的编号
     TableRow *row = GetRowByIndex(input, 1);
+
     // 将Id由字符转为整数类型
     int id = change(GetRowItemByColumnName(input, row, "库存编号"));
+
     // 如果货存条目已经在货损内或在销售条目内 那就不允许删除
     if (GetOrdersByInventoryId(id) != NULL || GetLossEntriesByInventoryId(id) != NULL)
     {
-        table = NewTable(NULL, "修改失败，该库存已存在关联的订单或货损条目");
-        return table;
+        return NewTable(NULL, "修改失败，该库存已存在关联的订单或货损条目");
     }
 
     // 由编号获得该货存信息
     InventoryEntry *entry = GetInventoryById(id);
-    if (entry != NULL)
-    {
-        // 获取表格中相应的信息
-        int itemId = 0, number = 0, y1 = 0, m1 = 0, d1 = 0, h1 = 0, min1 = 0, s1 = 0, y2 = 0, m2 = 0, d2 = 0, h2 = 0,
-            min2 = 0, s2 = 0, yuan = 0, jiao = 0, cent = 0;
-        GetInventoryInformationFromTable(input, &itemId, &number, &y1, &m1, &d1, &h1, &min1, &s1, &y2, &m2, &d2, &h2,
-                                         &min2, &s2, &yuan, &jiao, &cent);
-        if (yuan < 0 || jiao < 0 || cent < 0 || jiao >= 10 || cent >= 10)
-            return NewTable(NULL, "输入的金额有问题");
-        // 将入库时间信息转化
-        Time inboundTime = NewDateTime(y1, m1, d1, h1, min1, s1);
-        // 将生产日期信息转化
-        Time productionTime = NewDateTime(y2, m2, d2, h2, min2, s2);
-        // 将进价信息转化
-        Amount unitPrice = NewAmount(yuan, jiao, cent);
+    if (entry == NULL)
+        return NewTable(NULL, "编号输入有误 未查找到相关的货存信息");
+    // 获取表格中相应的信息
+    int itemId = 0, number = 0, y1 = 0, m1 = 0, d1 = 0, h1 = 0, min1 = 0, s1 = 0, y2 = 0, m2 = 0, d2 = 0, h2 = 0,
+        min2 = 0, s2 = 0, yuan = 0, jiao = 0, cent = 0;
+    GetInventoryInformationFromTable(input, &itemId, &number, &y1, &m1, &d1, &h1, &min1, &s1, &y2, &m2, &d2, &h2, &min2,
+                                     &s2, &yuan, &jiao, &cent);
+    if (yuan < 0 || jiao < 0 || cent < 0 || jiao >= 10 || cent >= 10)
+        return NewTable(NULL, "输入的金额有问题");
+    // 将入库时间信息转化
+    Time inboundTime = NewDateTime(y1, m1, d1, h1, min1, s1);
+    // 将生产日期信息转化
+    Time productionTime = NewDateTime(y2, m2, d2, h2, min2, s2);
+    // 将进价信息转化
+    Amount unitPrice = NewAmount(yuan, jiao, cent);
 
-        // 判断是否存在相关的商品信息
-        if (GetItemById(itemId) != NULL)
-        {
-            Time NowTime = GetSystemTime();
-            Time judgeTime = NewDateTime(1980, 1, 1, 1, 1, 1);
-            // 判断输入的入库时间是否大于现在的时间
-            if (CompareTime(&NowTime, &inboundTime) >= 0 && CompareTime(&inboundTime, &judgeTime) >= 0)
-            {
-                // 判断输入的生产日期时间是否大于现在时间
-                if (CompareTime(&NowTime, &productionTime) >= 0 && CompareTime(&productionTime, &judgeTime) >= 0)
-                {
-                    // 判断输入的入库时间是否大于生产日期
-                    if (CompareTime(&inboundTime, &productionTime) >= 0)
-                    {
-                        // 判断数量是否小于0
-                        if (number >= 0)
-                        {
-                            // 获取原货存中存储的数量
-                            int oldnumber = GetInventoryEntryNumber(entry);
-                            // 获取原货存中的商品编号
-                            int olditemId = GetInventoryEntryItemId(entry);
-                            Amount oldunitprice = GetInventoryEntryInboundUnitPrice(entry);
-                            // 进行原货物账目操作
-                            //  计算出原货物一共花费的钱
+    // 判断是否存在相关的商品信息
+    if (GetItemById(itemId) == NULL)
+        return NewTable(NULL, "输入的商品编号有误 未查询到相关的商品");
+    Time NowTime = GetSystemTime();
+    Time judgeTime = NewDateTime(1980, 1, 1, 1, 1, 1);
 
-                            Amount oldpay = AmountMultiply(&oldunitprice, oldnumber);
-                            // 通过商品Id得到item
-                            Item *olditem = GetItemById(olditemId);
-                            // 获取商品的名称
-                            const char *oldname = GetItemName(olditem);
-                            // 事项
-                            char matter[500] = "修改货存 返还修改前货存花费金额 商品名称:";
-                            strcat(matter, oldname);
-                            // 创建一个新的profit结构体
-                            Profit *oldprofit1 = NewProfit(&oldpay, matter, &NowTime);
-                            // 将新的profit结构体插入到链表中 并将插入结果返回到result2中
-                            int result2 = AppendProfit(oldprofit1);
+    // 判断输入的入库时间是否大于现在的时间
+    if (CompareTime(&NowTime, &inboundTime) < 0 || CompareTime(&inboundTime, &judgeTime) < 0 ||
+        IsValidDate(y1, m1, d1, h1, min1, s1) == 0)
+        return NewTable(NULL, "输入的入库时间有误");
+    if (CompareTime(&NowTime, &productionTime) < 0 || CompareTime(&productionTime, &judgeTime) < 0 ||
+        IsValidDate(y2, m2, d2, h2, min2, s2) == 0)
+        return NewTable(NULL, "输入的生产日期有误");
+    if (CompareTime(&inboundTime, &productionTime) < 0)
+        return NewTable(NULL, "输入的生产日期大于入库时间");
+    if (number < 0)
+        return NewTable(NULL, "输入的数量有误");
 
-                            // 进行修改操作
+    // 获取原货存中存储的数量
+    int oldNumber = GetInventoryEntryNumber(entry);
+    // 获取原货存中的商品编号
+    int oldItemId = GetInventoryEntryItemId(entry);
+    Amount oldUnitPrice = GetInventoryEntryInboundUnitPrice(entry);
+    // 进行原货物账目操作
+    //  计算出原货物一共花费的钱
 
-                            // 改变商品id
-                            SetInventoryEntryItemId(entry, itemId);
-                            // 改变货存数量
-                            SetInventoryEntryNumber(entry, number);
-                            // 改变该批货的入库时间
-                            SetInventoryEntryInboundTime(entry, &inboundTime);
-                            // 改变该批货的生产日期
-                            SetInventoryEntryProductionTime(entry, &productionTime);
-                            // 改变该批货物的购入单价
-                            SetInventoryEntryInboundUnitPrice(entry, &unitPrice);
-                            InventorySave();
+    Amount oldPay = AmountMultiply(&oldUnitPrice, oldNumber);
+    // 通过商品Id得到item
+    Item *oldItem = GetItemById(oldItemId);
+    // 获取商品的名称
+    const char *oldName = GetItemName(oldItem);
+    // 事项
+    char matter[500] = "修改货存 返还修改前货存花费金额 商品名称:";
+    strcat(matter, oldName);
+    // 创建一个新的profit结构体
+    Profit *oldProfit1 = NewProfit(&oldPay, matter, &NowTime);
+    // 将新的profit结构体插入到链表中 并将插入结果返回到result2中
+    int result2 = AppendProfit(oldProfit1);
 
-                            // 进行修改后的账目操作
-                            //  计算出该批货物一共花费的钱
-                            Amount Newpay = AmountMultiply(&unitPrice, -number);
-                            // 通过商品Id得到item
-                            Item *Newitem = GetItemById(itemId);
-                            // 获取商品的名称
-                            const char *Newname = GetItemName(Newitem);
-                            // 事项
-                            char Newmatter[500] = "进货 商品名称:";
-                            strcat(Newmatter, Newname);
-                            // 创建一个新的profit结构体
-                            Profit *Newprofit = NewProfit(&Newpay, matter, &NowTime);
-                            // 将新的profit结构体插入到链表中 并将插入结果返回到result2中
-                            int Newresult = AppendProfit(Newprofit);
+    // 进行修改操作
 
-                            if (result2 != 0)
-                                return table = NewTable(NULL, "货存修改成功 但账目全部添加失败");
-                            // 储存账目是否添加成功
-                            if (Newresult == 0)
-                                table = NewTable(NULL, "修改成功");
-                            else
-                                table = NewTable(NULL, "货存添加成功 旧货存账目修改成功 但新货存的账目未添加成功");
-                            // 像文件保存账目
-                            ProfitSave();
-                        }
-                        else
-                            table = NewTable(NULL, "输入的数量有误");
-                    }
-                    else
-                        table = NewTable(NULL, "输入的生产日期大于入库时间");
-                }
-                else
-                    table = NewTable(NULL, "输入的生产日期有误");
-            }
-            else
-                table = NewTable(NULL, "输入的入库时间有误");
-        }
-        else
-            table = NewTable(NULL, "输入的商品编号有误 未查询到相关的商品");
-    }
+    // 改变商品id
+    SetInventoryEntryItemId(entry, itemId);
+    // 改变货存数量
+    SetInventoryEntryNumber(entry, number);
+    // 改变该批货的入库时间
+    SetInventoryEntryInboundTime(entry, &inboundTime);
+    // 改变该批货的生产日期
+    SetInventoryEntryProductionTime(entry, &productionTime);
+    // 改变该批货物的购入单价
+    SetInventoryEntryInboundUnitPrice(entry, &unitPrice);
+    InventorySave();
+
+    // 进行修改后的账目操作
+    //  计算出该批货物一共花费的钱
+    Amount newPay = AmountMultiply(&unitPrice, -number);
+    // 通过商品Id得到item
+    Item *newItem = GetItemById(itemId);
+    // 获取商品的名称
+    const char *newName = GetItemName(newItem);
+    // 事项
+    char newMatter[500] = "进货 商品名称：";
+    strcat(newMatter, newName);
+    // 创建一个新的profit结构体
+    Profit *newProfit = NewProfit(&newPay, matter, &NowTime);
+    // 将新的profit结构体插入到链表中 并将插入结果返回到result2中
+    int newResult = AppendProfit(newProfit);
+
+    ProfitSave();
+
+    if (result2 != 0)
+        return NewTable(NULL, "货存修改成功 但账目全部添加失败");
+
+    // 储存账目是否添加成功
+    if (newResult == 0)
+        return NULL;
     else
-        table = NewTable(NULL, "编号输入有误 未查找到相关的货存信息");
-
-    return table;
+        return NewTable(NULL, "货存添加成功 旧货存账目修改成功 但新货存的账目未添加成功");
 }
 
 // 添加一个商品
@@ -569,7 +524,7 @@ Table *AddItem(Table *input)
     int h1 = change(GetRowItemByColumnName(input, row, "时"));
     Time shelfLife = NewTimeSpan(d1, h1); // 获取保质期时间
     Time judgeTime = NewTimeSpan(0, 0);
-    if (CompareTime(&judgeTime, &shelfLife) >= 0)
+    if (CompareTime(&judgeTime, &shelfLife) >= 0 || d1 < 0 || h1 < 0)
         return NewTable(NULL, "保质期输入有误");
     // 将准备好的信息用于创建商品
     int result = AppendItem(NewItem(itemName, &amount, &shelfLife));
@@ -720,7 +675,6 @@ Table *ShowInventory(Table *input)
     return table;
 }
 
-// 展示商品系统中的全部信息
 Table *ShowItem(Table *input)
 {
     // 用于记录一共有多少中商品
@@ -748,38 +702,69 @@ Table *ShowItem(Table *input)
 
     while (head != NULL)
     {
-
-        // 用于记录一共有多少个商品
-        itemCount++;
-        // 获取相应的商品信息
-        const Item *item = head->data;
-        row = NewTableRow();
-
-        // 得到商品编号
-        free(AppendTableRow(row, LongLongToString(GetItemId(item))));
-
-        // 得到商品名称
-        AppendTableRow(row, GetItemName(item));
-
-        // 得到商品的销售状态
         if (GetItemIsEnabled(head->data) == 1)
+        {
+            // 用于记录一共有多少个商品
+            itemCount++;
+            // 获取相应的商品信息
+            const Item *item = head->data;
+            row = NewTableRow();
+
+            // 得到商品编号
+            free(AppendTableRow(row, LongLongToString(GetItemId(item))));
+
+            // 得到商品名称
+            AppendTableRow(row, GetItemName(item));
+
+            // 得到商品的销售状态
+
             AppendTableRow(row, "在售");
-        else
-            AppendTableRow(row, "下架");
 
-        // 得到商品的售价
-        Amount salePrice = GetItemPrice(item);
-        free(AppendTableRow(row, AmountToString(&salePrice)));
+            // 得到商品的售价
+            Amount salePrice = GetItemPrice(item);
+            free(AppendTableRow(row, AmountToString(&salePrice)));
 
-        // 得到商品的保质期
-        Time shelfLife = GetItemShelfLife(item);
-        free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelfLife, 0))));
+            // 得到商品的保质期
+            Time shelfLife = GetItemShelfLife(item);
+            free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelfLife, 0))));
 
-        AppendTable(table, row);
-
+            AppendTable(table, row);
+        }
         head = head->next;
     }
+    head = GetAllItems();
+    while (head != NULL)
+    {
+        if (GetItemIsEnabled(head->data) == 0)
+        {
+            // 用于记录一共有多少个商品
+            itemCount++;
+            // 获取相应的商品信息
+            const Item *item = head->data;
+            row = NewTableRow();
 
+            // 得到商品编号
+            free(AppendTableRow(row, LongLongToString(GetItemId(item))));
+
+            // 得到商品名称
+            AppendTableRow(row, GetItemName(item));
+
+            // 得到商品的销售状态
+
+            AppendTableRow(row, "下架");
+
+            // 得到商品的售价
+            Amount salePrice = GetItemPrice(item);
+            free(AppendTableRow(row, AmountToString(&salePrice)));
+
+            // 得到商品的保质期
+            Time shelfLife = GetItemShelfLife(item);
+            free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelfLife, 0))));
+
+            AppendTable(table, row);
+        }
+        head = head->next;
+    }
     // 备注的具体实现
     char remark[100] = "以下为商品系统中的全部信息 一共记录了";
     char *itemCountString = LongLongToString(itemCount);
@@ -845,218 +830,6 @@ Table *ShowLossInventory(Table *input)
     return table;
 }
 
-TableRow *ShowSingleInventoryByOperation(InventoryEntry *entry)
-{
-    TableRow *row = NewTableRow();
-    // 获取Id信息
-    free(AppendTableRow(row, LongLongToString(GetInventoryEntryId(entry))));
-
-    // 获取该批货存的商品编号
-    int itemId = GetInventoryEntryItemId(entry);
-    free(AppendTableRow(row, LongLongToString(itemId))); // 将itemId信息加入
-
-    // 获取商品名称
-    AppendTableRow(row, GetItemName(GetItemById(itemId)));
-
-    // 获取商品的售货状态
-    if (GetItemIsEnabled(GetItemById(itemId)) == 1)
-        AppendTableRow(row, "在售");
-    else
-        AppendTableRow(row, "下架");
-
-    // 获取该批货存的数量
-    free(AppendTableRow(row, LongLongToString(GetInventoryEntryNumber(entry))));
-
-    // 获取该批货物的入库时间
-    Time inboundTime = GetInventoryEntryInboundTime(entry);
-    free(AppendTableRow(row, TimeToString(GetTimeInfo(&inboundTime, 1))));
-
-    // 获取该批货物的生产日期
-    Time productionTime = GetInventoryEntryProductionTime(entry);
-    free(AppendTableRow(row, TimeToString(GetTimeInfo(&productionTime, 1))));
-
-    // 获取该批货物的进价
-    Amount unitPrice = GetInventoryEntryInboundUnitPrice(entry);
-    free(AppendTableRow(row, AmountToString(&unitPrice)));
-
-    return row;
-}
-
-// 查找某一批货物的全部信息 以Id为索引
-Table *ShowSingleInventoryById(Table *input)
-{
-    // 用于存放该批货物的表格
-    Table *table;
-    TableRow *row = GetRowByIndex(input, 1);
-    // 获取表格中相应的信息
-    int id = change(GetRowItemByColumnName(input, row, "Id"));
-    InventoryEntry *entry = GetInventoryById(id);
-    if (entry != NULL)
-    {
-        // 创建货存信息表格的表头
-        row = NewTableRow();
-        AppendTableRow(row, "Id");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "商品售货状态");
-        AppendTableRow(row, "数量");
-        AppendTableRow(row, "入库时间");
-        AppendTableRow(row, "生产日期");
-        AppendTableRow(row, "购入单价");
-
-        // 创建表格
-        table = NewTable(row, "以下为要查找的信息");
-
-        // row = NewTableRow();
-        row = ShowSingleInventoryByOperation(entry);
-        AppendTable(table, row);
-    }
-    else
-        table = NewTable(NULL, "输入的Id有误 未查找到与该Id相关的货物信息");
-    return table;
-}
-
-Table *ShowSingleInventoryByItemId(Table *input)
-{
-    // 用于存放该批货物的表格
-    Table *table;
-    TableRow *row = GetRowByIndex(input, 1);
-    // 获取表格中相应的信息
-    LinkedList *head = GetInventoryByItemId(change(GetRowItemByColumnName(input, row, "itemId")));
-    if (head != NULL)
-    {
-        // 创建货存信息表格的表头
-        row = NewTableRow();
-        AppendTableRow(row, "Id");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "数量");
-        AppendTableRow(row, "入库时间");
-        AppendTableRow(row, "生产日期");
-        AppendTableRow(row, "购入单价");
-
-        // 用于记录有多少货存
-        int inventoryCount = 0;
-        table = NewTable(row, NULL);
-        while (head != NULL)
-        {
-            // 记录货存数量
-            inventoryCount++;
-            // 获取货存信息
-            InventoryEntry *entry = head->data;
-            row = ShowSingleInventoryByOperation(entry);
-            AppendTable(table, row);
-            head = head->next;
-        }
-        // 备注的具体实现
-        char remark[100] = "以下为货存系统中满足条件的全部信息 一共记录了";
-        char *inventoryCountString = LongLongToString(inventoryCount);
-        strcat(remark, inventoryCountString);
-        strcat(remark, "条信息");
-        free(inventoryCountString);
-        // 重新设置备注
-        SetTableRemark(table, remark);
-    }
-    else
-        table = NewTable(NULL, "输入的商品编号有误 未查找到与该商品编号相关的货存信息");
-    return table;
-}
-
-//
-TableRow *ShowSingleItemByOperation(Item *item)
-{
-    TableRow *row = NewTableRow();
-    // 写入商品编号
-    free(AppendTableRow(row, LongLongToString(GetItemId(item))));
-
-    // 写入商品名称
-    AppendTableRow(row, GetItemName(item));
-
-    // 写入售货状态
-    if (GetItemIsEnabled(item) == 1)
-        AppendTableRow(row, "在售");
-    else
-        AppendTableRow(row, "下架");
-
-    // 写入商品售价
-    Amount price = GetItemPrice(item);
-    free(AppendTableRow(row, AmountToString(&price)));
-
-    // 得到商品的保质期
-    Time shelfLife = GetItemShelfLife(item);
-    free(AppendTableRow(row, TimeToString(GetTimeInfo(&shelfLife, 0))));
-
-    return row;
-}
-
-//
-Table *ShowSingleItemByItemId(Table *input)
-{
-    Table *table; // 用于存放该商品信息的表格
-    TableRow *row = GetRowByIndex(input, 1);
-
-    // 获取表格中相应的信息
-    Item *item = GetItemById(change(GetRowItemByColumnName(input, row, "itemId")));
-    if (item != NULL)
-    {
-
-        // 创建表头
-        row = NewTableRow();
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "售货状态");
-        AppendTableRow(row, "售价");
-        AppendTableRow(row, "保质期");
-        table = NewTable(NULL, "以下为该商品的全部信息");
-
-        row = ShowSingleItemByOperation(item);
-        AppendTable(table, row);
-    }
-    else
-        table = NewTable(NULL, "输入商品编号有误 未查询到相关的商品编号");
-
-    return table;
-}
-
-// 展示某一个货损信息通过货损编号
-Table *ShowSingleLossById(Table *input)
-{
-    // 用于存放货损信息的表格
-    Table *table;
-    TableRow *row = NewTableRow();
-    AppendTableRow(row, "货损编号");
-    AppendTableRow(row, "库存编号");
-    AppendTableRow(row, "货损数量");
-    AppendTableRow(row, "货损原因");
-    AppendTableRow(row, "损耗时间");
-
-    table = NewTable(row, "以下为要查询的货损信息");
-
-    // 获取表格中相应的信息
-    LinkedList *head =
-        GetLossEntriesByInventoryId(change(GetRowItemByColumnName(input, GetRowByIndex(input, 1), "Id")));
-
-    if (head != NULL)
-    {
-        row = NewTableRow();
-        // 加入货损Id
-        free(AppendTableRow(row, LongLongToString(GetLossEntryId(head->data))));
-        // 加入货存Id
-        free(AppendTableRow(row, LongLongToString(GetLossEntryInventoryId(head->data))));
-        // 加入货损数量
-        free(AppendTableRow(row, LongLongToString(GetLossEntryNumber(head->data))));
-        // 加入货损原因
-        AppendTableRow(row, GetLossEntryReason(head->data));
-        Time time = GetLossEntryTime(head->data);
-        // 加入货损时间
-        free(AppendTableRow(row, TimeToString(GetTimeInfo(&time, 1))));
-    }
-    else
-        table = NewTable(NULL, "输入Id有误 未查找到与相关Id有关的货损信息");
-
-    return table;
-}
-
 // 修改一个商品 以商品编号为索引
 Table *ReviseAnItemByItemId(Table *input)
 {
@@ -1066,6 +839,9 @@ Table *ReviseAnItemByItemId(Table *input)
     Item *item = GetItemById(change(GetRowItemByColumnName(input, row, "商品编号")));
     if (item != NULL)
     {
+        // 获取修改后商品的新名称
+        char *newName = GetRowItemByColumnName(input, row, "商品名称");
+
         // 获取商品的价格信息
         int yuan = change(GetRowItemByColumnName(input, row, "元"));
         int jiao = change(GetRowItemByColumnName(input, row, "角"));
@@ -1079,10 +855,17 @@ Table *ReviseAnItemByItemId(Table *input)
         char *h = GetRowItemByColumnName(input, row, "时");
         Time shelfLife = NewTimeSpan(change(d), change(h));
         Time judgeTime = NewTimeSpan(0, 0);
-        if (CompareTime(&judgeTime, &shelfLife) >= 0)
+        if (CompareTime(&judgeTime, &shelfLife) >= 0 || change(d) < 0 || change(h) < 0)
             return NewTable(NULL, "输入的新的保质期有误");
+        Item *newItem = GetItemByName(newName);
+        // 判断修改后的商品名称在原商品系统中是否存在
+        if (newItem != NULL && GetItemId(item) != GetItemId(newItem))
+        {
+            return NewTable(NULL, "修改后的商品已在商品系统中存在");
+        }
+
         // 将要修改的各类信息传入到item中
-        SetItemName(item, GetRowItemByColumnName(input, row, "商品名称"));
+        SetItemName(item, newName);
         SetItemPrice(item, &price);
         SetItemShelfLife(item, &shelfLife);
         table = NULL;
@@ -1096,66 +879,58 @@ Table *ReviseAnItemByItemId(Table *input)
 // 修改一个货损系统 以货损编号为索引
 Table *ReviseLossInventory(Table *input)
 {
-    // 用于存放该商品信息的表格
-    Table *table;
     TableRow *row = GetRowByIndex(input, 1);
     // 获取表格中相应的信息
     LossEntry *entry = GetLossEntryById(change(GetRowItemByColumnName(input, row, "货损编号")));
-    if (entry != NULL)
+    if (entry == NULL)
+        return NewTable(NULL, "输入货损编号有误 未查询到相关的货损");
+
+    if (GetInventoryById(change(GetRowItemByColumnName(input, row, "库存编号"))) == NULL)
+        return NewTable(NULL, "输入的修改后的货存编号有误 未查询到相关的货存编号");
+
+    int y = change(GetRowItemByColumnName(input, row, "年"));
+    int m = change(GetRowItemByColumnName(input, row, "月"));
+    int d = change(GetRowItemByColumnName(input, row, "日"));
+    int h = change(GetRowItemByColumnName(input, row, "时"));
+    int min = change(GetRowItemByColumnName(input, row, "分"));
+    int s = change(GetRowItemByColumnName(input, row, "秒"));
+    if (!IsValidDate(y, m, d, h, min, s))
     {
-        // 判断要修改的货存编号是否存在
-        if (GetInventoryById(change(GetRowItemByColumnName(input, row, "库存编号"))) != NULL)
-        {
-            int y = change(GetRowItemByColumnName(input, row, "年"));
-            int m = change(GetRowItemByColumnName(input, row, "月"));
-            int d = change(GetRowItemByColumnName(input, row, "日"));
-            int h = change(GetRowItemByColumnName(input, row, "时"));
-            int min = change(GetRowItemByColumnName(input, row, "分"));
-            int s = change(GetRowItemByColumnName(input, row, "秒"));
-            Time time1 = NewDateTime(y, m, d, h, min, s);
-
-            // 获取原有的货损数量
-            int oldNumber =
-                GetLossEntryNumber(GetLossEntryById(change(GetRowItemByColumnName(input, row, "货损编号"))));
-            // 获取原有的货损库存编号
-            int oldInventoryId =
-                GetLossEntryInventoryId(GetLossEntryById(change(GetRowItemByColumnName(input, row, "库存编号"))));
-            // 获取新的货存
-            InventoryEntry *Newinventory = GetInventoryById(change(GetRowItemByColumnName(input, row, "库存编号")));
-            // 获取修改后的数量
-            int NewNumber = change(GetRowItemByColumnName(input, row, "货损数量"));
-            if (NewNumber <= GetInventoryEntryNumber(Newinventory))
-            {
-
-                // 修改货损信息
-
-                // 修改对应的货存编号
-                SetLossEntryInventoryId(entry, change(GetRowItemByColumnName(input, row, "库存编号")));
-                // 修改货损理由
-                SetLossEntryReason(entry, GetRowItemByColumnName(input, row, "货损原因"));
-                // 修改货损时间
-                SetLossEntryTime(entry, &time1);
-                // 修改货损数量
-                SetLossEntryNumber(entry, change(GetRowItemByColumnName(input, row, "货损数量")));
-
-                // 将原有的货损数量加回到货存系统中
-                SetInventoryEntryNumber(GetInventoryById(oldInventoryId),
-                                        GetInventoryEntryNumber(GetInventoryById(oldInventoryId)) + oldNumber);
-                // 将货存系统中的货存数量对应减少
-                SetInventoryEntryNumber(Newinventory, GetInventoryEntryNumber(Newinventory) - NewNumber); //
-                // 向文件中保存
-                LossEntrySave();
-                InventorySave();
-                table = NULL;
-            }
-            else
-                table = NewTable(NULL, "输入货损数量大于货存的存储量 请重新输入");
-        }
-        else
-            table = NewTable(NULL, "输入的修改后的货存编号有误 未查询到相关的货存编号");
+        return NewTable(NULL, "输入的货损时间无效");
     }
-    else
-        table = NewTable(NULL, "输入货损编号有误 未查询到相关的货损");
+    Time time1 = NewDateTime(y, m, d, h, min, s);
 
-    return table;
+    // 获取原有的货损数量
+    int oldNumber = GetLossEntryNumber(GetLossEntryById(change(GetRowItemByColumnName(input, row, "货损编号"))));
+
+    // 获取原有的货损库存编号
+    int oldInventoryId =
+        GetLossEntryInventoryId(GetLossEntryById(change(GetRowItemByColumnName(input, row, "货损编号"))));
+
+    // 获取新的货存
+    InventoryEntry *newInventory = GetInventoryById(change(GetRowItemByColumnName(input, row, "库存编号")));
+
+    // 获取修改后的数量
+    int NewNumber = change(GetRowItemByColumnName(input, row, "货损数量"));
+    if (NewNumber > GetInventoryEntryNumber(newInventory))
+        return NewTable(NULL, "输入货损数量大于货存的存储量 请重新输入");
+
+    // 修改对应的货存编号
+    SetLossEntryInventoryId(entry, change(GetRowItemByColumnName(input, row, "库存编号")));
+    // 修改货损理由
+    SetLossEntryReason(entry, GetRowItemByColumnName(input, row, "货损原因"));
+    // 修改货损时间
+    SetLossEntryTime(entry, &time1);
+    // 修改货损数量
+    SetLossEntryNumber(entry, change(GetRowItemByColumnName(input, row, "货损数量")));
+
+    // 将原有的货损数量加回到货存系统中
+    SetInventoryEntryNumber(GetInventoryById(oldInventoryId),
+                            GetInventoryEntryNumber(GetInventoryById(oldInventoryId)) + oldNumber);
+    // 将货存系统中的货存数量对应减少
+    SetInventoryEntryNumber(newInventory, GetInventoryEntryNumber(newInventory) - NewNumber); //
+    // 向文件中保存
+    LossEntrySave();
+    InventorySave();
+    return NULL;
 }

@@ -24,7 +24,7 @@
                 "./bin/gui",
                 "-lm",
                 "-lglfw3",
-                "-lgdi32",
+                "-lgdi32"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

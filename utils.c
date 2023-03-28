@@ -94,3 +94,28 @@ int GenerateId(void *systemList, LinkedList *(*initialize)(), int *idCount, int 
     }
     return (*idCount)++;
 }
+
+int IsValidDate(int y, int m, int d, int h, int min, int s)
+{
+    static int day[13] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+    if (h < 0 || h >= 24 || min < 0 || min >= 60 || s < 0 || s >= 60)
+    {
+        return 0;
+    }
+    if (y < 1 || m < 1 || m > 12 || d < 1)
+    {
+        return 0;
+    }
+
+    if ((y % 4 == 0 && y % 100 != 0) || y % 400 == 0)
+    {
+        day[2] = 29;
+    }
+    else
+    {
+        day[2] = 28;
+    }
+    if (d <= day[m]) return 1;
+    return 0;
+}

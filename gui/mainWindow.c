@@ -1,23 +1,24 @@
 #include "design/mainWindow.h"
 #include "design/utils.h"
 #include "design/layout.h"
+#include "../config.h"
 #include <malloc.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
-#define SECTION_COUNT 11
-
-const char *const sections[SECTION_COUNT] = { "", "商品", "库存", "货损", "订单", "折扣",
-                                              "顾客", "员工", "日志", "统计", "退货" };
-const LayoutFunc pages[SECTION_COUNT] = { WelcomePageLayout, ItemPageLayout, InventoryPageLayout, LossPageLayout,
-                                          OrderPageLayout, DiscountPageLayout, CustomerPageLayout, StaffPageLayout,
-                                          JournalPageLayout, ProfitPageLayout, RefundPageLayout };
+//const char *const sections[SECTION_COUNT] = { "", "商品", "库存", "货损", "订单", "退货", "折扣",
+//                                              "顾客", "员工", "日志", "统计" };
+//const LayoutFunc pages[SECTION_COUNT] = { WelcomePageLayout, ItemPageLayout, InventoryPageLayout, LossPageLayout,
+//                                          OrderPageLayout, RefundPageLayout, DiscountPageLayout, CustomerPageLayout, StaffPageLayout,
+//                                          JournalPageLayout, ProfitPageLayout };
+const char *sections[SECTION_COUNT];
+LayoutFunc pages[SECTION_COUNT];
 
 void MainWindowLayout(struct nk_context *context, Window *window)
 {
     EnsureWindowSize(context, window, 400, 400);
-    struct Data *data = window->data;
+    struct MainWindowData *data = window->data;
 
     if (data->context == NULL)
     {
@@ -65,224 +66,78 @@ void MainWindowLayout(struct nk_context *context, Window *window)
 
 void FreeMainWindow(Window *window)
 {
-    struct Data *data = window->data;
-    free(data->inventoryValueBuffer);
+    struct MainWindowData *data = window->data;
+    for (int i = 0; i < SECTION_COUNT; i++)
+    {
+        free(data->dataArray[i].valueBuffer);
+        free(data->dataArray[i].properties);
+        free(data->dataArray[i].table);
+        free(data->dataArray[i].checkList);
+    }
+
     free(data->password);
     free(data->message);
-    free(data->inventoryProperties);
-    FreeTable(data->inventoryTable);
-    FreeList(data->inventoryCheckList);
     free(data);
     free(window);
 }
 
+void InitSections()
+{
+    sections[WELCOME_INDEX] = WELCOME_NAME;
+    sections[ITEM_INDEX] = ITEM_NAME;
+    sections[INVENTORY_INDEX] = INVENTORY_NAME;
+    sections[LOSS_INDEX] = LOSS_NAME;
+    sections[ORDER_INDEX] = ORDER_NAME;
+    sections[REFUND_INDEX] = REFUND_NAME;
+    sections[DISCOUNT_INDEX] = DISCOUNT_NAME;
+    sections[CUSTOMER_INDEX] = CUSTOMER_NAME;
+    sections[STAFF_INDEX] = STAFF_NAME;
+    sections[JOURNAL_INDEX] = JOURNAL_NAME;
+    sections[PROFIT_INDEX] = PROFIT_NAME;
+
+    pages[WELCOME_INDEX] = WelcomePageLayout;
+    pages[ITEM_INDEX] = ItemPageLayout;
+    pages[INVENTORY_INDEX] = InventoryPageLayout;
+    pages[LOSS_INDEX] = LossPageLayout;
+    pages[ORDER_INDEX] = OrderPageLayout;
+    pages[REFUND_INDEX] = RefundPageLayout;
+    pages[DISCOUNT_INDEX] = DiscountPageLayout;
+    pages[CUSTOMER_INDEX] = CustomerPageLayout;
+    pages[STAFF_INDEX] = StaffPageLayout;
+    pages[JOURNAL_INDEX] = JournalPageLayout;
+    pages[PROFIT_INDEX] = ProfitPageLayout;
+}
+
 Window *NewMainWindow(const char *title, const char *id, const char *password, const char *name)
 {
+    InitSections();
+
     Window *window = malloc(sizeof(Window));
     window->isClosed = 0;
     window->layoutFunc = MainWindowLayout;
     window->freeFunc = FreeMainWindow;
     window->title = title;
 
-    struct Data *data = malloc(sizeof(struct Data));
-    memset(data, 0, sizeof(struct Data));
+    struct MainWindowData *data = malloc(sizeof(struct MainWindowData));
+    memset(data, 0, sizeof(struct MainWindowData));
     sscanf(id, "%d", &data->id);
     data->name = CloneString(name);
     data->password = CloneString(password);
     data->message = NULL;
     data->sectionSelected = 0;
 
-    data->inventoryPropertySelected = 0;
-    data->inventoryValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
-    memset(data->inventoryValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-
-    data->inventoryCheckList = NewCheckList();
-    data->inventoryProperties = NULL;
-
+    data->dataArray = malloc(SECTION_COUNT * sizeof(struct PageData));
+    for (int i = 1; i < SECTION_COUNT; i++)
     {
+        data->dataArray[i].propertySelected = 0;
+        data->dataArray[i].valueBuffer = malloc(BUFFER_SIZE * sizeof(char));
+        memset(data->dataArray[i].valueBuffer, 0, BUFFER_SIZE * sizeof(char));
+        data->dataArray[i].checkList = NewCheckList();
+        data->dataArray[i].properties = NULL;
+
         TableRow *row = NewTableRow();
-        AppendTableRow(row, "库存编号");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "售货状态");
-        AppendTableRow(row, "数量");
-        AppendTableRow(row, "入库时间");
-        AppendTableRow(row, "生产日期");
-        AppendTableRow(row, "购入单价");
-        Table *table = NewTable(row, NULL);
-        data->inventoryTable = table;
-    }
-
-    data->itemPropertySelected = 0;
-    data->itemValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
-    memset(data->itemValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-
-    data->itemCheckList = NewCheckList();
-
-    data->itemProperties = NULL;
-
-    {
-        TableRow *row = NewTableRow();
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "售价");
-        AppendTableRow(row, "保质期");
-        Table *table = NewTable(row, NULL);
-        data->itemTable = table;
-    }
-
-    data->discountPropertySelected = 0;
-    data->discountValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
-    memset(data->discountValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-
-    data->discountCheckList = NewCheckList();
-
-    data->discountProperties = NULL;
-
-    {
-        TableRow *row = NewTableRow();
-        AppendTableRow(row, "折扣编号");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "折扣比率");
-        AppendTableRow(row, "客户等级");
-        AppendTableRow(row, "截止日期");
-        Table *table = NewTable(row, NULL);
-        data->discountTable = table;
-    }
-
-    data->orderPropertySelected = 0;
-    data->orderValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
-    memset(data->orderValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-
-    data->orderCheckList = NewCheckList();
-
-    data->orderProperties = NULL;
-
-    {
-        TableRow *row = NewTableRow();
-        AppendTableRow(row, "订单编号");
-        AppendTableRow(row, "库存编号");
-        AppendTableRow(row, "商品编号");
-        AppendTableRow(row, "商品名称");
-        AppendTableRow(row, "客户编号");
-        AppendTableRow(row, "客户姓名");
-        AppendTableRow(row, "购买数量");
-        AppendTableRow(row, "购买时间");
-        AppendTableRow(row, "总价");
-        Table *table = NewTable(row, NULL);
-        data->orderTable = table;
-    }
-
-    data->customerPropertySelected = 0;
-    data->customerValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
-    memset(data->customerValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-
-    data->customerCheckList = NewCheckList();
-
-    data->customerProperties = NULL;
-
-    {
-        TableRow *row = NewTableRow();
-        AppendTableRow(row, "客户编号");
-        AppendTableRow(row, "客户等级");
-        AppendTableRow(row, "客户姓名");
-        AppendTableRow(row, "客户联系方式");
-        Table *table = NewTable(row, NULL);
-        data->customerTable = table;
-    }
-
-    data->journalPropertySelected = 0;
-    data->journalValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
-    memset(data->journalValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-
-    data->journalCheckList = NewCheckList();
-
-    data->journalProperties = NULL;
-
-    {
-        TableRow *row = NewTableRow();
-        AppendTableRow(row, "员工编号");
-        AppendTableRow(row, "时间");
-        AppendTableRow(row, "操作");
-        AppendTableRow(row, "参数");
-        Table *table = NewTable(row, NULL);
-        data->journalTable = table;
-    }
-
-    data->lossPropertySelected = 0;
-    data->lossValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
-    memset(data->lossValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-
-    data->lossCheckList = NewCheckList();
-
-    data->lossProperties = NULL;
-
-    {
-        TableRow *row = NewTableRow();
-        AppendTableRow(row, "货损编号");
-        AppendTableRow(row, "库存编号");
-        AppendTableRow(row, "损耗时间");
-        AppendTableRow(row, "货损数量");
-        AppendTableRow(row, "货损原因");
-        Table *table = NewTable(row, NULL);
-        data->lossTable = table;
-    }
-
-    data->profitPropertySelected = 0;
-    data->profitValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
-    memset(data->profitValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-
-    data->profitCheckList = NewCheckList();
-
-    data->profitProperties = NULL;
-
-    {
-        TableRow *row = NewTableRow();
-        AppendTableRow(row, "收支");
-        AppendTableRow(row, "事项");
-        AppendTableRow(row, "时间");
-        Table *table = NewTable(row, NULL);
-        data->profitTable = table;
-    }
-
-    data->refundPropertySelected = 0;
-    data->refundValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
-    memset(data->refundValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-
-    data->refundCheckList = NewCheckList();
-
-    data->refundProperties = NULL;
-
-    {
-        TableRow *row = NewTableRow();
-        AppendTableRow(row, "订单编号");
-        AppendTableRow(row, "退款原因");
-        AppendTableRow(row, "时间");
-        AppendTableRow(row, "退款");
-        AppendTableRow(row, "退回数目");
-        AppendTableRow(row, "备注");
-        Table *table = NewTable(row, NULL);
-        data->refundTable = table;
-    }
-
-    data->staffPropertySelected = 0;
-    data->staffValueBuffer = malloc(BUFFER_SIZE * sizeof(char));
-    memset(data->staffValueBuffer, 0, BUFFER_SIZE * sizeof(char));
-
-    data->staffCheckList = NewCheckList();
-
-    data->staffProperties = NULL;
-
-    {
-        TableRow *row = NewTableRow();
-        AppendTableRow(row, "员工编号");
-        AppendTableRow(row, "员工可用性");
-        AppendTableRow(row, "员工姓名");
-        AppendTableRow(row, "员工联系方式");
-        AppendTableRow(row, "员工权限");
-        Table *table = NewTable(row, NULL);
-        data->staffTable = table;
+        AppendTableRow(row, "点击查询以获取数据");
+        data->dataArray[i].table = NewTable(row, NULL);
     }
 
     window->data = data;

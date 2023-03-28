@@ -8,7 +8,7 @@
 #include <malloc.h>
 #include <string.h>
 
-static int SendRequest(struct EditData *data)
+static void SendRequest(struct EditData *data)
 {
     int hasPermission;
     Operation operation = data->modify ? OP_UPDATE_DISCOUNT : OP_ADD_DISCOUNT;
@@ -17,7 +17,7 @@ static int SendRequest(struct EditData *data)
     {
         data->messageCallback = FinishCallback;
         data->message = CloneString("没有权限");
-        return 0;
+        return;
     }
 
     TableRow *row = NewTableRow();
@@ -81,8 +81,6 @@ static int SendRequest(struct EditData *data)
     {
         FreeTable(response);
     }
-
-    return 1;
 }
 
 void DiscountEditLayout(struct nk_context *context, Window *window)
@@ -225,10 +223,7 @@ void DiscountEditLayout(struct nk_context *context, Window *window)
             PlaceNothing(context);
             if (nk_button_label(context, "确定"))
             {
-                if (SendRequest(data))
-                {
-                    window->isClosed = 1;
-                }
+                SendRequest(data);
             }
             PlaceNothing(context);
             if (nk_button_label(context, "取消"))

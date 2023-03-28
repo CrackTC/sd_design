@@ -79,4 +79,15 @@ char *JoinPath(const char *pathA, const char *pathB);
  * */
 int GenerateId(void *systemList, LinkedList *(*initialize)(), int *idCount, int fetched);
 
+/*
+ * Name: IsValidDate
+ * Description: 判断日期是否合法
+ * Arguments:
+ *     y: 年
+ *     m: 月
+ *     d: 日
+ * Returns: 若日期合法，返回1，否则，返回0
+ * */
+int IsValidDate(int y, int m, int d, int h, int min, int s);
+
 #endif

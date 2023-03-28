@@ -8,14 +8,14 @@
 #include <malloc.h>
 #include <string.h>
 
-struct Data
+struct StaffEditData
 {
     struct EditData *editData;
     int enabledCheck;
     int permissionChecks[OPERATION_COUNT];
 };
 
-static void SendRequest(struct Data *data)
+static void SendRequest(struct StaffEditData *data)
 {
     int hasPermission;
     Operation operation = data->editData->modify ? OP_UPDATE_STAFF : OP_ADD_STAFF;
@@ -84,8 +84,8 @@ static void SendRequest(struct Data *data)
 
 void StaffEditLayout(struct nk_context *context, Window *window)
 {
-    struct Data *data = window->data;
-    DrawMessageBox(context, "", data->editData->message != NULL, data->editData->message, data->editData->messageCallback, data);
+    struct StaffEditData *data = window->data;
+    DrawMessageBox(context, "", data->editData->message != NULL, data->editData->message, data->editData->messageCallback, data->editData);
     TableRow *dataRow = GetRowByIndex(data->editData->data, 1);
 
     nk_style_push_font(context, &fontLarge->handle);
@@ -203,7 +203,7 @@ void StaffEditLayout(struct nk_context *context, Window *window)
 
 void FreeStaffEdit(Window *window)
 {
-    struct Data *data = window->data;
+    struct StaffEditData *data = window->data;
     FreeTable(data->editData->data);
     free(window);
 }
@@ -216,8 +216,8 @@ Window *NewStaffEdit(const char *title, int id, const char *password, Table *sta
     window->freeFunc = FreeStaffEdit;
     window->title = title;
 
-    struct Data *data = malloc(sizeof(struct Data));
-    memset(data, 0, sizeof(struct Data));
+    struct StaffEditData *data = malloc(sizeof(struct StaffEditData));
+    memset(data, 0, sizeof(struct StaffEditData));
 
     data->editData = malloc(sizeof(struct EditData));
     memset(data->editData, 0, sizeof(struct EditData));
