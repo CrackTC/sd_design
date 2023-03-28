@@ -220,7 +220,7 @@ Table *UpdateOrder(Table *a)
     TableRow *information = GetRowByIndex(a, 1);
     int orderId = atoi(GetRowItemByColumnName(a, information, "订单编号"));
     int inventoryId = atoi(GetRowItemByColumnName(a, information, "库存编号"));
-    int number = atoi(GetRowItemByColumnName(a, information, "数量"));
+    int number = atoi(GetRowItemByColumnName(a, information, "购买数量"));
     int customerId = atoi(GetRowItemByColumnName(a, information, "客户编号"));
 
     // 判断该订单是否可以修改

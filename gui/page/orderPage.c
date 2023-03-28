@@ -101,6 +101,7 @@ void OrderModify(struct MainWindowData *data)
 
             {
                 AppendTableRow(row, "订单编号");
+                AppendTableRow(row, "库存编号");
                 AppendTableRow(row, "商品编号");
                 AppendTableRow(row, "商品名称");
                 AppendTableRow(row, "客户编号");
@@ -114,6 +115,8 @@ void OrderModify(struct MainWindowData *data)
                 row = NewTableRow();
                 AppendTableRow(row,
                         GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "订单编号"));
+                AppendTableRow(row,
+                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "库存编号"));
                 AppendTableRow(row,
                         GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "商品编号"));
                 AppendTableRow(row,
