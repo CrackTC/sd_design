@@ -80,6 +80,10 @@ Table *AddOrder(Table *a)
     // 向库存系统确认并修改信息
     LinkedList *inventoryhead = GetInventoryByItemId(itemid);
     LinkedList *latest = inventoryhead;
+    if (inventoryhead == NULL)
+    {
+        return NewTable(NULL, "该商品无库存");
+    }
     LinkedList *nextlatest = latest->next;
     int judge = 1; // 判断是否达到出货数量要求
     int totalnum = 0;
@@ -248,6 +252,10 @@ Table *UpdateOrder(Table *a)
 
     // 判断库存是否充足
     LinkedList *inventoryhead = GetInventoryByItemId(newItemId);
+    if (inventoryhead == NULL)
+    {
+        return NewTable(NULL, "该商品无库存");
+    }
     LinkedList *latest = inventoryhead;
     int totalnum = 0;
     while (latest != NULL)
@@ -478,6 +486,11 @@ Table *AddDiscount(Table *a)
     {
         return NewTable(NULL, "折扣比率应大于0且小于100");
     }
+
+    if (customerLevel <= 0)
+    {
+        return NewTable(NULL, "客户等级应该大于0");
+    }
     // 创建折扣并判断是否失败
     BasicDiscount *newBasicDiscount = NewBasicDiscount(itemId, rate, customerLevel, &create);
     if (newBasicDiscount == NULL)
@@ -572,17 +585,39 @@ Table *UpdateDiscount(Table *a)
         return NewTable(NULL, "不存在符合条件的折扣");
     }
 
-    // 数据准备
-    Time newTime = NewDateTime(year, month, day, hour, minute, second);
-    if (newTime.value < 0)
+    Time create = NewDateTime(year, month, day, hour, minute, second);
+    Time nowtime = GetSystemTime();
+    Item *thisitem = GetItemById(itemId);
+    if (thisitem == NULL)
+    {
+        return NewTable(NULL, "该商品不存在");
+    }
+    // 时间信息有误
+    if (CompareTime(&nowtime, &create) > 0)
     {
         return NewTable(NULL, "时间信息有误");
     }
+
+    if (customerLevel <= 0)
+    {
+        return NewTable(NULL, "客户等级应该大于0");
+    }
+
+    if (GetItemIsEnabled(thisitem) == 0)
+    {
+        return NewTable(NULL, "该商品不可售");
+    }
+
+    if (rate <= 0 || rate >= 100)
+    {
+        return NewTable(NULL, "折扣比率应大于0且小于100");
+    }
+
     // 数据修改
     SetBasicDiscountItemId(discount, itemId);
     SetBasicDiscountRatio(discount, rate);
     SetBasicDiscountCustomerLevel(discount, customerLevel);
-    SetBasicDiscountDeadline(discount, &newTime);
+    SetBasicDiscountDeadline(discount, &create);
     BasicDiscountSave();
 
     // 返回值

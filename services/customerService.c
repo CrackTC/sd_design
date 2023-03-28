@@ -16,6 +16,10 @@ Table *AddCustomer(Table *a)
     int level = atoi(GetRowItemByColumnName(a, information, "客户等级"));
     const char *name = GetRowItemByColumnName(a, information, "客户姓名");
     const char *contact = GetRowItemByColumnName(a, information, "客户联系方式");
+    if (level <= 0)
+    {
+        return NewTable(NULL, "客户等级要大于等于0");
+    }
     // 判断客户是否存在
     LinkedList *customerhead = GetCustomersByName(name);
     if (customerhead != NULL)
@@ -122,6 +126,10 @@ Table *UpdateCustomer(Table *a)
     int level = atoi(GetRowItemByColumnName(a, information, "客户等级"));
     const char *name = GetRowItemByColumnName(a, information, "客户姓名");
     const char *contact = GetRowItemByColumnName(a, information, "客户联系方式");
+    if (level <= 0)
+    {
+        return NewTable(NULL, "客户等级要大于等于0");
+    }
     // 修改数据
     Customer *re = GetCustomerById(id);
     if (re == NULL)
