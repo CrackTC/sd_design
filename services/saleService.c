@@ -250,6 +250,11 @@ Table *UpdateOrder(Table *a)
         return NewTable(NULL, "该订单不可修改");
     }
 
+    if (number <= 0)
+    {
+        return NewTable(NULL, "购买数量不符合实际");
+    }
+
     Order *order = GetOrderById(orderId);
     if (order == NULL)
     {
