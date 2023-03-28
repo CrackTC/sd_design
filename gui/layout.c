@@ -1,4 +1,6 @@
 #include "design/layout.h"
+#include "design/time.h"
+#include "design/mainWindow.h"
 #include <malloc.h>
 #include <stddef.h>
 #include "../config.h"
@@ -56,6 +58,18 @@ void DrawMessageBox(struct nk_context *context, const char *title, int draw, con
 
             nk_popup_end(context);
         }
+    }
+}
+
+void DrawSeparateLine(struct nk_context *context)
+{
+    nk_layout_row_dynamic(context, 10, 1);
+    {
+        struct nk_rect space;
+        nk_widget(&space, context);
+        struct nk_command_buffer *canvas = nk_window_get_canvas(context);
+        nk_stroke_line(canvas, space.x, space.y + space.h / 2, space.x + space.w, space.y + space.h / 2, 1,
+                nk_rgb(100, 100, 100));
     }
 }
 
@@ -179,4 +193,261 @@ LinkedList *NewCheckList()
     *(int *)result->data = 0;
     result->next = NULL;
     return result;
+}
+
+void DateRangeFilterLayout(struct nk_context *context, const char *title, char **from, char **to)
+{
+    static char y1[5];
+    static char m1[3];
+    static char d1[3];
+    static char h1[3] = "0";
+    static char min1[3] = "0";
+    static char s1[3] = "0";
+    static char y2[5];
+    static char m2[3];
+    static char d2[3];
+    static char h2[3] = "0";
+    static char min2[3] = "0";
+    static char s2[3] = "0";
+    static char dateFrom[20];
+    static char dateTo[20];
+    static int filterDate;
+
+    *from = *to = NULL;
+    nk_style_push_font(context, &fontSmall->handle);
+    {
+        nk_layout_row_static(context, 0, 200, 1);
+        nk_checkbox_label(context, title, &filterDate);
+        nk_style_pop_font(context);
+    }
+
+    if (filterDate == 0)
+    {
+        return;
+    }
+
+    nk_style_push_font(context, &fontSmall->handle);
+    {
+        nk_layout_row_begin(context, NK_STATIC, 0, 13);
+        {
+            nk_layout_row_push(context, 30);
+            nk_label(context, "从", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 60);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, y1, 5,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "年", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 40);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, m1, 3,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "月", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 40);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, d1, 3,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "日", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 40);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, h1, 3,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "时", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 40);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, min1, 3,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "分", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 40);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, s1, 3,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "秒", NK_TEXT_CENTERED);
+        }
+
+        nk_layout_row_begin(context, NK_STATIC, 0, 13);
+        {
+            nk_layout_row_push(context, 30);
+            nk_label(context, "到", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 60);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, y2, 5,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "年", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 40);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, m2, 3,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "月", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 40);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, d2, 3,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "日", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 40);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, h2, 3,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "时", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 40);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, min2, 3,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "分", NK_TEXT_CENTERED);
+
+            nk_layout_row_push(context, 40);
+            nk_edit_string_zero_terminated(context, NK_EDIT_BOX & ~NK_EDIT_MULTILINE | NK_EDIT_AUTO_SELECT, s2, 3,
+                    nk_filter_decimal);
+
+            nk_layout_row_push(context, 30);
+            nk_label(context, "秒", NK_TEXT_CENTERED);
+        }
+        nk_style_pop_font(context);
+    }
+
+    if ((y1[0] == 0 || m1[0] == 0 || d1[0] == 0 || h1[0] == 0 || min1[0] == 0 || s1[0] == 0)
+        || (y2[0] == 0 || m2[0] == 0 || d2[0] == 0 || h2[0] == 0 || min2[0] == 0 || s2[0] == 0))
+    {
+        return;
+    }
+
+    int year1, month1, day1, hour1, minute1, second1;
+    int year2, month2, day2, hour2, minute2, second2;
+    sscanf(y1, "%d", &year1);
+    sscanf(m1, "%d", &month1);
+    sscanf(d1, "%d", &day1);
+    sscanf(h1, "%d", &hour1);
+    sscanf(min1, "%d", &minute1);
+    sscanf(s1, "%d", &second1);
+    sscanf(y2, "%d", &year2);
+    sscanf(m2, "%d", &month2);
+    sscanf(d2, "%d", &day2);
+    sscanf(h2, "%d", &hour2);
+    sscanf(min2, "%d", &minute2);
+    sscanf(s2, "%d", &second2);
+
+    if (year1 >= 0 && month1 >= 0 && day1 >= 0 && hour1 >= 0 && minute1 >= 0 && second1 >= 0
+        && year2 >= 0 && month2 >= 0 && day2 >= 0 && hour2 >= 0 && minute2 >= 0 && second2 >= 0)
+    {
+        sprintf(dateFrom, "%04d-%02d-%02d %02d:%02d:%02d", year1, month1, day1, hour1, minute1, second1);
+        sprintf(dateTo, "%04d-%02d-%02d %02d:%02d:%02d", year2, month2, day2, hour2, minute2, second2);
+        *from = dateFrom;
+        *to = dateTo;
+    }
+}
+
+void BasicFilterLayout(struct nk_context *context, const char *title, struct PageData *data)
+{
+    // title
+    nk_layout_row_dynamic(context, 0, 1);
+    {
+        if (nk_style_push_font(context, &fontLarge->handle))
+        {
+            nk_label(context, title, NK_TEXT_LEFT);
+            nk_style_pop_font(context);
+        }
+    }
+
+    // filter
+    nk_layout_row_begin(context, NK_STATIC, 35, 5);
+    {
+        nk_layout_row_push(context, 100);
+        {
+            nk_label(context, "通过条件 ", NK_TEXT_LEFT);
+        }
+
+        int columnCount;
+        {
+            TableRow *row = data->table == NULL ? NULL : GetTableTitle(data->table);
+            columnCount = row == NULL ? 0 : row->columnCount;
+            if (data->properties == NULL)
+            {
+                data->properties = malloc((columnCount + 1) * sizeof(char *));
+                data->properties[0] = "无";
+
+                LinkedList *rowNow = row == NULL ? NULL : row->items;
+                for (int i = 1; i < columnCount + 1; i++)
+                {
+                    data->properties[i] = rowNow->data;
+                    rowNow = rowNow->next;
+                }
+            }
+        }
+
+        nk_layout_row_push(context, 140);
+        {
+            if (nk_style_push_font(context, &fontSmall->handle))
+            {
+                nk_combobox(context, data->properties, columnCount + 1, &data->propertySelected, 35,
+                        nk_vec2(200, 400));
+                nk_style_pop_font(context);
+            }
+        }
+
+        nk_layout_row_push(context, 30);
+        {
+            nk_label(context, "为", NK_TEXT_CENTERED);
+        }
+
+        nk_layout_row_push(context, 200);
+        {
+            nk_edit_string_zero_terminated(context,
+                    (NK_EDIT_BOX | NK_EDIT_AUTO_SELECT | NK_EDIT_CLIPBOARD) & ~NK_EDIT_MULTILINE,
+                    data->valueBuffer, BUFFER_SIZE * sizeof(char), nk_filter_default);
+        }
+
+        nk_layout_row_push(context, 100);
+        {
+            nk_label(context, "进行筛选", NK_TEXT_LEFT);
+        }
+
+        nk_layout_row_end(context);
+    }
+}
+
+void PageResultLayout(struct nk_context *context, const struct PageData *data, const char *rangeFilter, const char *from, const char *to)
+{
+    nk_layout_row_dynamic(context, nk_window_get_height(context) - 420, 1);
+    {
+        if (nk_style_push_font(context, &fontSmall->handle))
+        {
+            if (nk_group_begin(context, "查询结果", NK_WINDOW_BORDER))
+            {
+                TableLayout(context, data->table, data->checkList,
+                        data->propertySelected == 0
+                        ? NULL
+                        : (data->properties != NULL
+                           ? data->properties[data->propertySelected]
+                           : NULL),
+                        data->valueBuffer,
+                        rangeFilter,
+                        from,
+                        to);
+                nk_group_end(context);
+            }
+
+            nk_style_pop_font(context);
+        }
+    }
 }

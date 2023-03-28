@@ -9,9 +9,9 @@
 #include "design/refundEntry.h"
 #include "design/utils.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 // 自动售货
 Table *AddOrder(Table *a)
@@ -321,6 +321,7 @@ Table *GetAllOrder(Table *a)
     {
         Order *order = orderNow->data;
         row = NewTableRow();
+        count++;
 
         // 数据准备
         int orderId = GetOrderId(order);
@@ -390,6 +391,7 @@ Table *GetAllOrder(Table *a)
 Table *AddDiscount(Table *a)
 {
     //整合的根据日期更新折扣
+    // 整合的根据日期更新折扣
     LinkedList *discountNow = GetAllBasicDiscounts();
     Time present = GetSystemTime();
     while (discountNow != NULL)
@@ -422,6 +424,7 @@ Table *AddDiscount(Table *a)
     Time create = NewDateTime(year, month, day, hour, minute, second);
     Time nowtime = GetSystemTime();
     Item *thisitem = GetItemById(itemId);
+    
     if (thisitem == NULL)
     {
         return NewTable(NULL, "该商品不存在");
