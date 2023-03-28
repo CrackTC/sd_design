@@ -1,49 +1,17 @@
+#include "design/crud.h"
 #include "design/linkedList.h"
 #include "design/operation.h"
 #include "design/table.h"
 #include "design/journalService.h"
-#include "design/judgeService.h"
 #include "design/utils.h"
 #include "../../config.h"
 #include "design/layout.h"
 #include "design/mainWindow.h"
 #include <stddef.h>
-#include <malloc.h>
 
 void SendJournalRequest(struct MainWindowData *data)
 {
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_READ_JOURNAL);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：读取日志");
-        return;
-    }
-
-    AddJournal(NULL, data->id, OP_READ_JOURNAL);
-    Table *response = GetAllJournal(NULL);
-    if (response != NULL)
-    {
-        if (response->remark != NULL && response->remark[0] != '\0')
-        {
-            data->messageCallback = MessageBoxCallback;
-            data->message = CloneString(response->remark);
-        }
-
-        free(data->dataArray[JOURNAL_INDEX].properties);
-        FreeList(data->dataArray[JOURNAL_INDEX].checkList);
-        FreeTable(data->dataArray[JOURNAL_INDEX].table);
-        data->dataArray[JOURNAL_INDEX].checkList = NewCheckList();
-        data->dataArray[JOURNAL_INDEX].table = response;
-        data->dataArray[JOURNAL_INDEX].properties = NULL;
-        data->dataArray[JOURNAL_INDEX].propertySelected = 0;
-    }
-    else
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("查询失败: 响应为NULL");
-    }
+    Read(data, &data->dataArray[JOURNAL_INDEX], GetAllJournal, "缺少权限：读取日志", OP_READ_JOURNAL);
 }
 
 void JournalLookup(struct MainWindowData *data)

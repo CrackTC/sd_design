@@ -3,8 +3,6 @@
 #include "design/operation.h"
 #include "design/table.h"
 #include "design/time.h"
-#include "design/journalService.h"
-#include "design/judgeService.h"
 #include "design/saleService.h"
 #include "design/utils.h"
 #include "../../config.h"
@@ -16,7 +14,7 @@
 void DiscountDelete(int ok, void *parameter)
 {
     struct MainWindowData *data = parameter;
-    Delete(ok, parameter, &data->dataArray[DISCOUNT_INDEX], RemoveDiscount, "缺少权限：删除折扣", "折扣编号");
+    Delete(ok, parameter, &data->dataArray[DISCOUNT_INDEX], RemoveDiscount, "缺少权限：删除折扣", "折扣编号", OP_DELETE_DISCOUNT);
 }
 
 void ConfirmDiscountDelete(struct MainWindowData *data)
@@ -27,38 +25,7 @@ void ConfirmDiscountDelete(struct MainWindowData *data)
 
 void SendDiscountRequest(struct MainWindowData *data)
 {
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_READ_DISCOUNT);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：读取折扣");
-        return;
-    }
-
-    AddJournal(NULL, data->id, OP_READ_DISCOUNT);
-    Table *response = GetAllDiscount(NULL);
-    if (response != NULL)
-    {
-        if (response->remark != NULL && response->remark[0] != '\0')
-        {
-            data->messageCallback = MessageBoxCallback;
-            data->message = CloneString(response->remark);
-        }
-
-        free(data->dataArray[DISCOUNT_INDEX].properties);
-        FreeTable(data->dataArray[DISCOUNT_INDEX].table);
-        FreeList(data->dataArray[DISCOUNT_INDEX].checkList);
-        data->dataArray[DISCOUNT_INDEX].checkList = NewCheckList();
-        data->dataArray[DISCOUNT_INDEX].table = response;
-        data->dataArray[DISCOUNT_INDEX].properties = NULL;
-        data->dataArray[DISCOUNT_INDEX].propertySelected = 0;
-    }
-    else
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("查询失败: 响应为NULL");
-    }
+    Read(data, &data->dataArray[DISCOUNT_INDEX], GetAllDiscount, "缺少权限：读取折扣", OP_READ_DISCOUNT);
 }
 
 void DiscountLookup(struct MainWindowData *data)

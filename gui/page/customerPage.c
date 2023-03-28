@@ -3,19 +3,16 @@
 #include "design/operation.h"
 #include "design/table.h"
 #include "design/customerService.h"
-#include "design/journalService.h"
-#include "design/judgeService.h"
 #include "design/utils.h"
 #include "../../config.h"
 #include "design/layout.h"
 #include "design/mainWindow.h"
 #include <stddef.h>
-#include <malloc.h>
 
 void CustomerDelete(int ok, void *parameter)
 {
     struct MainWindowData *data = parameter;
-    Delete(ok, parameter, &data->dataArray[CUSTOMER_INDEX], DeleteCustomer, "缺少权限：删除客户", "客户编号");
+    Delete(ok, parameter, &data->dataArray[CUSTOMER_INDEX], DeleteCustomer, "缺少权限：删除客户", "客户编号", OP_DELETE_CUSTOMER);
 }
 
 void ConfirmCustomerDelete(struct MainWindowData *data)
@@ -26,38 +23,7 @@ void ConfirmCustomerDelete(struct MainWindowData *data)
 
 void SendCustomerRequest(struct MainWindowData *data)
 {
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_READ_CUSTOMER);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：读取客户");
-        return;
-    }
-
-    AddJournal(NULL, data->id, OP_READ_CUSTOMER);
-    Table *response = GetAllCustomer(NULL);
-    if (response != NULL)
-    {
-        if (response->remark != NULL && response->remark[0] != '\0')
-        {
-            data->messageCallback = MessageBoxCallback;
-            data->message = CloneString(response->remark);
-        }
-
-        free(data->dataArray[CUSTOMER_INDEX].properties);
-        FreeTable(data->dataArray[CUSTOMER_INDEX].table);
-        FreeList(data->dataArray[CUSTOMER_INDEX].checkList);
-        data->dataArray[CUSTOMER_INDEX].checkList = NewCheckList();
-        data->dataArray[CUSTOMER_INDEX].table = response;
-        data->dataArray[CUSTOMER_INDEX].properties = NULL;
-        data->dataArray[CUSTOMER_INDEX].propertySelected = 0;
-    }
-    else
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("查询失败: 响应为NULL");
-    }
+    Read(data, &data->dataArray[CUSTOMER_INDEX], GetAllCustomer, "缺少权限：读取客户", OP_READ_CUSTOMER);
 }
 
 void CustomerLookup(struct MainWindowData *data)

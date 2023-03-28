@@ -1,50 +1,17 @@
+#include "design/crud.h"
 #include "design/linkedList.h"
 #include "design/operation.h"
 #include "design/table.h"
-#include "design/journalService.h"
-#include "design/judgeService.h"
 #include "design/statisticService.h"
 #include "design/utils.h"
 #include "../../config.h"
 #include "design/layout.h"
 #include "design/mainWindow.h"
 #include <stddef.h>
-#include <malloc.h>
 
 void SendProfitRequest(struct MainWindowData *data)
 {
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_READ_STATISTICS);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：读取统计");
-        return;
-    }
-
-    AddJournal(NULL, data->id, OP_READ_STATISTICS);
-    Table *response = GetStatistics(NULL);
-    if (response != NULL)
-    {
-        if (response->remark != NULL && response->remark[0] != '\0')
-        {
-            data->messageCallback = MessageBoxCallback;
-            data->message = CloneString(response->remark);
-        }
-
-        free(data->dataArray[PROFIT_INDEX].properties);
-        FreeList(data->dataArray[PROFIT_INDEX].checkList);
-        FreeTable(data->dataArray[PROFIT_INDEX].table);
-        data->dataArray[PROFIT_INDEX].checkList = NewCheckList();
-        data->dataArray[PROFIT_INDEX].table = response;
-        data->dataArray[PROFIT_INDEX].properties = NULL;
-        data->dataArray[PROFIT_INDEX].propertySelected = 0;
-    }
-    else
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("查询失败: 响应为NULL");
-    }
+    Read(data, &data->dataArray[PROFIT_INDEX], GetStatistics, "缺少权限：读取统计", OP_READ_STATISTICS);
 }
 
 void ProfitLookup(struct MainWindowData *data)

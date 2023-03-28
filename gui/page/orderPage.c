@@ -1,51 +1,16 @@
 #include "design/crud.h"
-#include "design/amount.h"
 #include "design/linkedList.h"
 #include "design/operation.h"
 #include "design/table.h"
-#include "design/journalService.h"
-#include "design/judgeService.h"
 #include "design/saleService.h"
 #include "design/utils.h"
 #include "../../config.h"
 #include "design/layout.h"
 #include "design/mainWindow.h"
-#include <malloc.h>
 
 void SendOrderRequest(struct MainWindowData *data)
 {
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_READ_ORDER);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：读取订单");
-        return;
-    }
-
-    AddJournal(NULL, data->id, OP_READ_ORDER);
-    Table *response = GetAllOrder(NULL);
-    if (response != NULL)
-    {
-        if (response->remark != NULL && response->remark[0] != '\0')
-        {
-            data->messageCallback = MessageBoxCallback;
-            data->message = CloneString(response->remark);
-        }
-
-        free(data->dataArray[ORDER_INDEX].properties);
-        FreeList(data->dataArray[ORDER_INDEX].checkList);
-        FreeTable(data->dataArray[ORDER_INDEX].table);
-        data->dataArray[ORDER_INDEX].checkList = NewCheckList();
-        data->dataArray[ORDER_INDEX].table = response;
-        data->dataArray[ORDER_INDEX].properties = NULL;
-        data->dataArray[ORDER_INDEX].propertySelected = 0;
-    }
-    else
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("查询失败: 响应为NULL");
-    }
+    Read(data, &data->dataArray[ORDER_INDEX], GetAllOrder, "缺少权限：读取订单", OP_READ_ORDER);
 }
 
 void OrderLookup(struct MainWindowData *data)
@@ -176,7 +141,7 @@ void OrderModify(struct MainWindowData *data)
 void OrderDelete(int ok, void *parameter)
 {
     struct MainWindowData *data = parameter;
-    Delete(ok, parameter, &data->dataArray[ORDER_INDEX], RemoveAnOrder, "缺少权限：删除订单", "订单编号");
+    Delete(ok, parameter, &data->dataArray[ORDER_INDEX], RemoveAnOrder, "缺少权限：删除订单", "订单编号", OP_DELETE_ORDER);
 }
 
 void ConfirmOrderDelete(struct MainWindowData *data)

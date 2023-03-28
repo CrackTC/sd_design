@@ -2,20 +2,17 @@
 #include "design/linkedList.h"
 #include "design/operation.h"
 #include "design/table.h"
-#include "design/journalService.h"
-#include "design/judgeService.h"
 #include "design/staffService.h"
 #include "design/utils.h"
 #include "../../config.h"
 #include "design/layout.h"
 #include "design/mainWindow.h"
 #include <stddef.h>
-#include <malloc.h>
 
 void StaffDelete(int ok, void *parameter)
 {
     struct MainWindowData *data = parameter;
-    Delete(ok, parameter, &data->dataArray[STAFF_INDEX], DeleteStaff, "缺少权限：删除员工", "员工编号");
+    Delete(ok, parameter, &data->dataArray[STAFF_INDEX], DeleteStaff, "缺少权限：删除员工", "员工编号", OP_DELETE_STAFF);
 }
 
 void ConfirmStaffDelete(struct MainWindowData *data)
@@ -26,38 +23,7 @@ void ConfirmStaffDelete(struct MainWindowData *data)
 
 void SendStaffRequest(struct MainWindowData *data)
 {
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_READ_STAFF);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：读取员工");
-        return;
-    }
-
-    AddJournal(NULL, data->id, OP_READ_STAFF);
-    Table *response = GetItemOfAllStaff(NULL);
-    if (response != NULL)
-    {
-        if (response->remark != NULL && response->remark[0] != '\0')
-        {
-            data->messageCallback = MessageBoxCallback;
-            data->message = CloneString(response->remark);
-        }
-
-        free(data->dataArray[STAFF_INDEX].properties);
-        FreeList(data->dataArray[STAFF_INDEX].checkList);
-        FreeTable(data->dataArray[STAFF_INDEX].table);
-        data->dataArray[STAFF_INDEX].checkList = NewCheckList();
-        data->dataArray[STAFF_INDEX].table = response;
-        data->dataArray[STAFF_INDEX].properties = NULL;
-        data->dataArray[STAFF_INDEX].propertySelected = 0;
-    }
-    else
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("查询失败: 响应为NULL");
-    }
+    Read(data, &data->dataArray[STAFF_INDEX], GetItemOfAllStaff, "缺少权限：读取员工", OP_READ_STAFF);
 }
 
 void StaffLookup(struct MainWindowData *data)

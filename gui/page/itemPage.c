@@ -4,9 +4,7 @@
 #include "design/operation.h"
 #include "design/table.h"
 #include "design/time.h"
-#include "design/judgeService.h"
 #include "design/inventoryService.h"
-#include "design/journalService.h"
 #include "design/utils.h"
 #include "../../config.h"
 #include "design/layout.h"
@@ -15,44 +13,7 @@
 
 void SendItemRequest(struct MainWindowData *data)
 {
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_READ_ITEM);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：读取商品");
-        return;
-    }
-
-    AddJournal(NULL, data->id, OP_READ_ITEM);
-    Table *response = ShowItem(NULL);
-    if (response != NULL)
-    {
-        if (response->remark != NULL && response->remark[0] != '\0')
-        {
-            data->messageCallback = MessageBoxCallback;
-            data->message = CloneString(response->remark);
-        }
-
-        free(data->dataArray[ITEM_INDEX].properties);
-        FreeList(data->dataArray[ITEM_INDEX].checkList);
-        FreeTable(data->dataArray[ITEM_INDEX].table);
-        data->dataArray[ITEM_INDEX].checkList = NewCheckList();
-        data->dataArray[ITEM_INDEX].table = response;
-        data->dataArray[ITEM_INDEX].properties = NULL;
-        data->dataArray[ITEM_INDEX].propertySelected = 0;
-
-        response = ShowLackInventory(NULL);
-        if (response->rows->next != NULL)
-        {
-            PushWindow(NewResultDialog("缺货详情", response));
-        }
-    }
-    else
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("查询失败: 响应为NULL");
-    }
+    Read(data, &data->dataArray[ITEM_INDEX], ShowItem, "缺少权限：读取商品", OP_READ_ITEM);
 }
 
 void ItemLookup(struct MainWindowData *data)
@@ -158,7 +119,7 @@ void ItemModify(struct MainWindowData *data)
 void ItemDelete(int ok, void *parameter)
 {
     struct MainWindowData *data = parameter;
-    Delete(ok, parameter, &data->dataArray[ITEM_INDEX], DeleteItemById, "缺少权限：删除商品", "商品编号");
+    Delete(ok, parameter, &data->dataArray[ITEM_INDEX], DeleteItemById, "缺少权限：删除商品", "商品编号", OP_DELETE_ITEM);
 }
 
 void ConfirmItemDelete(struct MainWindowData *data)

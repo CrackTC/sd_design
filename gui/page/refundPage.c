@@ -3,8 +3,6 @@
 #include "design/linkedList.h"
 #include "design/operation.h"
 #include "design/table.h"
-#include "design/journalService.h"
-#include "design/judgeService.h"
 #include "design/saleService.h"
 #include "design/utils.h"
 #include "../../config.h"
@@ -16,7 +14,7 @@
 void RefundDelete(int ok, void *parameter)
 {
     struct MainWindowData *data = parameter;
-    Delete(ok, parameter, &data->dataArray[REFUND_INDEX], RemoveRefund, "缺少权限：删除退款条目", "订单编号");
+    Delete(ok, parameter, &data->dataArray[REFUND_INDEX], RemoveRefund, "缺少权限：删除退款条目", "订单编号", OP_DELETE_REFUND);
 }
 
 void ConfirmRefundDelete(struct MainWindowData *data)
@@ -27,38 +25,7 @@ void ConfirmRefundDelete(struct MainWindowData *data)
 
 void SendRefundRequest(struct MainWindowData *data)
 {
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_READ_REFUND);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：读取退款");
-        return;
-    }
-
-    AddJournal(NULL, data->id, OP_READ_REFUND);
-    Table *response = GetAllRefund(NULL);
-    if (response != NULL)
-    {
-        if (response->remark != NULL && response->remark[0] != '\0')
-        {
-            data->messageCallback = MessageBoxCallback;
-            data->message = CloneString(response->remark);
-        }
-
-        free(data->dataArray[REFUND_INDEX].properties);
-        FreeList(data->dataArray[REFUND_INDEX].checkList);
-        FreeTable(data->dataArray[REFUND_INDEX].table);
-        data->dataArray[REFUND_INDEX].checkList = NewCheckList();
-        data->dataArray[REFUND_INDEX].table = response;
-        data->dataArray[REFUND_INDEX].properties = NULL;
-        data->dataArray[REFUND_INDEX].propertySelected = 0;
-    }
-    else
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("查询失败: 响应为NULL");
-    }
+    Read(data, &data->dataArray[REFUND_INDEX], GetAllRefund, "缺少权限：读取退款", OP_READ_REFUND);
 }
 
 void RefundLookup(struct MainWindowData *data)

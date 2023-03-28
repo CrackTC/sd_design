@@ -5,8 +5,6 @@
 #include "design/table.h"
 #include "design/time.h"
 #include "design/inventoryService.h"
-#include "design/journalService.h"
-#include "design/judgeService.h"
 #include "design/utils.h"
 #include "../../config.h"
 #include "design/layout.h"
@@ -17,7 +15,7 @@
 void InventoryDelete(int ok, void *parameter)
 {
     struct MainWindowData *data = parameter;
-    Delete(ok, parameter, &data->dataArray[INVENTORY_INDEX], DeleteInventoryById, "缺少权限：删除库存", "库存编号");
+    Delete(ok, parameter, &data->dataArray[INVENTORY_INDEX], DeleteInventoryById, "缺少权限：删除库存", "库存编号", OP_DELETE_INVENTORY);
 }
 
 void ConfirmInventoryDelete(struct MainWindowData *data)
@@ -28,38 +26,7 @@ void ConfirmInventoryDelete(struct MainWindowData *data)
 
 void SendInventoryRequest(struct MainWindowData *data)
 {
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_READ_INVENTORY);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：读取库存");
-        return;
-    }
-
-    AddJournal(NULL, data->id, OP_READ_INVENTORY);
-    Table *response = ShowInventory(NULL);
-    if (response != NULL)
-    {
-        if (response->remark != NULL && response->remark[0] != '\0')
-        {
-            data->messageCallback = MessageBoxCallback;
-            data->message = CloneString(response->remark);
-        }
-
-        free(data->dataArray[INVENTORY_INDEX].properties);
-        FreeTable(data->dataArray[INVENTORY_INDEX].table);
-        FreeList(data->dataArray[INVENTORY_INDEX].checkList);
-        data->dataArray[INVENTORY_INDEX].checkList = NewCheckList();
-        data->dataArray[INVENTORY_INDEX].table = response;
-        data->dataArray[INVENTORY_INDEX].properties = NULL;
-        data->dataArray[INVENTORY_INDEX].propertySelected = 0;
-    }
-    else
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("查询失败: 响应为NULL");
-    }
+    Read(data, &data->dataArray[INVENTORY_INDEX], ShowInventory, "缺少权限：读取库存", OP_READ_INVENTORY);
 }
 
 void InventoryLookup(struct MainWindowData *data)

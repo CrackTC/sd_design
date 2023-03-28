@@ -4,8 +4,6 @@
 #include "design/table.h"
 #include "design/time.h"
 #include "design/inventoryService.h"
-#include "design/journalService.h"
-#include "design/judgeService.h"
 #include "design/utils.h"
 #include "../../config.h"
 #include "design/layout.h"
@@ -16,7 +14,7 @@
 void LossEntryDelete(int ok, void *parameter)
 {
     struct MainWindowData *data = parameter;
-    Delete(ok, parameter, &data->dataArray[LOSS_INDEX], DeleteSingleLossById, "缺少权限：删除货损", "货损编号");
+    Delete(ok, parameter, &data->dataArray[LOSS_INDEX], DeleteSingleLossById, "缺少权限：删除货损", "货损编号", OP_DELETE_LOSS);
 }
 
 void ConfirmLossDelete(struct MainWindowData *data)
@@ -27,38 +25,7 @@ void ConfirmLossDelete(struct MainWindowData *data)
 
 void SendLossRequest(struct MainWindowData *data)
 {
-    int hasPermission;
-    Judge(data->id, &hasPermission, data->password, OP_READ_LOSS);
-    if (!hasPermission)
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("缺少权限：读取货损");
-        return;
-    }
-
-    AddJournal(NULL, data->id, OP_READ_LOSS);
-    Table *response = ShowLossInventory(NULL);
-    if (response != NULL)
-    {
-        if (response->remark != NULL && response->remark[0] != '\0')
-        {
-            data->messageCallback = MessageBoxCallback;
-            data->message = CloneString(response->remark);
-        }
-
-        free(data->dataArray[LOSS_INDEX].properties);
-        FreeList(data->dataArray[LOSS_INDEX].checkList);
-        FreeTable(data->dataArray[LOSS_INDEX].table);
-        data->dataArray[LOSS_INDEX].checkList = NewCheckList();
-        data->dataArray[LOSS_INDEX].table = response;
-        data->dataArray[LOSS_INDEX].properties = NULL;
-        data->dataArray[LOSS_INDEX].propertySelected = 0;
-    }
-    else
-    {
-        data->messageCallback = MessageBoxCallback;
-        data->message = CloneString("查询失败: 响应为NULL");
-    }
+    Read(data, &data->dataArray[LOSS_INDEX], ShowLossInventory, "缺少权限：读取货损", OP_READ_LOSS);
 }
 
 void LossLookup(struct MainWindowData *data)
