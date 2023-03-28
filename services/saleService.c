@@ -82,6 +82,20 @@ Table *AddOrder(Table *a)
     LinkedList *latest = inventoryhead;
     LinkedList *nextlatest = latest->next;
     int judge = 1; // 判断是否达到出货数量要求
+    int totalnum = 0;
+
+    //判断库存是否充足
+    while (latest != NULL)
+    {
+        totalnum += GetInventoryEntryNumber(latest->data);
+        latest = latest->next;
+    }
+    if (totalnum < number)
+    {
+        return NewTable(NULL, "没有足够的库存");
+    }
+    latest = inventoryhead;
+
     while (judge)  // 出货并记录订单直至达到需要的数量
     {
         while (nextlatest != NULL) // 找出生产日期最早的产品
@@ -205,6 +219,13 @@ Table *UpdateOrder(Table *a)
     int number = atoi(GetRowItemByColumnName(a, information, "数量"));
     int customerId = atoi(GetRowItemByColumnName(a, information, "客户编号"));
 
+    //判断该订单是否可以修改
+    RefundEntry *thisrefund = GetRefundByOrderId(orderId);
+    if (thisrefund != NULL)
+    {
+        return NewTable(NULL, "该订单不可删除");
+    }
+
     Order *order = GetOrderById(orderId);
     if (order == NULL)
     {
@@ -221,8 +242,24 @@ Table *UpdateOrder(Table *a)
     {
         return NewTable(NULL, "不存在符合条件的库存条目");
     }
+
     int newNumber = GetInventoryEntryNumber(inventory);
     int newItemId = GetInventoryEntryItemId(inventory);
+
+    //判断库存是否充足
+    LinkedList *inventoryhead = GetInventoryByItemId(newItemId);
+    LinkedList *latest = inventoryhead;
+    int totalnum = 0;
+    while (latest != NULL)
+    {
+        totalnum += GetInventoryEntryNumber(latest->data);
+        latest = latest->next;
+    }
+    if (totalnum < number)
+    {
+        return NewTable(NULL, "没有足够的库存");
+    }
+
     Item *newItem = GetItemById(newItemId);
     Amount price = GetItemPrice(newItem);
     price = AmountMultiply(&price, number);
