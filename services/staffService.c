@@ -167,6 +167,10 @@ Table *DeleteStaff(Table *staff)
             return NewTable(NULL, "删除失败，找不到指定id的员工");
         }
 
+        if (GetStaffAvailability(objectStaff) == 0) {
+            return NewTable(NULL, "删除失败，该员工已被删除");
+        }
+
         /*释放该员工*/
         RemoveStaff(objectStaff); // 释放这个员工
         StaffSave(); // 若释放成功，则保存这个更改
