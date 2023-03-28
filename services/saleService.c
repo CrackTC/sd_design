@@ -7,7 +7,6 @@
 #include "design/order.h"
 #include "design/profit.h"
 #include "design/refundEntry.h"
-#include "design/table.h"
 #include "design/utils.h"
 
 #include <stdio.h>
@@ -19,12 +18,12 @@ Table *AddOrder(Table *a)
 {
     // 整合的根据日期更新折扣
     LinkedList *discountNow = GetAllBasicDiscounts();
-    Time nowTime = GetSystemTime();
+    Time nowtime = GetSystemTime();
     while (discountNow != NULL)
     {
         BasicDiscount *discount = discountNow->data;
         Time deadline = GetBasicDiscountDeadline(discount);
-        int judge = CompareTime(&nowTime, &deadline);
+        int judge = CompareTime(&nowtime, &deadline);
         if (judge > 0)
         {
             RemoveBasicDiscount(discount);
@@ -37,18 +36,18 @@ Table *AddOrder(Table *a)
 
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
-    int itemId = atoi(GetRowItemByColumnName(a, information, "商品编号"));
-    int customerId = atoi(GetRowItemByColumnName(a, information, "客户编号"));
+    int itemid = atoi(GetRowItemByColumnName(a, information, "商品编号"));
+    int customerid = atoi(GetRowItemByColumnName(a, information, "客户编号"));
     int number = atoi(GetRowItemByColumnName(a, information, "购买数量"));
     // 确认客户等级和所需金额
-    Customer *cus = GetCustomerById(customerId);
+    Customer *cus = GetCustomerById(customerid);
     if (cus == NULL)
     {
         return NewTable(NULL, "不存在该客户");
     }
-    int customerLevel = GetCustomerLevel(cus);
+    int customerlevel = GetCustomerLevel(cus);
 
-    Item *item = GetItemById(itemId);
+    Item *item = GetItemById(itemid);
     if (item == NULL)
     {
         return NewTable(NULL, "不存在该商品");
@@ -56,35 +55,36 @@ Table *AddOrder(Table *a)
     Amount price = GetItemPrice(item);
     Amount store = NewAmount(0, 0, 0);
 
-    if (AmountMultiply(&price, number).value == 0)
-    {
-        return NewTable(NULL, "购买数量超出范围");
-    }
-
     // 算折扣
-    LinkedList *itemDiscount = GetBasicDiscountsByItemId(itemId);
-    LinkedList *singleDiscount = itemDiscount;
-    while (singleDiscount != NULL)
+    LinkedList *itemdiscount = GetBasicDiscountsByItemId(itemid);
+    LinkedList *singlediscount = itemdiscount;
+    while (singlediscount != NULL)
     {
-        BasicDiscount *discount = singleDiscount->data;
+        BasicDiscount *discount = singlediscount->data;
         int level = GetBasicDiscountCustomerLevel(discount);
-        if (level == customerLevel)
+        if (level == customerlevel)
         {
             int rate = GetBasicDiscountRatio(discount);
             price = AmountMultiplyRatio(&price, rate);
         }
-        singleDiscount = singleDiscount->next;
+        singlediscount = singlediscount->next;
     }
 
-    // 向库存系统确认并修改信息
-    LinkedList *inventoryHead = GetInventoryByItemId(itemId);
-    LinkedList *latest = inventoryHead;
-    LinkedList *nextLatest = latest;
+    // 给收支系统信息
     Time present = GetSystemTime();
+    store = AmountMultiply(&price, number);
+    Profit *put = NewProfit(&store, "售货", &present);
+    AppendProfit(put);
+    ProfitSave();
+
+    // 向库存系统确认并修改信息
+    LinkedList *inventoryhead = GetInventoryByItemId(itemid);
+    LinkedList *latest = inventoryhead;
+    LinkedList *nextlatest = latest->next;
     int judge = 1; // 判断是否达到出货数量要求
     int totalnum = 0;
 
-    //判断库存是否充足
+    // 判断库存是否充足
     while (latest != NULL)
     {
         totalnum += GetInventoryEntryNumber(latest->data);
@@ -96,24 +96,16 @@ Table *AddOrder(Table *a)
     }
     latest = inventoryhead;
 
-    while (judge)  // 出货并记录订单直至达到需要的数量
+    while (judge) // 出货并记录订单直至达到需要的数量
     {
-        int exists = 0;
-        while (nextLatest != NULL) // 找出生产日期最早的产品
+        while (nextlatest != NULL) // 找出生产日期最早的产品
         {
             Time now = GetInventoryEntryProductionTime(latest->data);
-            Time com = GetInventoryEntryProductionTime(nextLatest->data);
-            int tempLeft = GetInventoryEntryNumber(nextLatest->data);
-            if (CompareTime(&now, &com) > 0 && tempLeft > 0)
-            {
-                latest = nextLatest;
-                exists = 1;
-            }
-            nextLatest = nextLatest->next;
-        }
-        if (!exists)
-        {
-            break;
+            Time com = GetInventoryEntryProductionTime(nextlatest->data);
+            int templeft = GetInventoryEntryNumber(nextlatest->data);
+            if (CompareTime(&now, &com) > 0 && templeft > 0)
+                latest = nextlatest;
+            nextlatest = nextlatest->next;
         }
         int left = GetInventoryEntryNumber(latest->data);
         if (left >= number) // 一批货充足
@@ -122,9 +114,8 @@ Table *AddOrder(Table *a)
 
             store = AmountMultiply(&price, number);
 
-            total += number;
             int inventoryid = GetInventoryEntryId(latest->data);
-            Order *neworder = NewOrder(inventoryid, number, customerId, &present, &store); // 添加订单
+            Order *neworder = NewOrder(inventoryid, number, customerid, &present, &store); // 添加订单
             AppendOrder(neworder);
             OrderSave();
 
@@ -136,34 +127,17 @@ Table *AddOrder(Table *a)
             store = AmountMultiply(&price, left);
 
             int inventoryid = GetInventoryEntryId(latest->data);
-            Order *neworder = NewOrder(inventoryid, left, customerId, &present, &store); // 添加订单
+            Order *neworder = NewOrder(inventoryid, left, customerid, &present, &store); // 添加订单
             AppendOrder(neworder);
             OrderSave();
 
             SetInventoryEntryNumber(latest->data, 0); // 修改库存数量
             InventorySave();
 
-            total += left;
             number -= left;         // 确认新的所需数量
-            latest = inventoryHead; // 重新设定指针位置以便下一次循环
-            nextLatest = latest->next;
+            latest = inventoryhead; // 重新设定指针位置以便下一次循环
+            nextlatest = latest->next;
         }
-    }
-
-    // 给收支系统信息
-    store = AmountMultiply(&price, total);
-    Profit *put = NewProfit(&store, "售货", &present);
-    AppendProfit(put);
-    ProfitSave();
-
-    if (judge == 1)
-    {
-        int length = strlen("库存不足，实际购买数：") + IntegerStringLength(total) + 1;
-        char *remark = malloc(length * sizeof(char));
-        sprintf(remark, "库存不足，实际购买数：%d", total);
-        Table *table = NewTable(NULL, remark);
-        free(remark);
-        return table;
     }
 
     return NULL;
@@ -245,7 +219,7 @@ Table *UpdateOrder(Table *a)
     int number = atoi(GetRowItemByColumnName(a, information, "数量"));
     int customerId = atoi(GetRowItemByColumnName(a, information, "客户编号"));
 
-    //判断该订单是否可以修改
+    // 判断该订单是否可以修改
     RefundEntry *thisrefund = GetRefundByOrderId(orderId);
     if (thisrefund != NULL)
     {
@@ -272,7 +246,7 @@ Table *UpdateOrder(Table *a)
     int newNumber = GetInventoryEntryNumber(inventory);
     int newItemId = GetInventoryEntryItemId(inventory);
 
-    //判断库存是否充足
+    // 判断库存是否充足
     LinkedList *inventoryhead = GetInventoryByItemId(newItemId);
     LinkedList *latest = inventoryhead;
     int totalnum = 0;
@@ -384,7 +358,6 @@ Table *GetAllOrder(Table *a)
     {
         Order *order = orderNow->data;
         row = NewTableRow();
-        count++;
 
         // 数据准备
         int orderId = GetOrderId(order);
@@ -454,7 +427,6 @@ Table *GetAllOrder(Table *a)
 Table *AddDiscount(Table *a)
 {
     // 整合的根据日期更新折扣
-    //  整合的根据日期更新折扣
     LinkedList *discountNow = GetAllBasicDiscounts();
     Time present = GetSystemTime();
     while (discountNow != NULL)
@@ -487,7 +459,6 @@ Table *AddDiscount(Table *a)
     Time create = NewDateTime(year, month, day, hour, minute, second);
     Time nowtime = GetSystemTime();
     Item *thisitem = GetItemById(itemId);
-
     if (thisitem == NULL)
     {
         return NewTable(NULL, "该商品不存在");
