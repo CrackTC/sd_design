@@ -519,7 +519,7 @@ Table *AddItem(Table *input)
     int h1 = change(GetRowItemByColumnName(input, row, "时"));
     Time shelfLife = NewTimeSpan(d1, h1); // 获取保质期时间
     Time judgeTime = NewTimeSpan(0, 0);
-    if (CompareTime(&judgeTime, &shelfLife) >= 0)
+    if (CompareTime(&judgeTime, &shelfLife) >= 0 || d1 < 0 || h1 < 0)
         return NewTable(NULL, "保质期输入有误");
     // 将准备好的信息用于创建商品
     int result = AppendItem(NewItem(itemName, &amount, &shelfLife));
@@ -852,7 +852,7 @@ Table *ReviseAnItemByItemId(Table *input)
         char *h = GetRowItemByColumnName(input, row, "时");
         Time shelfLife = NewTimeSpan(change(d), change(h));
         Time judgeTime = NewTimeSpan(0, 0);
-        if (CompareTime(&judgeTime, &shelfLife) >= 0)
+        if (CompareTime(&judgeTime, &shelfLife) >= 0 || change(d) < 0 || change(h) < 0)
             return NewTable(NULL, "输入的新的保质期有误");
         Item *newItem = GetItemByName(newName);
         //判断修改后的商品名称在原商品系统中是否存在
