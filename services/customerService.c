@@ -1,12 +1,12 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #include "design/customer.h"
+#include "design/customerService.h"
 #include "design/order.h"
 #include "design/table.h"
 #include "design/utils.h"
-#include "design/customerService.h"
 
 // 添加客户
 Table *AddCustomer(Table *a)
@@ -18,7 +18,7 @@ Table *AddCustomer(Table *a)
     const char *contact = GetRowItemByColumnName(a, information, "客户联系方式");
     if (level <= 0)
     {
-        return NewTable(NULL, "客户等级要大于等于0");
+        return NewTable(NULL, "客户等级要大于0");
     }
     // 判断客户是否存在
     LinkedList *customerhead = GetCustomersByName(name);
@@ -128,7 +128,7 @@ Table *UpdateCustomer(Table *a)
     const char *contact = GetRowItemByColumnName(a, information, "客户联系方式");
     if (level <= 0)
     {
-        return NewTable(NULL, "客户等级要大于等于0");
+        return NewTable(NULL, "客户等级要大于0");
     }
     // 修改数据
     Customer *re = GetCustomerById(id);
