@@ -116,7 +116,7 @@ void RefundModify(struct MainWindowData *data)
             AppendTableRow(row, GetRowItemByColumnName(data->dataArray[REFUND_INDEX].table, rowNow->data, "退款原因"));
             AppendTableRow(row, GetRowItemByColumnName(data->dataArray[REFUND_INDEX].table, rowNow->data, "退回数目"));
 
-            Amount amount = ParseAmount(GetRowItemByColumnName(data->dataArray[REFUND_INDEX].table, rowNow->data, "退款"));
+            Amount amount = ParseAmount(GetRowItemByColumnName(data->dataArray[REFUND_INDEX].table, rowNow->data, "退款金额"));
             free(AppendTableRow(row, LongLongToString(GetAmountYuan(&amount))));
             free(AppendTableRow(row, LongLongToString(GetAmountJiao(&amount))));
             free(AppendTableRow(row, LongLongToString(GetAmountCent(&amount))));

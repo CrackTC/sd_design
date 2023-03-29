@@ -275,9 +275,11 @@ Table *UpdateOrder(Table *a)
     int newNumber = GetInventoryEntryNumber(inventory);
     int newItemId = GetInventoryEntryItemId(inventory);
 
+    int oldNumber = GetOrderNumber(order);
+
     // 判断库存是否充足
     int totalnum = GetInventoryEntryNumber(inventory);
-    if (totalnum < number)
+    if (totalnum + oldNumber < number)
     {
         return NewTable(NULL, "库存不足");
     }
@@ -286,7 +288,6 @@ Table *UpdateOrder(Table *a)
     Amount price = GetItemPrice(newItem);
     price = AmountMultiply(&price, number);
 
-    int oldNumber = GetOrderNumber(order);
     int oldInventoryId = GetOrderInventoryId(order);
     InventoryEntry *oldInventory = GetInventoryById(oldInventoryId);
     int oldInventoryNumber = GetInventoryEntryNumber(oldInventory);
@@ -330,7 +331,7 @@ Table *UpdateOrder(Table *a)
     SetInventoryEntryNumber(oldInventory, oldNumber + oldInventoryNumber);
     InventorySave();
     // 给库存系统信息
-    SetInventoryEntryNumber(inventory, newNumber - number);
+    SetInventoryEntryNumber(inventory, newNumber + oldNumber - number);
     InventorySave();
     // 修改数量
     SetOrderNumber(order, number);
@@ -380,6 +381,7 @@ Table *GetAllOrder(Table *a)
     {
         Order *order = orderNow->data;
         row = NewTableRow();
+        count++;
 
         // 数据准备
         int orderId = GetOrderId(order);
@@ -890,6 +892,8 @@ Table *UpdateRefund(Table *a)
         return NewTable(NULL, "不存在符合条件的退款条目");
     }
 
+
+
     Time timeNow = GetSystemTime();
     Order *order = GetOrderById(orderId);
 
@@ -911,13 +915,24 @@ Table *UpdateRefund(Table *a)
     SetRefundEntryAmount(refund, &newAmount);
 
     // 操作数量和库存
+    int inventoryId = GetOrderInventoryId(order);
+    InventoryEntry *inventory = GetInventoryById(inventoryId);
     int oldNumber = GetRefundEntryNumber(refund);
     int deltaNumber = number - oldNumber;
+    if (oldNumber < number || number <= 0)
+    {
+        return NewTable(NULL, "数量不符合规定");
+    }
+    int tempNumber = deltaNumber * -1;
+
+    if (GetInventoryEntryNumber(inventory) < tempNumber)
+    {
+        return NewTable(NULL, "操作失败，库存数量不足");
+    }
 
     SetRefundEntryNumber(refund, number);
 
-    int inventoryId = GetOrderInventoryId(order);
-    InventoryEntry *inventory = GetInventoryById(inventoryId);
+
     int inventoryNumber = GetInventoryEntryNumber(inventory);
     SetInventoryEntryNumber(inventory, inventoryNumber + deltaNumber);
     InventorySave();
