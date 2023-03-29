@@ -510,7 +510,7 @@ Table *AddItem(Table *input)
     }
     int i = 0;
     int n = -1;
-    for (i = 0; i < itemName[i] != '\0'; i++)
+    for (i = 0; itemName[i] != '\0'; i++)
     {
         if (itemName[i] != ' ') {
             n = i;
