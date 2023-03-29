@@ -1,12 +1,12 @@
-#include "design/crud.h"
-#include "design/linkedList.h"
-#include "design/operation.h"
-#include "design/table.h"
-#include "design/saleService.h"
-#include "design/utils.h"
 #include "../../config.h"
+#include "design/crud.h"
 #include "design/layout.h"
+#include "design/linkedList.h"
 #include "design/mainWindow.h"
+#include "design/operation.h"
+#include "design/saleService.h"
+#include "design/table.h"
+#include "design/utils.h"
 
 void SendOrderRequest(struct MainWindowData *data)
 {
@@ -51,6 +51,7 @@ void OrderAdd(struct MainWindowData *data)
                 {
                     TableRow *row = NewTableRow();
                     AppendTableRow(row, "商品编号");
+                    AppendTableRow(row, "库存编号");
                     AppendTableRow(row, "商品名称");
                     AppendTableRow(row, "客户编号");
                     AppendTableRow(row, "客户姓名");
@@ -58,16 +59,16 @@ void OrderAdd(struct MainWindowData *data)
                     Table *table = NewTable(row, "");
 
                     row = NewTableRow();
-                    AppendTableRow(row,
-                            GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, itemRowNow->data, "商品编号"));
-                    AppendTableRow(row,
-                            GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, itemRowNow->data, "商品名称"));
-                    AppendTableRow(row,
-                            GetRowItemByColumnName(data->dataArray[CUSTOMER_INDEX].table, customerRowNow->data,
-                                    "客户编号"));
-                    AppendTableRow(row,
-                            GetRowItemByColumnName(data->dataArray[CUSTOMER_INDEX].table, customerRowNow->data,
-                                    "客户姓名"));
+                    AppendTableRow(
+                        row, GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, itemRowNow->data, "商品编号"));
+                    AppendTableRow(
+                        row, GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, itemRowNow->data, "库存编号"));
+                    AppendTableRow(
+                        row, GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, itemRowNow->data, "商品名称"));
+                    AppendTableRow(row, GetRowItemByColumnName(data->dataArray[CUSTOMER_INDEX].table,
+                                                               customerRowNow->data, "客户编号"));
+                    AppendTableRow(row, GetRowItemByColumnName(data->dataArray[CUSTOMER_INDEX].table,
+                                                               customerRowNow->data, "客户姓名"));
                     AppendTableRow(row, "0");
                     AppendTable(table, row);
 
@@ -114,19 +115,19 @@ void OrderModify(struct MainWindowData *data)
             {
                 row = NewTableRow();
                 AppendTableRow(row,
-                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "订单编号"));
+                               GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "订单编号"));
                 AppendTableRow(row,
-                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "库存编号"));
+                               GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "库存编号"));
                 AppendTableRow(row,
-                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "商品编号"));
+                               GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "商品编号"));
                 AppendTableRow(row,
-                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "商品名称"));
+                               GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "商品名称"));
                 AppendTableRow(row,
-                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "客户编号"));
+                               GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "客户编号"));
                 AppendTableRow(row,
-                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "客户姓名"));
+                               GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "客户姓名"));
                 AppendTableRow(row,
-                        GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "购买数量"));
+                               GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, rowNow->data, "购买数量"));
                 AppendTable(table, row);
             }
 
@@ -145,7 +146,7 @@ void OrderDelete(int ok, void *parameter)
 {
     struct MainWindowData *data = parameter;
     Delete(ok, parameter, &data->dataArray[ORDER_INDEX], RemoveAnOrder, "缺少权限：删除订单", "订单编号",
-            OP_DELETE_ORDER);
+           OP_DELETE_ORDER);
 }
 
 void ConfirmOrderDelete(struct MainWindowData *data)
@@ -160,14 +161,9 @@ void OrderPageLayout(struct nk_context *context, struct Window *window)
     DrawMessageBox(context, "", data->message != NULL, data->message, data->messageCallback, data);
     BasicFilterLayout(context, "订单", &data->dataArray[ORDER_INDEX]);
     nk_layout_row_static(context, 10, 0, 0);
-    OperationLayout(context,
-            OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
-            (OperationHandler)SendOrderRequest,
-            (OperationHandler)OrderLookup,
-            (OperationHandler)OrderAdd,
-            (OperationHandler)ConfirmOrderDelete,
-            (OperationHandler)OrderModify,
-            data);
+    OperationLayout(context, OP_TYPE_GET | OP_TYPE_DETAIL | OP_TYPE_ADD | OP_TYPE_DELETE | OP_TYPE_UPDATE,
+                    (OperationHandler)SendOrderRequest, (OperationHandler)OrderLookup, (OperationHandler)OrderAdd,
+                    (OperationHandler)ConfirmOrderDelete, (OperationHandler)OrderModify, data);
     DrawSeparateLine(context);
     char *from, *to;
     DateRangeFilterLayout(context, "筛选购买时间", &from, &to);

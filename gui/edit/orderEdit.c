@@ -24,8 +24,8 @@ static void SendRequest(struct EditData *data)
     if (data->modify)
     {
         AppendTableRow(row, "订单编号");
-        AppendTableRow(row, "库存编号");
     }
+    AppendTableRow(row, "库存编号");
     AppendTableRow(row, "商品编号");
     AppendTableRow(row, "客户编号");
     AppendTableRow(row, "购买数量");
@@ -36,8 +36,8 @@ static void SendRequest(struct EditData *data)
     if (data->modify)
     {
         AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "订单编号"));
-        AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "库存编号"));
     }
+    AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "库存编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "商品编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "客户编号"));
     AppendTableRow(row, GetRowItemByColumnName(data->data, sourceRow, "购买数量"));
@@ -101,6 +101,22 @@ void OrderEditLayout(struct nk_context *context, Window *window)
             nk_edit_string_zero_terminated(
                     context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
                     GetRowItemByColumnName(data->data, dataRow, "商品编号"), 512, nk_filter_decimal);
+
+            nk_layout_row_end(context);
+        }
+
+        nk_layout_row_begin(context, NK_STATIC, 0, 2);
+        {
+            nk_style_push_font(context, &fontMedium->handle);
+            {
+                nk_layout_row_push(context, 100);
+                nk_label(context, "库存编号", NK_TEXT_CENTERED);
+                nk_style_pop_font(context);
+            }
+            nk_layout_row_push(context, 100);
+            nk_edit_string_zero_terminated(
+                    context, (NK_EDIT_BOX | NK_EDIT_CLIPBOARD | NK_EDIT_AUTO_SELECT) & (~NK_EDIT_MULTILINE),
+                    GetRowItemByColumnName(data->data, dataRow, "库存编号"), 512, nk_filter_decimal);
 
             nk_layout_row_end(context);
         }
