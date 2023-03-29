@@ -56,6 +56,10 @@ Table *AddOrder(Table *a)
     {
         return NewTable(NULL, "不存在该商品");
     }
+    if (GetItemIsEnabled(item) == 0)
+    {
+        return NewTable(NULL, "该商品不可售");
+    }
     Amount price = GetItemPrice(item);
     Amount store = NewAmount(0, 0, 0);
     Time present = GetSystemTime();
@@ -105,9 +109,17 @@ Table *AddOrder(Table *a)
         AppendOrder(neworder);
         OrderSave();
 
+        // 给收支系统信息
+        store = AmountMultiply(&price, number);
+        Profit *put = NewProfit(&store, "售货", &present);
+        AppendProfit(put);
+        ProfitSave();
+
         int left = GetInventoryEntryNumber(latest->data);
         SetInventoryEntryNumber(latest->data, left - number); // 修改库存数量
         InventorySave();
+
+        return NULL;
     }
     int judge = 1; // 判断是否达到出货数量要求
 
@@ -239,7 +251,7 @@ Table *UpdateOrder(Table *a)
     // 读数据
     TableRow *information = GetRowByIndex(a, 1);
     int orderId = atoi(GetRowItemByColumnName(a, information, "订单编号"));
-    int inventoryId = atoi(GetRowItemByColumnName(a, information, "库存编号"));
+    int newInventoryId = atoi(GetRowItemByColumnName(a, information, "库存编号"));
     int number = atoi(GetRowItemByColumnName(a, information, "购买数量"));
     int customerId = atoi(GetRowItemByColumnName(a, information, "客户编号"));
 
@@ -261,34 +273,49 @@ Table *UpdateOrder(Table *a)
         return NewTable(NULL, "不存在符合条件的订单条目");
     }
 
+    int oldInventoryId = GetOrderInventoryId(order);
+
     Time systemTime = GetSystemTime();
 
-    Amount oldPrice = GetOrderAmount(order);
-    oldPrice = AmountMultiply(&oldPrice, -1);
+    Amount oldSalePrice = GetOrderAmount(order);
+    oldSalePrice = AmountMultiply(&oldSalePrice, -1);
 
-    InventoryEntry *inventory = GetInventoryById(inventoryId);
+    InventoryEntry *inventory = GetInventoryById(newInventoryId);
     if (inventory == NULL)
     {
         return NewTable(NULL, "不存在符合条件的库存条目");
     }
 
-    int newNumber = GetInventoryEntryNumber(inventory);
-    int newItemId = GetInventoryEntryItemId(inventory);
+    int newInventoryNumber = GetInventoryEntryNumber(inventory);
+    // int newInventoryItemId = GetInventoryEntryItemId(inventory);
 
-    int oldNumber = GetOrderNumber(order);
+    int oldSaleNumber = GetOrderNumber(order);
 
     // 判断库存是否充足
-    int totalnum = GetInventoryEntryNumber(inventory);
-    if (totalnum + oldNumber < number)
+    if (oldInventoryId == newInventoryId)
     {
-        return NewTable(NULL, "库存不足");
+        if (newInventoryNumber + oldSaleNumber < number)
+        {
+            return NewTable(NULL, "库存不足");
+        }
+    }
+    else
+    {
+        if (newInventoryNumber < number)
+        {
+            return NewTable(NULL, "库存不足");
+        }
     }
 
+    int newItemId = GetInventoryEntryItemId(inventory);
     Item *newItem = GetItemById(newItemId);
+    if (GetItemIsEnabled(newItem) == 0)
+    {
+        return NewTable(NULL, "所选库存对应的商品不可售");
+    }
     Amount price = GetItemPrice(newItem);
     price = AmountMultiply(&price, number);
 
-    int oldInventoryId = GetOrderInventoryId(order);
     InventoryEntry *oldInventory = GetInventoryById(oldInventoryId);
     int oldInventoryNumber = GetInventoryEntryNumber(oldInventory);
 
@@ -302,7 +329,7 @@ Table *UpdateOrder(Table *a)
     // 操作金额和收支
 
     // 给收支系统信息
-    Profit *oldProfit = NewProfit(&oldPrice, "修改订单1", &systemTime);
+    Profit *oldProfit = NewProfit(&oldSalePrice, "修改订单1", &systemTime);
     AppendProfit(oldProfit);
     ProfitSave();
     // 计算金额
@@ -328,15 +355,16 @@ Table *UpdateOrder(Table *a)
     // 操作数量和库存
 
     // 给库存系统信息
-    SetInventoryEntryNumber(oldInventory, oldNumber + oldInventoryNumber);
+    SetInventoryEntryNumber(oldInventory, oldSaleNumber + oldInventoryNumber);
     InventorySave();
     // 给库存系统信息
-    SetInventoryEntryNumber(inventory, newNumber + oldNumber - number);
+    newInventoryNumber = GetInventoryEntryNumber(inventory);
+    SetInventoryEntryNumber(inventory, newInventoryNumber - number);
     InventorySave();
     // 修改数量
     SetOrderNumber(order, number);
     // 修改库存编号
-    SetOrderInventoryId(order, inventoryId);
+    SetOrderInventoryId(order, newInventoryId);
 
     // 操作时间
     SetOrderTime(order, &systemTime);
@@ -772,6 +800,11 @@ Table *AddRefund(Table *a)
     int number = atoi(GetRowItemByColumnName(a, information, "退回数目"));
     char *remark = GetRowItemByColumnName(a, information, "备注");
 
+    // 判断金额相关数据是否符合规定
+    if (yuan < 0 || jiao < 0 || jiao >= 10 || cent < 0 || cent >= 10)
+    {
+        return NewTable(NULL, "金额有误");
+    }
     // 判断是否可以退货（只能退货一次）
     LinkedList *refundNow = GetAllRefunds();
     while (refundNow != NULL)
@@ -847,6 +880,18 @@ Table *RemoveRefund(Table *a)
     Time systemTime = GetSystemTime();
     Order *order = GetOrderById(orderId);
 
+    // 操作数量和库存
+    int oldNumber = GetRefundEntryNumber(refund);
+    int inventoryId = GetOrderInventoryId(order);
+    InventoryEntry *inventory = GetInventoryById(inventoryId);
+    int number = GetInventoryEntryNumber(inventory);
+    if (number - oldNumber < 0)
+    {
+        return NewTable(NULL, "库存数量不足");
+    }
+    SetInventoryEntryNumber(inventory, number - oldNumber);
+    InventorySave();
+
     // 操作金额和收支
     Amount oldAmount = GetRefundEntryAmount(refund);
     Profit *newProfit = NewProfit(&oldAmount, "删除退货信息", &systemTime);
@@ -856,14 +901,6 @@ Table *RemoveRefund(Table *a)
         return NewTable(NULL, "删除退货失败");
     }
     ProfitSave();
-
-    // 操作数量和库存
-    int oldNumber = GetRefundEntryNumber(refund);
-    int inventoryId = GetOrderInventoryId(order);
-    InventoryEntry *inventory = GetInventoryById(inventoryId);
-    int number = GetInventoryEntryNumber(inventory);
-    SetInventoryEntryNumber(inventory, number - oldNumber);
-    InventorySave();
 
     // 删除退款条目
     RemoveRefundEntry(refund);
@@ -886,16 +923,21 @@ Table *UpdateRefund(Table *a)
     int number = atoi(GetRowItemByColumnName(a, information, "退回数目"));
     const char *remark = GetRowItemByColumnName(a, information, "备注");
 
+    // 判断金额相关数据是否符合规定
+    if (yuan < 0 || jiao < 0 || jiao >= 10 || cent < 0 || cent >= 10)
+    {
+        return NewTable(NULL, "金额有误");
+    }
+
     RefundEntry *refund = GetRefundByOrderId(orderId);
     if (refund == NULL)
     {
         return NewTable(NULL, "不存在符合条件的退款条目");
     }
 
-
-
     Time timeNow = GetSystemTime();
     Order *order = GetOrderById(orderId);
+    int ordernumber = GetOrderNumber(order);
 
     // 操作金额和收支
     Amount newAmount = NewAmount(yuan, jiao, cent);
@@ -919,9 +961,9 @@ Table *UpdateRefund(Table *a)
     InventoryEntry *inventory = GetInventoryById(inventoryId);
     int oldNumber = GetRefundEntryNumber(refund);
     int deltaNumber = number - oldNumber;
-    if (oldNumber < number || number <= 0)
+    if (ordernumber < number || number <= 0)
     {
-        return NewTable(NULL, "数量不符合规定");
+        return NewTable(NULL, "数量不符合规定:数量要大于0且修改后的数量不能大于订单数量");
     }
     int tempNumber = deltaNumber * -1;
 
@@ -931,7 +973,6 @@ Table *UpdateRefund(Table *a)
     }
 
     SetRefundEntryNumber(refund, number);
-
 
     int inventoryNumber = GetInventoryEntryNumber(inventory);
     SetInventoryEntryNumber(inventory, inventoryNumber + deltaNumber);
@@ -951,15 +992,15 @@ Table *UpdateRefund(Table *a)
     return NULL;
 }
 
-// 查询所有退货
+// 查询退货
 Table *GetAllRefund(Table *a)
 {
     TableRow *row = NewTableRow();
 
     AppendTableRow(row, "订单编号");
     AppendTableRow(row, "退款原因");
-    AppendTableRow(row, "退款时间");
-    AppendTableRow(row, "退款金额");
+    AppendTableRow(row, "时间");
+    AppendTableRow(row, "退款");
     AppendTableRow(row, "退回数目");
     AppendTableRow(row, "备注");
     Table *table = NewTable(row, NULL);
