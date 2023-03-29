@@ -51,7 +51,6 @@ void OrderAdd(struct MainWindowData *data)
                 {
                     TableRow *row = NewTableRow();
                     AppendTableRow(row, "商品编号");
-                    AppendTableRow(row, "库存编号");
                     AppendTableRow(row, "商品名称");
                     AppendTableRow(row, "客户编号");
                     AppendTableRow(row, "客户姓名");
@@ -61,8 +60,6 @@ void OrderAdd(struct MainWindowData *data)
                     row = NewTableRow();
                     AppendTableRow(
                         row, GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, itemRowNow->data, "商品编号"));
-                    AppendTableRow(
-                        row, GetRowItemByColumnName(data->dataArray[ORDER_INDEX].table, itemRowNow->data, "库存编号"));
                     AppendTableRow(
                         row, GetRowItemByColumnName(data->dataArray[ITEM_INDEX].table, itemRowNow->data, "商品名称"));
                     AppendTableRow(row, GetRowItemByColumnName(data->dataArray[CUSTOMER_INDEX].table,
