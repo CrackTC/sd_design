@@ -505,6 +505,23 @@ Table *AddItem(Table *input)
     // 获取该商品的名称
     const char *itemName = GetRowItemByColumnName(input, row, "商品名称");
 
+    if (itemName[0] == '\0') {
+        return NewTable(NULL, "商品名称不能为空");
+    }
+    int i = 0;
+    int n = -1;
+    for (i = 0; i < itemName[i] != '\0'; i++)
+    {
+        if (itemName[i] != ' ') {
+            n = i;
+            break;
+        }
+    }
+    if (n == -1) {
+        return NewTable(NULL, "商品名称不能为空");
+    }
+    itemName = &itemName[n];
+
     // 判断是否存在过下架该商品 如下架过 则重新上架
     if (GetItemByName(itemName) != NULL)
     {
