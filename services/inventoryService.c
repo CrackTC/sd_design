@@ -505,19 +505,22 @@ Table *AddItem(Table *input)
     // 获取该商品的名称
     const char *itemName = GetRowItemByColumnName(input, row, "商品名称");
 
-    if (itemName[0] == '\0') {
+    if (itemName[0] == '\0')
+    {
         return NewTable(NULL, "商品名称不能为空");
     }
     int i = 0;
     int n = -1;
     for (i = 0; itemName[i] != '\0'; i++)
     {
-        if (itemName[i] != ' ') {
+        if (itemName[i] != ' ')
+        {
             n = i;
             break;
         }
     }
-    if (n == -1) {
+    if (n == -1)
+    {
         return NewTable(NULL, "商品名称不能为空");
     }
     itemName = &itemName[n];
@@ -526,6 +529,7 @@ Table *AddItem(Table *input)
     if (GetItemByName(itemName) != NULL)
     {
         SetItemIsEnabled(GetItemByName(itemName), 1);
+        ItemsSave();
         return NULL;
     }
     // 将字符转化为数字
@@ -586,6 +590,7 @@ Table *AddLossInventory(Table *input)
         {
             SetInventoryEntryNumber(inventoryEntry, GetInventoryEntryNumber(inventoryEntry) - number);
             InventorySave();
+            LossEntrySave();
             return NULL;
         }
         else
